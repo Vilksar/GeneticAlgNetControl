@@ -15,6 +15,10 @@ namespace GeneticAlgNetControl.Data.Models
 
         public string Name { get; set; }
 
+        public DateTime DateTimeStarted { get; set; }
+
+        public DateTime DateTimeEnded { get; set; }
+
         public List<(DateTime StartTime, DateTime? EndTime)> DateTimeList { get; set; }
 
         public AlgorithmRunStatus Status { get; set; }

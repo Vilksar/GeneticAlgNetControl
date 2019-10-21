@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Migrations;
+﻿using System;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace GeneticAlgNetControl.Data.Migrations
 {
@@ -12,8 +13,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Edges = table.Column<string>(nullable: true),
+                    Nodes = table.Column<string>(nullable: true),
                     TargetNodes = table.Column<string>(nullable: true),
-                    DrugTargetNodes = table.Column<string>(nullable: true),
+                    PreferredNodes = table.Column<string>(nullable: true),
                     AlgorithmRunId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -48,6 +50,8 @@ namespace GeneticAlgNetControl.Data.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
+                    DateTimeStarted = table.Column<DateTime>(nullable: false),
+                    DateTimeEnded = table.Column<DateTime>(nullable: false),
                     DateTimeList = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),
                     CurrentIteration = table.Column<int>(nullable: false),

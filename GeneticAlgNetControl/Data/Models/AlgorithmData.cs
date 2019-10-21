@@ -15,7 +15,7 @@ namespace GeneticAlgNetControl.Data.Models
 
         public List<string> TargetNodes { get; set; }
 
-        public List<string> DrugTargetNodes { get; set; }
+        public List<string> PreferredNodes { get; set; }
 
         public string AlgorithmRunId { get; set; }
 

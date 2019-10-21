@@ -52,7 +52,7 @@ namespace GeneticAlgNetControl.Data
                 .Property(ad => ad.Nodes)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
             modelBuilder.Entity<AlgorithmData>()
-                .Property(ad => ad.DrugTargetNodes)
+                .Property(ad => ad.PreferredNodes)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
             modelBuilder.Entity<AlgorithmData>()
                 .Property(ad => ad.Edges)
