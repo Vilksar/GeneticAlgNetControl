@@ -3,16 +3,22 @@
 }
 
 <div class="nav flex-column">
-    <a asp-page="/Index" class="row nav-link bg-dark text-white mx-0 @(activePage == "Overview" ? "active" : string.Empty)">
-        <span class="col-2 text-center"><i class="fas fa-chart-bar"></i></span>
-        <span class="col-10 text-left text-wrap">Overview</span>
+    <a asp-page="/Index" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "Overview" ? "active" : string.Empty)">
+        <div class="row">
+            <span class="col-10 font-weight-bold text-left text-wrap">Overview</span>
+            <span class="col-2 text-center"><i class="fas fa-chart-bar"></i></span>
+        </div>
     </a>
-    <a asp-page="/Create" class="row nav-link bg-dark text-white mx-0 @(activePage == "Create" ? "active" : string.Empty)">
-        <span class="col-2 text-center"><i class="fas fa-plus-circle"></i></span>
-        <span class="col-10 text-left text-wrap">Create</span>
+    <a asp-page="/Create" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "Create" ? "active" : string.Empty)">
+        <div class="row">
+            <span class="col-10 font-weight-bold text-left text-wrap">Create</span>
+            <span class="col-2 text-center"><i class="fas fa-plus-circle"></i></span>
+        </div>
     </a>
-    <a asp-page="/About" class="row nav-link bg-dark text-white mx-0 @(activePage == "About" ? "active" : string.Empty)">
-        <span class="col-2 text-center"><i class="fas fa-question-circle"></i></span>
-        <span class="col-10 text-left text-wrap">About</span>
+    <a asp-page="/About" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "About" ? "active" : string.Empty)">
+        <div class="row">
+            <span class="col-10 font-weight-bold text-left text-wrap">About</span>
+            <span class="col-2 text-center"><i class="fas fa-question-circle"></i></span>
+        </div>
     </a>
 </div>
