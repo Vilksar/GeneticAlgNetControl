@@ -16,3 +16,10 @@ body {
 .nav-link.active {
     background-color: #1d2124 !important;
 }
+
+/* Style for the dropdown menus. */
+.dropdown-menu {
+    min-width: 15rem;
+    max-height: 30rem;
+    overflow: auto;
+}
