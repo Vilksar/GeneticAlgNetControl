@@ -3,15 +3,15 @@
 }
 
 <div class="nav flex-column">
-    <a asp-page="/Index" class="row nav-link bg-dark text-white @(activePage == "Overview" ? "active" : string.Empty)">
+    <a asp-page="/Index" class="row nav-link bg-dark text-white mx-0 @(activePage == "Overview" ? "active" : string.Empty)">
         <span class="col-2 text-center"><i class="fas fa-chart-bar"></i></span>
         <span class="col-10 text-left text-wrap">Overview</span>
     </a>
-    <a asp-page="/Create" class="row nav-link bg-dark text-white @(activePage == "Create" ? "active" : string.Empty)">
+    <a asp-page="/Create" class="row nav-link bg-dark text-white mx-0 @(activePage == "Create" ? "active" : string.Empty)">
         <span class="col-2 text-center"><i class="fas fa-plus-circle"></i></span>
         <span class="col-10 text-left text-wrap">Create</span>
     </a>
-    <a asp-page="/About" class="row nav-link bg-dark text-white @(activePage == "About" ? "active" : string.Empty)">
+    <a asp-page="/About" class="row nav-link bg-dark text-white mx-0 @(activePage == "About" ? "active" : string.Empty)">
         <span class="col-2 text-center"><i class="fas fa-question-circle"></i></span>
         <span class="col-10 text-left text-wrap">About</span>
     </a>
