@@ -11,6 +11,8 @@ namespace GeneticAlgNetControl.Data.Models
 
         public List<(string SourceNode, string TargetNode)> Edges { get; set; }
 
+        public List<string> Nodes { get; set; }
+
         public List<string> TargetNodes { get; set; }
 
         public List<string> DrugTargetNodes { get; set; }
