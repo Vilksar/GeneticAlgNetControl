@@ -227,7 +227,7 @@ $(window).on('load', () => {
                             return undefined;
                         } else {
                             // Return a simplified object.
-                            return `${element['SourceNode']};${TargetNode['TargetNode']}`;
+                            return `${element['SourceNode']};${element['TargetNode']}`;
                         }
                     });
                     // Add the elements to the text.

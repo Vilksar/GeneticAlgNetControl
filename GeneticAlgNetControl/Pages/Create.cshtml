@@ -14,7 +14,7 @@
             <span asp-validation-for="Input.Name" class="text-danger small"></span>
         </div>
         <div class="file-group" data-type="edges">
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Input.Edges" class="font-weight-bold">Edges</label>
                 <textarea asp-for="Input.Edges" class="form-control file-group-input"></textarea>
                 <span asp-description-for="Input.Edges" class="text-muted small">The edges of the network, formatted as a JSON object. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
@@ -58,7 +58,7 @@
             </div>
         </div>
         <div class="file-group" data-type="nodes">
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Input.TargetNodes" class="font-weight-bold">Target nodes</label>
                 <textarea asp-for="Input.TargetNodes" class="form-control file-group-input"></textarea>
                 <span asp-description-for="Input.TargetNodes" class="text-muted small">The nodes to be used as target by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
@@ -91,7 +91,7 @@
             </div>
         </div>
         <div class="file-group" data-type="nodes">
-            <div class="form-group">
+            <div class="form-group" hidden>
                 <label asp-for="Input.PreferredNodes" class="font-weight-bold">Preferred nodes</label>
                 <textarea asp-for="Input.PreferredNodes" class="form-control file-group-input"></textarea>
                 <span asp-description-for="Input.PreferredNodes" class="text-muted small">The nodes to be used as preferred by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
