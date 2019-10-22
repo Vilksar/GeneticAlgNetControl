@@ -3,9 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
+using GeneticAlgNetControl.Data.Enumerations;
+using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -131,37 +135,130 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Try to get the item with the given ID.
-            var algorithmRun = _context.AlgorithmRuns
-                .Include(item => item.AlgorithmData)
-                .Include(item => item.AlgorithmParameters)
+            var algorithm = _context.Algorithms
                 .FirstOrDefault(item => item.Id == id);
             // Check if there was no item found.
-            if (algorithmRun == null)
+            if (algorithm == null)
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: There is no custom analysis with the specified ID or you do not have access to it.";
+                TempData["StatusMessage"] = "Error: There is no algorithm with the specified ID.";
                 // Redirect to the overview page.
                 return RedirectToPage("/Overview");
             }
             // Define the input.
             Input = new InputModel
             {
-                Name = algorithmRun.Name,
-                Edges = JsonSerializer.Serialize(algorithmRun.AlgorithmData.Edges),
-                TargetNodes = JsonSerializer.Serialize(algorithmRun.AlgorithmData.TargetNodes),
-                PreferredNodes = JsonSerializer.Serialize(algorithmRun.AlgorithmData.PreferredNodes),
-                RandomSeed = algorithmRun.AlgorithmParameters.RandomSeed,
-                MaximumIterations = algorithmRun.AlgorithmParameters.MaximumIterations,
-                MaximumIterationsWithoutImprovement = algorithmRun.AlgorithmParameters.MaximumIterationsWithoutImprovement,
-                MaximumPathLength = algorithmRun.AlgorithmParameters.MaximumPathLength,
-                PopulationSize = algorithmRun.AlgorithmParameters.PopulationSize,
-                RandomGenesPerChromosome = algorithmRun.AlgorithmParameters.RandomGenesPerChromosome,
-                PercentageRandom = algorithmRun.AlgorithmParameters.PercentageRandom,
-                PercentageElite = algorithmRun.AlgorithmParameters.PercentageElite,
-                ProbabilityMutation = algorithmRun.AlgorithmParameters.ProbabilityMutation
+                Name = algorithm.Name,
+                Edges = JsonSerializer.Serialize(algorithm.Edges),
+                TargetNodes = JsonSerializer.Serialize(algorithm.TargetNodes),
+                PreferredNodes = JsonSerializer.Serialize(algorithm.PreferredNodes),
+                RandomSeed = algorithm.RandomSeed,
+                MaximumIterations = algorithm.MaximumIterations,
+                MaximumIterationsWithoutImprovement = algorithm.MaximumIterationsWithoutImprovement,
+                MaximumPathLength = algorithm.MaximumPathLength,
+                PopulationSize = algorithm.PopulationSize,
+                RandomGenesPerChromosome = algorithm.RandomGenesPerChromosome,
+                PercentageRandom = algorithm.PercentageRandom,
+                PercentageElite = algorithm.PercentageElite,
+                ProbabilityMutation = algorithm.ProbabilityMutation
             };
             // Return the page.
             return Page();
+        }
+
+        public async Task<IActionResult> OnPostAsync()
+        {
+            // Check if the provided model isn't valid.
+            if (!ModelState.IsValid)
+            {
+                // Add an error to the model.
+                ModelState.AddModelError(string.Empty, "An error has been encountered. Please check again the input fields.");
+                // Redisplay the page.
+                return Page();
+            }
+            // Get the edges.
+            var edges = JsonSerializer.Deserialize<IEnumerable<Edge>>(Input.Edges)
+                .Where(item => !string.IsNullOrEmpty(item.SourceNode) && !string.IsNullOrEmpty(item.TargetNode))
+                .Distinct();
+            // Check if there haven't been any edges found.
+            if (edges == null || !edges.Any())
+            {
+                // Add an error to the model.
+                ModelState.AddModelError(string.Empty, "None of the provided edges contains both source and target nodes.");
+                // Redisplay the page.
+                return Page();
+            }
+            // Get a list of all the nodes in the edges.
+            var nodes = edges
+                .Select(item => item.SourceNode)
+                .Concat(edges.Select(item => item.TargetNode))
+                .Distinct();
+            // Get the target nodes.
+            var targetNodes = JsonSerializer.Deserialize<IEnumerable<string>>(Input.TargetNodes).Intersect(nodes);
+            // Get the preferred nodes.
+            var preferredNodes = JsonSerializer.Deserialize<IEnumerable<string>>(Input.PreferredNodes).Intersect(nodes);
+            // Check if there haven't been any target nodes found.
+            if (!targetNodes.Any())
+            {
+                // Add an error to the model.
+                ModelState.AddModelError(string.Empty, "No target nodes could be found with the given data.");
+                // Redisplay the page.
+                return Page();
+            }
+            // Define the new algorithm instance.
+            var algorithm = new Algorithm
+            {
+                Id = Guid.NewGuid().ToString(),
+                Name = Input.Name,
+                DateTimeStarted = DateTime.Now,
+                DateTimeEnded = null,
+                DateTimePeriods = new List<DateTimePeriod>
+                {
+                    new DateTimePeriod
+                    {
+                        DateTimeStarted = DateTime.Now,
+                        DateTimeEnded = null
+                    }    
+                },
+                Status = AlgorithmStatus.Scheduled,
+                Nodes = nodes.ToList(),
+                Edges = edges.ToList(),
+                TargetNodes = targetNodes.ToList(),
+                PreferredNodes = preferredNodes.ToList(),
+                CurrentIteration = 0,
+                CurrentIterationWithoutImprovement = 0,
+                RandomSeed = Input.RandomSeed,
+                MaximumIterations = Input.MaximumIterations,
+                MaximumIterationsWithoutImprovement = Input.MaximumIterationsWithoutImprovement,
+                MaximumPathLength = Input.MaximumPathLength,
+                PopulationSize = Input.PopulationSize,
+                RandomGenesPerChromosome = Input.RandomGenesPerChromosome,
+                PercentageElite = Input.PercentageElite,
+                PercentageRandom = Input.PercentageRandom,
+                ProbabilityMutation = Input.ProbabilityMutation
+            };
+            // Mark it for addition.
+            _context.Algorithms.Add(algorithm);
+            // Try to save the changes in the database.
+            try
+            {
+                // Save the changes in the database.
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception exception)
+            {
+                // If we made it this far, something went wrong with adding to the database, so we add an error to the model.
+                ModelState.AddModelError(string.Empty, exception.Message);
+                // And re-display the page.
+                return Page();
+            }
+            // Call on Hangifre for a new background task to run the algorithm.
+            //var run = new Run(_context);
+            //BackgroundJob.Enqueue(() => run.RunAlgorithm(algorithmRun.Id));
+            // Display a message.
+            TempData["StatusMessage"] = "Success: 1 algorithm created successfully and started.";
+            // Redirect to the index page.
+            return RedirectToPage("/Overview");
         }
     }
 }

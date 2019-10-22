@@ -3,6 +3,7 @@
 @{
     ViewData["Title"] = "Overview";
     ViewData["ActivePage"] = "Overview";
+    var statusMessage = (string)TempData["StatusMessage"];
 }
 
 <form method="get">
@@ -130,6 +131,21 @@
     </div>
 </form>
 <hr />
+@if (!string.IsNullOrEmpty(statusMessage))
+{
+    var statusMessageType = statusMessage.StartsWith("Error") ? "danger" : statusMessage.StartsWith("Success") ? "success" : "info";
+    var statusMessageIcon = statusMessage.StartsWith("Error") ? "exclamation" : statusMessage.StartsWith("Success") ? "check" : "info";
+    var statusMessageText = string.Join(" ", statusMessage.Split(" ").Skip(1));
+    <div class="alert alert-@statusMessageType alert-dismissible text-wrap mb-3">
+        <div>
+            <span><i class="fas fa-@statusMessageIcon-circle"></i></span>
+            <span>@statusMessageText</span>
+        </div>
+        <button type="button" class="close" data-dismiss="alert">
+            <span><i class="fas fa-times"></i></span>
+        </button>
+    </div>
+}
 <form method="get">
     <ul class="list-group list-group-flush item-group">
         <li class="list-group-item list-group-item-action list-group-item-dark active">
@@ -196,10 +212,14 @@
                             </div>
                         </div>
                         <div class="col-2 col-xl-2 text-center text-truncate">
-                            <span>@item.Status</span>
+                            <div>
+                                <span title="@item.Status">@item.Status</span>
+                            </div>
                         </div>
                         <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                            <span>@item.TimeSpan.ToString()</span>
+                            <div>
+                                <span title="@item.TimeSpan.ToString()">@item.TimeSpan.ToString()</span>
+                            </div>
                         </div>
                         <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                             <span>@item.ProgressIterations</span>

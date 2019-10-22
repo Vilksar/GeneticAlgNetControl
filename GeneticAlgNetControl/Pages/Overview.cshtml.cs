@@ -90,19 +90,19 @@ namespace GeneticAlgNetControl.Pages
             // Define the input
             Input = input ?? new InputModel();
             // Start with all of the items in the database that match the search string.
-            var query = _context.AlgorithmRuns
+            var query = _context.Algorithms
                 .Where(item => !Input.SearchIn.Any() ||
                 Input.SearchIn.Contains("Id") && item.Id.Contains(Input.SearchString) ||
                 Input.SearchIn.Contains("Name") && item.Name.Contains(Input.SearchString) ||
-                Input.SearchIn.Contains("Nodes") && item.AlgorithmData.Edges.Any(item1 => item1.SourceNode.Contains(Input.SearchString) || item1.TargetNode.Contains(Input.SearchString)) ||
-                Input.SearchIn.Contains("TargetNodes") && item.AlgorithmData.TargetNodes.Any(item1 => item1.Contains(Input.SearchString)) ||
-                Input.SearchIn.Contains("PreferredNodes") && item.AlgorithmData.PreferredNodes.Any(item1 => item1.Contains(Input.SearchString)));
+                Input.SearchIn.Contains("Nodes") && item.Edges.Any(item1 => item1.SourceNode.Contains(Input.SearchString) || item1.TargetNode.Contains(Input.SearchString)) ||
+                Input.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(Input.SearchString)) ||
+                Input.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(Input.SearchString)));
             // Select the results matching the filter parameter.
             query = query
-                .Where(item => Input.Filter.Contains("IsOngoing") ? item.Status == AlgorithmRunStatus.Ongoing : true)
-                .Where(item => Input.Filter.Contains("IsPaused") ? item.Status == AlgorithmRunStatus.Paused : true)
-                .Where(item => Input.Filter.Contains("IsStopped") ? item.Status == AlgorithmRunStatus.Stopped : true)
-                .Where(item => Input.Filter.Contains("IsCompleted") ? item.Status == AlgorithmRunStatus.Completed : true);
+                .Where(item => Input.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
+                .Where(item => Input.Filter.Contains("IsPaused") ? item.Status == AlgorithmStatus.Paused : true)
+                .Where(item => Input.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
+                .Where(item => Input.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true);
             // Sort it according to the parameters.
             switch ((Input.SortBy, Input.SortDirection))
             {
@@ -137,36 +137,32 @@ namespace GeneticAlgNetControl.Pages
                     query = query.OrderByDescending(item => item.Status);
                     break;
                 case var sort when sort == ("NodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.AlgorithmData.Nodes.Count());
+                    query = query.OrderBy(item => item.Nodes.Count());
                     break;
                 case var sort when sort == ("NodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.AlgorithmData.Nodes.Count());
+                    query = query.OrderByDescending(item => item.Nodes.Count());
                     break;
                 case var sort when sort == ("TargetNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.AlgorithmData.TargetNodes.Count());
+                    query = query.OrderBy(item => item.TargetNodes.Count());
                     break;
                 case var sort when sort == ("TargetNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.AlgorithmData.TargetNodes.Count());
+                    query = query.OrderByDescending(item => item.TargetNodes.Count());
                     break;
                 case var sort when sort == ("PreferredNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.AlgorithmData.PreferredNodes.Count());
+                    query = query.OrderBy(item => item.PreferredNodes.Count());
                     break;
                 case var sort when sort == ("PreferredNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.AlgorithmData.PreferredNodes.Count());
+                    query = query.OrderByDescending(item => item.PreferredNodes.Count());
                     break;
                 case var sort when sort == ("EdgeCount", "Ascending"):
-                    query = query.OrderBy(item => item.AlgorithmData.Edges.Count());
+                    query = query.OrderBy(item => item.Edges.Count());
                     break;
                 case var sort when sort == ("EdgeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.AlgorithmData.Edges.Count());
+                    query = query.OrderByDescending(item => item.Edges.Count());
                     break;
                 default:
                     break;
             }
-            // Include related entitites.
-            query = query
-                .Include(item => item.AlgorithmData)
-                .Include(item => item.AlgorithmParameters);
             // Get the pagination variables.
             var totalItems = query.Count();
             var totalPages = (int)Math.Ceiling((double)totalItems / Input.ItemsPerPage);
@@ -193,10 +189,10 @@ namespace GeneticAlgNetControl.Pages
                 {
                     Id = item.Id,
                     Name = item.Name,
-                    TimeSpan = item.DateTimeList.Select(item => (item.EndTime ?? DateTime.Now) - item.StartTime).Aggregate(TimeSpan.Zero, (sum, item) => sum + item),
+                    TimeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted).Aggregate(TimeSpan.Zero, (sum, item) => sum + item),
                     Status = item.Status.ToString(),
-                    ProgressIterations = (double)item.CurrentIteration / item.AlgorithmParameters.MaximumIterations,
-                    ProgressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.AlgorithmParameters.MaximumIterationsWithoutImprovement
+                    ProgressIterations = (double)item.CurrentIteration / item.MaximumIterations,
+                    ProgressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement
                 });
             // Return the page.
             return Page();
