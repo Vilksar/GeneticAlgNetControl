@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
+using GeneticAlgNetControl.Data.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -67,22 +68,7 @@ namespace GeneticAlgNetControl.Pages
 
             public Dictionary<string, string> AppliedFilters { get; set; }
 
-            public IEnumerable<ItemViewModel> Items { get; set; }
-        }
-
-        public class ItemViewModel
-        {
-            public string Id { get; set; }
-
-            public string Name { get; set; }
-
-            public string Status { get; set; }
-
-            public TimeSpan TimeSpan { get; set; }
-
-            public double ProgressIterations { get; set; }
-
-            public double ProgressIterationsWithoutImprovement { get; set; }
+            public IEnumerable<AlgorithmOverviewViewModel> Items { get; set; }
         }
 
         public IActionResult OnGet(InputModel input = null)
@@ -185,15 +171,7 @@ namespace GeneticAlgNetControl.Pages
                 .Skip((Input.CurrentPage - 1) * Input.ItemsPerPage)
                 .Take(Input.ItemsPerPage)
                 .AsEnumerable()
-                .Select(item => new ItemViewModel
-                {
-                    Id = item.Id,
-                    Name = item.Name,
-                    TimeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted).Aggregate(TimeSpan.Zero, (sum, item) => sum + item),
-                    Status = item.Status.ToString(),
-                    ProgressIterations = (double)item.CurrentIteration / item.MaximumIterations,
-                    ProgressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement
-                });
+                .Select(item => new AlgorithmOverviewViewModel(item));
             // Return the page.
             return Page();
         }
