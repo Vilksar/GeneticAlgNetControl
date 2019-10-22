@@ -54,6 +54,24 @@
             </div>
         </div>
         <div class="col-8 col-lg-9 px-4 py-5">
+            @{
+                var statusMessage = (string)TempData["StatusMessage"];
+            }
+            @if (!string.IsNullOrEmpty(statusMessage))
+            {
+                var statusMessageType = statusMessage.StartsWith("Error") ? "danger" : statusMessage.StartsWith("Success") ? "success" : "info";
+                var statusMessageIcon = statusMessage.StartsWith("Error") ? "exclamation" : statusMessage.StartsWith("Success") ? "check" : "info";
+                var statusMessageText = string.Join(" ", Model.Split(" ").Skip(1));
+                <div class="alert alert-@statusMessageType alert-dismissible text-wrap mb-2">
+                    <div>
+                        <span><i class="fas fa-@statusMessageIcon-circle"></i></span>
+                        <span>@statusMessageText</span>
+                    </div>
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span><i class="fas fa-times"></i></span>
+                    </button>
+                </div>
+            }
             @RenderBody()
         </div>
     </div>
