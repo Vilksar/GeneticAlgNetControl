@@ -1,0 +1,183 @@
+﻿@page
+@model CreateModel
+@{
+    ViewData["Title"] = "Create";
+    ViewData["ActivePage"] = "Create";
+}
+
+    <form method="post" class="text-justify">
+        <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
+        <div class="form-group">
+            <label asp-for="Input.Name" class="font-weight-bold">Name</label>
+            <input asp-for="Input.Name" class="form-control" />
+            <span asp-description-for="Input.Name" class="text-muted small">The name of the new algorithm run.</span>
+            <span asp-validation-for="Input.Name" class="text-danger small"></span>
+        </div>
+        <div class="file-group" data-type="edges">
+            <div class="form-group">
+                <label asp-for="Input.Edges" class="font-weight-bold">Edges</label>
+                <textarea asp-for="Input.Edges" class="form-control file-group-input"></textarea>
+                <span asp-description-for="Input.Edges" class="text-muted small">The edges of the network, formatted as a JSON object. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
+                <span asp-validation-for="Input.Edges" class="text-danger small"></span>
+            </div>
+            <div class="form-group">
+                <label for="edges-textarea" class="font-weight-bold">Edges</label>
+                <span class="badge badge-primary badge-pill file-group-count">0</span>
+                <textarea id="edges-textarea" class="form-control file-group-text"></textarea>
+                <div class="custom-file mt-2">
+                    <input type="file" class="custom-file-input file-group-file-upload" />
+                    <label class="custom-file-label file-group-file-label">Choose file</label>
+                </div>
+                <span class="text-muted small">The edges of the network. The data can also be uploaded from a file. The content will appear, unchanged, above.</span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-4 my-2 my-lg-0">
+                        <label class="font-weight-normal" for="proteins-in-line-separator">In-line separator</label>
+                        <select class="custom-select file-group-separator file-group-in-line-separator">
+                            <option value=",">comma (",")</option>
+                            <option value=";" selected>semicolon (";")</option>
+                            <option value="\t">tab ("\t")</option>
+                            <option value="\s">space (" ")</option>
+                            <option value="\n">new line ("\n")</option>
+                        </select>
+                        <span class="text-muted small">The character that separates the the source and target nodes in an edge.</span>
+                    </div>
+                    <div class="col-lg-4 my-2 my-lg-0">
+                        <label class="font-weight-normal" for="proteins-inline-separator">Line separator</label>
+                        <select class="custom-select file-group-separator file-group-line-separator">
+                            <option value=",">comma (",")</option>
+                            <option value=";">semicolon (";")</option>
+                            <option value="\t">tab ("\t")</option>
+                            <option value="\s">space (" ")</option>
+                            <option value="\n" selected>new line ("\n")</option>
+                        </select>
+                        <span class="text-muted small text-justify">The character that separates the different edges.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="file-group" data-type="nodes">
+            <div class="form-group" hidden>
+                <label asp-for="Input.TargetNodes" class="font-weight-bold">Target nodes</label>
+                <textarea asp-for="Input.TargetNodes" class="form-control file-group-input"></textarea>
+                <span asp-description-for="Input.TargetNodes" class="text-muted small">The nodes to be used as target by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
+                <span asp-validation-for="Input.TargetNodes" class="text-danger small"></span>
+            </div>
+            <div class="form-group">
+                <label for="target-nodes-textarea" class="font-weight-bold">Target nodes</label>
+                <span class="badge badge-primary badge-pill file-group-count">0</span>
+                <textarea id="target-nodes-textarea" class="form-control file-group-text"></textarea>
+                <div class="custom-file mt-2">
+                    <input type="file" class="custom-file-input file-group-file-upload" />
+                    <label class="custom-file-label file-group-file-label">Choose file</label>
+                </div>
+                <span class="text-muted small">The target nodes in the network. The data can also be uploaded from a file. The content will appear, unchanged, above.</span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-6 my-2 my-lg-0">
+                        <label class="font-weight-normal" for="proteins-inline-separator">Line separator</label>
+                        <select class="custom-select file-group-separator file-group-line-separator">
+                            <option value=",">comma (",")</option>
+                            <option value=";">semicolon (";")</option>
+                            <option value="\t">tab ("\t")</option>
+                            <option value="\s">space (" ")</option>
+                            <option value="\n" selected>new line ("\n")</option>
+                        </select>
+                        <span class="text-muted small">The character that separates the different target nodes.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="file-group" data-type="nodes">
+            <div class="form-group" hidden>
+                <label asp-for="Input.PreferredNodes" class="font-weight-bold">Preferred nodes</label>
+                <textarea asp-for="Input.PreferredNodes" class="form-control file-group-input"></textarea>
+                <span asp-description-for="Input.PreferredNodes" class="text-muted small">The nodes to be used as preferred by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
+                <span asp-validation-for="Input.PreferredNodes" class="text-danger small"></span>
+            </div>
+            <div class="form-group">
+                <label for="preferred-nodes-textarea" class="font-weight-bold">Preferred nodes</label>
+                <span class="badge badge-primary badge-pill file-group-count">0</span>
+                <textarea id="preferred-nodes-textarea" class="form-control file-group-text"></textarea>
+                <div class="custom-file mt-2">
+                    <input type="file" class="custom-file-input file-group-file-upload" />
+                    <label class="custom-file-label file-group-file-label">Choose file</label>
+                </div>
+                <span class="text-muted small">The preferred nodes in the network. The data can also be uploaded from a file. The content will appear, unchanged, above.</span>
+            </div>
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-lg-6 my-2 my-lg-0">
+                        <label class="font-weight-normal" for="proteins-inline-separator">Line separator</label>
+                        <select class="custom-select file-group-separator file-group-line-separator">
+                            <option value=",">comma (",")</option>
+                            <option value=";">semicolon (";")</option>
+                            <option value="\t">tab ("\t")</option>
+                            <option value="\s">space (" ")</option>
+                            <option value="\n" selected>new line ("\n")</option>
+                        </select>
+                        <span class="text-muted small">The character that separates the different preferred nodes.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.RandomSeed" class="font-weight-bold"></label>
+            <input asp-for="Input.RandomSeed" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.RandomSeed" />
+            <span asp-description-for="Input.RandomSeed" class="text-muted small"></span>
+            <span asp-validation-for="Input.RandomSeed" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.MaximumIterations" class="font-weight-bold"></label>
+            <input asp-for="Input.MaximumIterations" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumIterations" />
+            <span asp-description-for="Input.MaximumIterations" class="text-muted small"></span>
+            <span asp-validation-for="Input.MaximumIterations" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.MaximumIterationsWithoutImprovement" class="font-weight-bold"></label>
+            <input asp-for="Input.MaximumIterationsWithoutImprovement" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumIterationsWithoutImprovement" />
+            <span asp-description-for="Input.MaximumIterationsWithoutImprovement" class="text-muted small"></span>
+            <span asp-validation-for="Input.MaximumIterationsWithoutImprovement" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.MaximumPathLength" class="font-weight-bold"></label>
+            <input asp-for="Input.MaximumPathLength" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumPathLength" />
+            <span asp-description-for="Input.MaximumPathLength" class="text-muted small"></span>
+            <span asp-validation-for="Input.MaximumPathLength" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.PopulationSize" class="font-weight-bold"></label>
+            <input asp-for="Input.PopulationSize" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PopulationSize" />
+            <span asp-description-for="Input.PopulationSize" class="text-muted small"></span>
+            <span asp-validation-for="Input.PopulationSize" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.RandomGenesPerChromosome" class="font-weight-bold"></label>
+            <input asp-for="Input.RandomGenesPerChromosome" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.RandomGenesPerChromosome" />
+            <span asp-description-for="Input.RandomGenesPerChromosome" class="text-muted small"></span>
+            <span asp-validation-for="Input.RandomGenesPerChromosome" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.PercentageRandom" class="font-weight-bold"></label>
+            <input asp-for="Input.PercentageRandom" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PercentageRandom" />
+            <span asp-description-for="Input.PercentageRandom" class="text-muted small"></span>
+            <span asp-validation-for="Input.PercentageRandom" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.PercentageElite" class="font-weight-bold"></label>
+            <input asp-for="Input.PercentageElite" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PercentageElite" />
+            <span asp-description-for="Input.PercentageElite" class="text-muted small"></span>
+            <span asp-validation-for="Input.PercentageElite" class="text-danger small"></span>
+        </div>
+        <div class="form-group">
+            <label asp-for="Input.ProbabilityMutation" class="font-weight-bold"></label>
+            <input asp-for="Input.ProbabilityMutation" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.ProbabilityMutation" />
+            <span asp-description-for="Input.ProbabilityMutation" class="text-muted small"></span>
+            <span asp-validation-for="Input.ProbabilityMutation" class="text-danger small"></span>
+        </div>
+        <button type="submit" class="btn btn-block btn-success" title="Create">
+            <span>Create</span>
+        </button>
+    </form>
