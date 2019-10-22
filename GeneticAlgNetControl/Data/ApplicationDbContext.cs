@@ -1,11 +1,8 @@
 ﻿using GeneticAlgNetControl.Data.Models;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
 
 namespace GeneticAlgNetControl.Data
 {
@@ -15,19 +12,9 @@ namespace GeneticAlgNetControl.Data
     public class ApplicationDbContext : DbContext
     {
         /// <summary>
-        /// Gets or sets the database table containing the algorithm data (nodes and edges).
-        /// </summary>
-        public DbSet<AlgorithmData> AlgorithmData { get; set; }
-
-        /// <summary>
-        /// Gets or sets the database table containing the algorithm parameters.
-        /// </summary>
-        public DbSet<AlgorithmParameters> AlgorithmParameters { get; set; }
-
-        /// <summary>
         /// Gets or sets the database table containing the algorithm runs.
         /// </summary>
-        public DbSet<AlgorithmRun> AlgorithmRuns { get; set; }
+        public DbSet<Algorithm> Algorithms { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the database context.
@@ -45,33 +32,21 @@ namespace GeneticAlgNetControl.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             // Configure the mapping of more complex types to database fields.
-            modelBuilder.Entity<AlgorithmData>()
-                .Property(ad => ad.TargetNodes)
-                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
-            modelBuilder.Entity<AlgorithmData>()
+            modelBuilder.Entity<Algorithm>()
                 .Property(ad => ad.Nodes)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
-            modelBuilder.Entity<AlgorithmData>()
+            modelBuilder.Entity<Algorithm>()
+                .Property(ad => ad.TargetNodes)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
+            modelBuilder.Entity<Algorithm>()
                 .Property(ad => ad.PreferredNodes)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<string>>(item, null));
-            modelBuilder.Entity<AlgorithmData>()
+            modelBuilder.Entity<Algorithm>()
                 .Property(ad => ad.Edges)
-                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<(string SourceNode, string TargetNode)>>(item, null));
-            modelBuilder.Entity<AlgorithmRun>()
-                .Property(ar => ar.DateTimeList)
-                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<(DateTime StartTime, DateTime? EndTime)>>(item, null));
-            // Configure the relationships between the tables.
-            modelBuilder.Entity<AlgorithmRun>(algorithmRun =>
-            {
-                algorithmRun.HasOne(ar => ar.AlgorithmData)
-                    .WithOne(ad => ad.AlgorithmRun)
-                    .HasForeignKey<AlgorithmRun>(ar => ar.AlgorithmDataId)
-                    .IsRequired();
-                algorithmRun.HasOne(ar => ar.AlgorithmParameters)
-                    .WithOne(ap => ap.AlgorithmRun)
-                    .HasForeignKey<AlgorithmRun>(ar => ar.AlgorithmParametersId)
-                    .IsRequired();
-            });
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<Edge>>(item, null));
+            modelBuilder.Entity<Algorithm>()
+                .Property(ar => ar.DateTimePeriods)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<DateTimePeriod>>(item, null));
         }
     }
 }

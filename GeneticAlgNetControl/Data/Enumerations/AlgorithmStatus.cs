@@ -8,7 +8,7 @@ namespace GeneticAlgNetControl.Data.Enumerations
     /// <summary>
     /// Represents the possible statuses of an algorithm run.
     /// </summary>
-    public enum AlgorithmRunStatus
+    public enum AlgorithmStatus
     {
         /// <summary>
         /// Represents an algorithm which has been scheduled to start.
