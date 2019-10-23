@@ -13,7 +13,7 @@ namespace GeneticAlgNetControl.Data.Migrations
                 {
                     Id = table.Column<string>(nullable: false),
                     Name = table.Column<string>(nullable: true),
-                    DateTimeStarted = table.Column<DateTime>(nullable: false),
+                    DateTimeStarted = table.Column<DateTime>(nullable: true),
                     DateTimeEnded = table.Column<DateTime>(nullable: true),
                     DateTimePeriods = table.Column<string>(nullable: true),
                     Status = table.Column<int>(nullable: false),

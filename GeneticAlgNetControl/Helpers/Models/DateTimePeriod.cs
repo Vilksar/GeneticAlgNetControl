@@ -7,7 +7,7 @@ namespace GeneticAlgNetControl.Helpers.Models
 {
     public class DateTimePeriod
     {
-        public DateTime DateTimeStarted { get; set; }
+        public DateTime? DateTimeStarted { get; set; }
 
         public DateTime? DateTimeEnded { get; set; }
     }

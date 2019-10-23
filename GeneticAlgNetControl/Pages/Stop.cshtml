@@ -60,7 +60,7 @@
             var name = item.Name;
             var id = item.Id;
             var status = item.Status.ToString();
-            var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
+            var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
             var progressIterations = (double)item.CurrentIteration / item.MaximumIterations;
             var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement;
             <li class="list-group-item list-group-item-action list-group-item-light item-group-item">

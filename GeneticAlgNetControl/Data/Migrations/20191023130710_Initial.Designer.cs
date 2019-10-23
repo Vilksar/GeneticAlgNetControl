@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneticAlgNetControl.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191023104806_Initial")]
+    [Migration("20191023130710_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -44,7 +44,7 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("DateTimePeriods")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateTimeStarted")
+                    b.Property<DateTime?>("DateTimeStarted")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edges")

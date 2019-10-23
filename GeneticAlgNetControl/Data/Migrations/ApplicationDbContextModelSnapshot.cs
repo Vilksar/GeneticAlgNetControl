@@ -42,7 +42,7 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("DateTimePeriods")
                         .HasColumnType("TEXT");
 
-                    b.Property<DateTime>("DateTimeStarted")
+                    b.Property<DateTime?>("DateTimeStarted")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edges")

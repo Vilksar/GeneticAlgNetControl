@@ -220,16 +220,9 @@ namespace GeneticAlgNetControl.Pages
             {
                 Id = Guid.NewGuid().ToString(),
                 Name = Input.Name,
-                DateTimeStarted = DateTime.Now,
+                DateTimeStarted = null,
                 DateTimeEnded = null,
-                DateTimePeriods = new List<DateTimePeriod>
-                {
-                    new DateTimePeriod
-                    {
-                        DateTimeStarted = DateTime.Now,
-                        DateTimeEnded = null
-                    }    
-                },
+                DateTimePeriods = new List<DateTimePeriod>(),
                 Status = AlgorithmStatus.Scheduled,
                 Nodes = nodes.ToList(),
                 Edges = edges.ToList(),

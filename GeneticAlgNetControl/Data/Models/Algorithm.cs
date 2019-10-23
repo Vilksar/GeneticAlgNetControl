@@ -16,7 +16,7 @@ namespace GeneticAlgNetControl.Data.Models
 
         public string Name { get; set; }
 
-        public DateTime DateTimeStarted { get; set; }
+        public DateTime? DateTimeStarted { get; set; }
 
         public DateTime? DateTimeEnded { get; set; }
 
