@@ -54,6 +54,10 @@ namespace GeneticAlgNetControl.Data.Models
 
         public double ProbabilityMutation { get; set; }
 
+        public AlgorithmCrossoverType CrossoverType { get; set; }
+
+        public AlgorithmMutationType MutationType { get; set; }
+
         public List<List<string>> LastPopulation { get; set; }
 
         public List<double> AverageFitnessOverIterations { get; set; }

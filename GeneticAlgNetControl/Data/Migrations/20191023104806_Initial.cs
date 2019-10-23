@@ -32,6 +32,8 @@ namespace GeneticAlgNetControl.Data.Migrations
                     PercentageRandom = table.Column<double>(nullable: false),
                     PercentageElite = table.Column<double>(nullable: false),
                     ProbabilityMutation = table.Column<double>(nullable: false),
+                    CrossoverType = table.Column<int>(nullable: false),
+                    MutationType = table.Column<int>(nullable: false),
                     LastPopulation = table.Column<string>(nullable: true),
                     AverageFitnessOverIterations = table.Column<string>(nullable: true),
                     BestFitnessOverIterations = table.Column<string>(nullable: true)

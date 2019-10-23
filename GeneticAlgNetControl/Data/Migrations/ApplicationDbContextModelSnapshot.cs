@@ -27,6 +27,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("BestFitnessOverIterations")
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("CrossoverType")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CurrentIteration")
                         .HasColumnType("INTEGER");
 
@@ -55,6 +58,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaximumPathLength")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MutationType")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
