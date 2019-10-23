@@ -86,7 +86,6 @@ namespace GeneticAlgNetControl.Pages
             // Select the results matching the filter parameter.
             query = query
                 .Where(item => Input.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
-                .Where(item => Input.Filter.Contains("IsPaused") ? item.Status == AlgorithmStatus.Paused : true)
                 .Where(item => Input.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
                 .Where(item => Input.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true);
             // Sort it according to the parameters.
