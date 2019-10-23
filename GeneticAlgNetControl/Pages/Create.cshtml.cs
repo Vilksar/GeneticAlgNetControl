@@ -83,6 +83,12 @@ namespace GeneticAlgNetControl.Pages
             [Range(0.00, 1.00, ErrorMessage = "The value must be between {1} and {2}.")]
             public double ProbabilityMutation { get; set; } = DefaultValues.ProbabilityMutation;
 
+            [Required(ErrorMessage = "This field is required.")]
+            public AlgorithmCrossoverType CrossoverType { get; set; }
+
+            [Required(ErrorMessage = "This field is required.")]
+            public AlgorithmMutationType MutationType { get; set; }
+
             public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
             {
                 // Check if the string is a valid JSON object.
@@ -121,6 +127,10 @@ namespace GeneticAlgNetControl.Pages
                 public static double PercentageElite { get; } = 0.25;
 
                 public static double ProbabilityMutation { get; } = 0.01;
+
+                public static int CrossoverType { get; } = 0;
+
+                public static int MutationType { get; } = 0;
             }
         }
 
