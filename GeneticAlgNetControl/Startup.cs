@@ -77,8 +77,6 @@ namespace GeneticAlgNetControl
             {
                 // Redirect to a generic "Error" page.
                 app.UseExceptionHandler("/Error");
-                // Use re-execution for the HTTP error status codes, to the same "Error" page.
-                app.UseStatusCodePagesWithReExecute("/Error", "?errorCode={0}");
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
