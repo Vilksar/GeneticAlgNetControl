@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Data.ViewModels;
+using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -46,7 +46,7 @@ namespace GeneticAlgNetControl.Pages
 
         public class ViewModel
         {
-            public IEnumerable<AlgorithmOverviewViewModel> Items { get; set; }
+            public IEnumerable<Algorithm> Items { get; set; }
         }
 
         public IActionResult OnGet(IEnumerable<string> id)
@@ -64,7 +64,6 @@ namespace GeneticAlgNetControl.Pages
             {
                 Items = _context.Algorithms
                     .Where(item => id.Contains(item.Id) && item.Status != AlgorithmStatus.Stopped)
-                    .Select(item => new AlgorithmOverviewViewModel(item))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -95,16 +94,14 @@ namespace GeneticAlgNetControl.Pages
             }
             // Get all of the individual IDs to look for.
             var itemIds = JsonSerializer.Deserialize<IEnumerable<string>>(Input.Ids);
-            // Get all of the items.
-            var items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id) && item.Status != AlgorithmStatus.Stopped);
             // Define the view.
             View = new ViewModel
             {
-                Items = items.Select(item => new AlgorithmOverviewViewModel(item))
+                Items = _context.Algorithms
+                    .Where(item => itemIds.Contains(item.Id) && item.Status != AlgorithmStatus.Stopped)
             };
             // Check if there weren't any items found.
-            if (items == null || !items.Any())
+            if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Stopped\".";
@@ -112,11 +109,11 @@ namespace GeneticAlgNetControl.Pages
                 return RedirectToPage("/Overview");
             }
             // Save the number of items found.
-            var itemCount = items.Count();
+            var itemCount = View.Items.Count();
             // Mark the items for updating.
-            _context.UpdateRange(items);
+            _context.UpdateRange(View.Items);
             // Go over each of the items.
-            foreach (var item in items)
+            foreach (var item in View.Items)
             {
                 // Update its status.
                 item.Status = AlgorithmStatus.Scheduled;
@@ -135,7 +132,7 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Go over each of the items.
-            foreach (var item in items)
+            foreach (var item in View.Items)
             {
                 // Call on Hangifre for a new background task to run the algorithm.
                 //var run = new Run(_context);

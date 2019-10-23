@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
-using GeneticAlgNetControl.Data.ViewModels;
+using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -45,7 +45,7 @@ namespace GeneticAlgNetControl.Pages
 
         public class ViewModel
         {
-            public IEnumerable<AlgorithmOverviewViewModel> Items { get; set; }
+            public IEnumerable<Algorithm> Items { get; set; }
         }
 
         public IActionResult OnGet(IEnumerable<string> id)
@@ -63,7 +63,6 @@ namespace GeneticAlgNetControl.Pages
             {
                 Items = _context.Algorithms
                     .Where(item => id.Contains(item.Id))
-                    .Select(item => new AlgorithmOverviewViewModel(item))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -94,16 +93,14 @@ namespace GeneticAlgNetControl.Pages
             }
             // Get all of the individual IDs to look for.
             var itemIds = JsonSerializer.Deserialize<IEnumerable<string>>(Input.Ids);
-            // Get all of the items.
-            var items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id));
             // Define the view.
             View = new ViewModel
             {
-                Items = items.Select(item => new AlgorithmOverviewViewModel(item))
+                Items = _context.Algorithms
+                    .Where(item => itemIds.Contains(item.Id))
             };
             // Check if there weren't any items found.
-            if (items == null || !items.Any())
+            if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No items have been found with the provided IDs.";
@@ -111,9 +108,9 @@ namespace GeneticAlgNetControl.Pages
                 return RedirectToPage("/Overview");
             }
             // Save the number of items found.
-            var itemCount = items.Count();
+            var itemCount = View.Items.Count();
             // Mark the items for removal.
-            _context.RemoveRange(items);
+            _context.RemoveRange(View.Items);
             // Try to update the database.
             try
             {

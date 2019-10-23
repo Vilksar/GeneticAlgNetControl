@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Data.ViewModels;
+using GeneticAlgNetControl.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -68,7 +68,7 @@ namespace GeneticAlgNetControl.Pages
 
             public Dictionary<string, string> AppliedFilters { get; set; }
 
-            public IEnumerable<AlgorithmOverviewViewModel> Items { get; set; }
+            public IEnumerable<Algorithm> Items { get; set; }
         }
 
         public IActionResult OnGet(InputModel input = null)
@@ -169,8 +169,7 @@ namespace GeneticAlgNetControl.Pages
             View.Items = query
                 .Skip((Input.CurrentPage - 1) * Input.ItemsPerPage)
                 .Take(Input.ItemsPerPage)
-                .AsEnumerable()
-                .Select(item => new AlgorithmOverviewViewModel(item));
+                .AsEnumerable();
             // Return the page.
             return Page();
         }

@@ -1,4 +1,115 @@
 ﻿@page
-@model GeneticAlgNetControl.Pages.StartModel
+@model StartModel
 @{
+    ViewData["Title"] = "Start";
+    ViewData["ActivePage"] = "Overview";
 }
+
+<div class="alert alert-info mb-3">
+    <span><i class="fas fa-info-circle"></i></span>
+    <span>The following item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be started again.</span>
+    <span class="font-weight-bold">Only the algorithms having the status "Stopped" can be started.</span>
+</div>
+<ul class="list-group list-group-flush item-group">
+    <li class="list-group-item list-group-item-action list-group-item-dark active">
+        <div class="row align-items-center font-weight-bold">
+            <div class="col-6 col-xl-3 text-center text-truncate">
+                <span>Name</span>
+            </div>
+            <div class="col-2 col-xl-2 text-center text-truncate">
+                <span>Status</span>
+            </div>
+            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                <span>Time elapsed</span>
+            </div>
+            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                <span>Progress</span>
+            </div>
+            <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                <form method="post">
+                    <div class="form-group" hidden>
+                        <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
+                        <input asp-for="Input.Ids" type="hidden" class="form-control" />
+                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the custom analyses to be deleted, formatted as a JSON string array.</span>
+                        <span asp-validation-for="Input.Ids" class="text-danger small"></span>
+                    </div>
+                    <button type="submit" class="btn btn-block btn-danger text-wrap my-1" title="Delete all">
+                        <span>Delete all</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </li>
+    @if (Model.View.Items == null || !Model.View.Items.Any())
+    {
+        <li class="list-group-item">
+            <div class="row align-items-center py-2">
+                <div class="col-2 col-xl-1 text-center text-truncate">
+                    <span><i class="fas fa-info-circle"></i></span>
+                </div>
+                <div class="col-10 col-xl-11 text-left text-wrap">
+                    <span class="font-weight-bold">No items have been found.</span>
+                </div>
+            </div>
+        </li>
+    }
+    else
+    {
+        foreach (var item in Model.View.Items)
+        {
+            var name = item.Name;
+            var id = item.Id;
+            var status = item.Status.ToString();
+            var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
+            var progressIterations = (double)item.CurrentIteration / item.MaximumIterations;
+            var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement;
+            <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
+                <div class="row align-items-center">
+                    <div class="col-6 col-xl-3 text-center text-truncate">
+                        <div>
+                            <span title="@name" class="font-weight-bold">@name</span>
+                        </div>
+                        <div>
+                            <span title="@id" class="small">@id</span>
+                        </div>
+                    </div>
+                    <div class="col-2 col-xl-2 text-center text-truncate">
+                        <div>
+                            <span title="@status">@status</span>
+                        </div>
+                    </div>
+                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                        <div>
+                            <span title="@timeSpan">@timeSpan</span>
+                        </div>
+                    </div>
+                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                        <div>
+                            <span title="@progressIterations %">@progressIterations %</span>
+                        </div>
+                        <div>
+                            <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement %</span>
+                        </div>
+                    </div>
+                    <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-info m-1" title="Details">
+                            <span><i class="fas fa-info-circle"></i></span>
+                        </a>
+                        <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-danger m-1" title="Delete">
+                            <span><i class="fas fa-trash"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </li>
+        }
+        <li class="list-group-item">
+            <div class="row align-items-center">
+                <div class="col-sm-6 text-center text-md-left">
+                    <span class="text-muted small">Showing items 1 to @Model.View.Items.Count().</span>
+                </div>
+                <div class="col-sm-6 text-center text-md-right">
+                </div>
+            </div>
+        </li>
+    }
+</ul>
