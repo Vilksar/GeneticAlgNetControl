@@ -8,6 +8,8 @@ using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
+using GeneticAlgNetControl.Helpers.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -135,8 +137,8 @@ namespace GeneticAlgNetControl.Pages
             foreach (var item in View.Items)
             {
                 // Call on Hangifre for a new background task to run the algorithm.
-                //var run = new Run(_context);
-                //BackgroundJob.Enqueue(() => run.RunAlgorithm(algorithmRun.Id));
+                var algorithmRun = new AlgorithmRun(_context);
+                BackgroundJob.Enqueue(() => algorithmRun.RunAlgorithm(item.Id));
             }
             // Display a message.
             TempData["StatusMessage"] = $"Success: {itemCount.ToString()} algorithm{(itemCount != 1 ? "s" : string.Empty)} scheduled to stop successfully.";

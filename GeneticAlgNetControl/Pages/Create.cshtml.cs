@@ -10,6 +10,8 @@ using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
 using GeneticAlgNetControl.Helpers.Models;
+using GeneticAlgNetControl.Helpers.Services;
+using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -259,8 +261,8 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Call on Hangifre for a new background task to run the algorithm.
-            //var run = new Run(_context);
-            //BackgroundJob.Enqueue(() => run.RunAlgorithm(algorithmRun.Id));
+            var algorithmRun = new AlgorithmRun(_context);
+            BackgroundJob.Enqueue(() => algorithmRun.RunAlgorithm(algorithm.Id));
             // Display a message.
             TempData["StatusMessage"] = "Success: 1 algorithm created successfully and started.";
             // Redirect to the index page.
