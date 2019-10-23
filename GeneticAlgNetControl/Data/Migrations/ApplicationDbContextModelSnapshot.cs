@@ -21,6 +21,12 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("AverageFitnessOverIterations")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BestFitnessOverIterations")
+                        .HasColumnType("TEXT");
+
                     b.Property<int>("CurrentIteration")
                         .HasColumnType("INTEGER");
 
@@ -37,6 +43,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edges")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastPopulation")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MaximumIterations")

@@ -31,7 +31,10 @@ namespace GeneticAlgNetControl.Data.Migrations
                     RandomGenesPerChromosome = table.Column<int>(nullable: false),
                     PercentageRandom = table.Column<double>(nullable: false),
                     PercentageElite = table.Column<double>(nullable: false),
-                    ProbabilityMutation = table.Column<double>(nullable: false)
+                    ProbabilityMutation = table.Column<double>(nullable: false),
+                    LastPopulation = table.Column<string>(nullable: true),
+                    AverageFitnessOverIterations = table.Column<string>(nullable: true),
+                    BestFitnessOverIterations = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

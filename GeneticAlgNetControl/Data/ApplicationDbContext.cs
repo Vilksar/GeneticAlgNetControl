@@ -47,6 +47,15 @@ namespace GeneticAlgNetControl.Data
             modelBuilder.Entity<Algorithm>()
                 .Property(ar => ar.DateTimePeriods)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<DateTimePeriod>>(item, null));
+            modelBuilder.Entity<Algorithm>()
+                .Property(ad => ad.LastPopulation)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<List<string>>>(item, null));
+            modelBuilder.Entity<Algorithm>()
+                .Property(ad => ad.AverageFitnessOverIterations)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<double>>(item, null));
+            modelBuilder.Entity<Algorithm>()
+                .Property(ad => ad.BestFitnessOverIterations)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<double>>(item, null));
         }
     }
 }

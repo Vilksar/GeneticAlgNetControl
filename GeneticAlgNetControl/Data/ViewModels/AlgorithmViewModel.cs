@@ -1,16 +1,13 @@
-﻿using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Helpers.Models;
+﻿using GeneticAlgNetControl.Helpers.Models;
+using GeneticAlgNetControl.Helpers.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace GeneticAlgNetControl.Data.Models
+namespace GeneticAlgNetControl.Data.ViewModels
 {
-    /// <summary>
-    /// Represents the database model of an algorithm run.
-    /// </summary>
-    public class Algorithm
+    public class AlgorithmViewModel
     {
         public string Id { get; set; }
 
@@ -20,11 +17,11 @@ namespace GeneticAlgNetControl.Data.Models
 
         public DateTime? DateTimeEnded { get; set; }
 
-        public List<DateTimePeriod> DateTimePeriods { get; set; }
+        public List<DateTimePeriodViewModel> DateTimePeriods { get; set; }
 
-        public AlgorithmStatus Status { get; set; }
+        public string Status { get; set; }
 
-        public List<Edge> Edges { get; set; }
+        public List<EdgeViewModel> Edges { get; set; }
 
         public List<string> Nodes { get; set; }
 
@@ -54,7 +51,7 @@ namespace GeneticAlgNetControl.Data.Models
 
         public double ProbabilityMutation { get; set; }
 
-        public List<List<string>> LastPopulation { get; set; }
+        public List<SolutionViewModel> Solutions { get; set; }
 
         public List<double> AverageFitnessOverIterations { get; set; }
 

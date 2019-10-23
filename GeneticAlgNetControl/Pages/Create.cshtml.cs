@@ -235,7 +235,10 @@ namespace GeneticAlgNetControl.Pages
                 RandomGenesPerChromosome = Input.RandomGenesPerChromosome,
                 PercentageElite = Input.PercentageElite,
                 PercentageRandom = Input.PercentageRandom,
-                ProbabilityMutation = Input.ProbabilityMutation
+                ProbabilityMutation = Input.ProbabilityMutation,
+                LastPopulation = new List<List<string>>(),
+                AverageFitnessOverIterations = new List<double>(),
+                BestFitnessOverIterations = new List<double>()
             };
             // Mark it for addition.
             _context.Algorithms.Add(algorithm);

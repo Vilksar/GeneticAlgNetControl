@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneticAlgNetControl.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191022081659_Initial")]
+    [Migration("20191023075716_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,6 +21,12 @@ namespace GeneticAlgNetControl.Data.Migrations
             modelBuilder.Entity("GeneticAlgNetControl.Data.Models.Algorithm", b =>
                 {
                     b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("AverageFitnessOverIterations")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("BestFitnessOverIterations")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CurrentIteration")
@@ -39,6 +45,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edges")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("LastPopulation")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MaximumIterations")

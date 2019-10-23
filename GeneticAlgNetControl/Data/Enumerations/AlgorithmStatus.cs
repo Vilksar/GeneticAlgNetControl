@@ -21,16 +21,6 @@ namespace GeneticAlgNetControl.Data.Enumerations
         Ongoing,
 
         /// <summary>
-        /// Represents an algorithm which has been scheduled to pause as soon as possible.
-        /// </summary>
-        ScheduledToPause,
-
-        /// <summary>
-        /// Represents an algorithm which has been paused.
-        /// </summary>
-        Paused,
-
-        /// <summary>
         /// Represents an algorithm which has been scheduled to stop as soon as possible.
         /// </summary>
         ScheduledToStop,
