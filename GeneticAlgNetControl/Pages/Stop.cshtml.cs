@@ -63,13 +63,13 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => id.Contains(item.Id))
+                    .Where(item => id.Contains(item.Id) && item.Status == AlgorithmStatus.Ongoing)
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs.";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Ongoing\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }
@@ -98,13 +98,13 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id))
+                    .Where(item => itemIds.Contains(item.Id) && item.Status == AlgorithmStatus.Ongoing)
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs.";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Ongoing\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }

@@ -9,10 +9,10 @@
     <div asp-validation-summary="ModelOnly" class="alert alert-danger"></div>
     <div class="row h4">
         <div class="col-1 text-center">
-            <span><i class="fas fa-question"></i></span>
+            <span><i class="fas fa-font"></i></span>
         </div>
         <div class="col-11 text-left">
-            <span>Details</span>
+            <span>General details</span>
         </div>
     </div>
     <hr />
@@ -175,14 +175,14 @@
     <hr />
     <div class="row">
         <div class="offset-1 col-11">
-            <div class="row mb-lg-3">
+            <div class="row">
                 <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                     <label asp-for="Input.RandomSeed" class="font-weight-bold">Random seed</label>
                 </div>
                 <div class="col-lg-4 order-1 order-lg-2">
                     <input asp-for="Input.RandomSeed" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.RandomSeed" />
                 </div>
-                <div class="col-lg-4 order-1 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-1 order-lg-3 mb-3">
                     <span asp-description-for="Input.RandomSeed" class="text-muted small">The random seed to be used by the algorithm.</span>
                     <span asp-validation-for="Input.RandomSeed" class="text-danger small"></span>
                 </div>
@@ -192,7 +192,7 @@
                 <div class="col-lg-4 order-2 order-lg-2">
                     <input asp-for="Input.MaximumIterations" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumIterations" />
                 </div>
-                <div class="col-lg-4 order-2 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-2 order-lg-3 mb-3">
                     <span asp-description-for="Input.MaximumIterations" class="text-muted small">The maximum number of generations for which the algorithm will run.</span>
                     <span asp-validation-for="Input.MaximumIterations" class="text-danger small"></span>
                 </div>
@@ -202,7 +202,7 @@
                 <div class="col-lg-4 order-3 order-lg-2">
                     <input asp-for="Input.MaximumIterationsWithoutImprovement" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumIterationsWithoutImprovement" />
                 </div>
-                <div class="col-lg-4 order-3 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-3 order-lg-3 mb-3">
                     <span asp-description-for="Input.MaximumIterationsWithoutImprovement" class="text-muted small">The maximum number of generations without improvement in the size of the best solutions before the algorithm will stop.</span>
                     <span asp-validation-for="Input.MaximumIterationsWithoutImprovement" class="text-danger small"></span>
                 </div>
@@ -211,14 +211,14 @@
     </div>
     <div class="row">
         <div class="offset-1 col-11">
-            <div class="row mb-lg-3">
+            <div class="row">
                 <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                     <label asp-for="Input.MaximumPathLength" class="font-weight-bold">Maximum path length</label>
                 </div>
                 <div class="col-lg-4 order-1 order-lg-2">
                     <input asp-for="Input.MaximumPathLength" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MaximumPathLength" />
                 </div>
-                <div class="col-lg-4 order-1 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-1 order-lg-3 mb-3">
                     <span asp-description-for="Input.MaximumPathLength" class="text-muted small">The maximum length of a control path (between a target node and the node which controls it).</span>
                     <span asp-validation-for="Input.MaximumPathLength" class="text-danger small"></span>
                 </div>
@@ -228,7 +228,7 @@
                 <div class="col-lg-4 order-2 order-lg-2">
                     <input asp-for="Input.PopulationSize" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PopulationSize" />
                 </div>
-                <div class="col-lg-4 order-2 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-2 order-lg-3 mb-3">
                     <span asp-description-for="Input.PopulationSize" class="text-muted small">The number of chromosomes in each generation.</span>
                     <span asp-validation-for="Input.PopulationSize" class="text-danger small"></span>
                 </div>
@@ -238,7 +238,7 @@
                 <div class="col-lg-4 order-3 order-lg-2">
                     <input asp-for="Input.RandomGenesPerChromosome" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.RandomGenesPerChromosome" />
                 </div>
-                <div class="col-lg-4 order-3 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-3 order-lg-3 mb-3">
                     <span asp-description-for="Input.RandomGenesPerChromosome" class="text-muted small">The maximum number of genes in a randomly generated chromosome that will have a randomly generated value. All of the other genes will have a default value.</span>
                     <span asp-validation-for="Input.RandomGenesPerChromosome" class="text-danger small"></span>
                 </div>
@@ -247,14 +247,14 @@
     </div>
     <div class="row">
         <div class="offset-1 col-11">
-            <div class="row mb-lg-3">
+            <div class="row">
                 <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                     <label asp-for="Input.PercentageRandom" class="font-weight-bold">Percentage of random chromosomes</label>
                 </div>
                 <div class="col-lg-4 order-1 order-lg-2">
                     <input asp-for="Input.PercentageRandom" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PercentageRandom" />
                 </div>
-                <div class="col-lg-4 order-1 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-1 order-lg-3 mb-3">
                     <span asp-description-for="Input.PercentageRandom" class="text-muted small">The percentage of randomly generated chromosomes in any population.</span>
                     <span asp-validation-for="Input.PercentageRandom" class="text-danger small"></span>
                 </div>
@@ -264,7 +264,7 @@
                 <div class="col-lg-4 order-2 order-lg-2">
                     <input asp-for="Input.PercentageElite" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.PercentageElite" />
                 </div>
-                <div class="col-lg-4 order-2 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-2 order-lg-3 mb-3">
                     <span asp-description-for="Input.PercentageElite" class="text-muted small">The maximum percentage of elite chromosomes saved directly from one generation to the next.</span>
                     <span asp-validation-for="Input.PercentageElite" class="text-danger small"></span>
                 </div>
@@ -274,7 +274,7 @@
                 <div class="col-lg-4 order-3 order-lg-2">
                     <input asp-for="Input.ProbabilityMutation" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.ProbabilityMutation" />
                 </div>
-                <div class="col-lg-4 order-3 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-4 order-3 order-lg-3 mb-3">
                     <span asp-description-for="Input.ProbabilityMutation" class="text-muted small">The probability for any new generated chromosome to suffer a mutation.</span>
                     <span asp-validation-for="Input.ProbabilityMutation" class="text-danger small"></span>
                 </div>
@@ -283,14 +283,14 @@
     </div>
     <div class="row">
         <div class="offset-1 col-11">
-            <div class="row mb-lg-3">
+            <div class="row">
                 <div class="col-lg-6 order-1 order-lg-1 align-self-center">
                     <label asp-for="Input.CrossoverType" class="font-weight-bold">Crossover type</label>
                 </div>
                 <div class="col-lg-6 order-1 order-lg-2">
                     <select asp-for="Input.CrossoverType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmCrossoverType>()" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.CrossoverType"></select>
                 </div>
-                <div class="col-lg-6 order-1 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-6 order-1 order-lg-3 mb-3">
                     <span asp-description-for="Input.CrossoverType" class="text-muted small">The crossover algorithm which will be used.</span>
                     <span asp-validation-for="Input.CrossoverType" class="text-danger small"></span>
                 </div>
@@ -300,7 +300,7 @@
                 <div class="col-lg-6 order-2 order-lg-2">
                     <select asp-for="Input.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmMutationType>()" class="form-control parameter-group-parameter" data-defaultValue="@CreateModel.InputModel.DefaultValues.MutationType"></select>
                 </div>
-                <div class="col-lg-6 order-2 order-lg-3 mb-3 mb-lg-0">
+                <div class="col-lg-6 order-2 order-lg-3 mb-3">
                     <span asp-description-for="Input.MutationType" class="text-muted small">The mutation algorithm which will be used.</span>
                     <span asp-validation-for="Input.MutationType" class="text-danger small"></span>
                 </div>
