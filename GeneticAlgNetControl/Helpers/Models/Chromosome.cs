@@ -125,6 +125,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 // Go over all of the values in the random interval.
                 foreach (var item in genesRandom)
                 {
+                    // Assign a random value from the corresponding list.
                     Genes[item] = pathList[item][random.Next(pathList[item].Count())];
                 }
                 // Check if the chromosome is valid.
@@ -154,7 +155,9 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="secondChromosome">The second parent chromosome of the offspring.</param>
         /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodePreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
         /// <param name="type">The crossover type for the algorithm.</param>
+        /// <param name="random">The random seed.</param>
         /// <returns></returns>
         public Chromosome Crossover(Chromosome secondChromosome, Dictionary<string, int> nodeIndices, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, AlgorithmCrossoverType type, Random random)
         {
@@ -176,8 +179,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Decrease the number of tries.
                         tries--;
                         // Assign to each gene in the chromosome its corresponding random parent value.
-                        chromosome.Genes = chromosome.Genes.ToDictionary(item => item.Key, item => random.NextDouble() < occurancesInFirst[item.Value] / occurancesInFirst[item.Value] + occurancesInSecond[item.Value] ? Genes[item.Key] : secondChromosome.Genes[item.Key]
-                        );
+                        chromosome.Genes = chromosome.Genes.ToDictionary(item => item.Key, item => random.NextDouble() < occurancesInFirst[item.Value] / occurancesInFirst[item.Value] + occurancesInSecond[item.Value] ? Genes[item.Key] : secondChromosome.Genes[item.Key]);
                         // Check if the chromosome is valid.
                         if (chromosome.IsValid(nodeIndices, matrixPowerList))
                         {
@@ -239,6 +241,112 @@ namespace GeneticAlgNetControl.Helpers.Models
             }
             // Return the new chromosome.
             return chromosome;
+        }
+
+        /// <summary>
+        /// Mutates the current chromosome based on the given mutation probability.
+        /// </summary>
+        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
+        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodePreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
+        /// <param name="type">The mutation type for the algorithm.</param>
+        /// <param name="mutationProbability">The probability of mutation for any gene of the chromosome.</param>
+        /// <param name="random">The random seed.</param>
+        public void Mutate(Dictionary<string, int> nodeIndices, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, AlgorithmMutationType type, double mutationProbability, Random random)
+        {
+            // Define the number of tries in which to try and find a valid chromosome.
+            var tries = 10;
+            // Get the genes which will suffer a mutation, together with their current value.
+            var genesMutateDictionary = Genes.Where(item => random.NextDouble() < mutationProbability).ToDictionary(item => item.Key, item => item.Value);
+            // Use the specified mutation type.
+            switch (type)
+            {
+                // If we have a standard crossover.
+                case AlgorithmMutationType.Standard:
+                    // Repeat while the chromosome is not valid.
+                    while (genesMutateDictionary.Any())
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over all of the values in the genes to mutate.
+                        foreach (var item in genesMutateDictionary.Keys)
+                        {
+                            // Assign a random new value from the list.
+                            Genes[item] = pathList[item][random.Next(pathList[item].Count())];
+                        }
+                        // Check if the chromosome is valid.
+                        if (IsValid(nodeIndices, matrixPowerList))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                        // Check if we reached the last try.
+                        else if (tries == 0)
+                        {
+                            // Reset the number of tries.
+                            tries = 10;
+                            // Get a random gene to remove from the list of genes to mutate.
+                            var randomGene = genesMutateDictionary[genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()))];
+                            // Assign to it the current value.
+                            Genes[randomGene] = genesMutateDictionary[randomGene];
+                            // Remove it from the list of genes to mutate.
+                            genesMutateDictionary.Remove(randomGene);
+                        }
+                    }
+                    // End the switch statement.
+                    break;
+                // If we have a mutation with preference.
+                case AlgorithmMutationType.WithPreference:
+                    // Repeat while the chromosome is not valid.
+                    while (genesMutateDictionary.Any())
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over all of the values in the genes to mutate.
+                        foreach (var item in genesMutateDictionary.Keys)
+                        {
+                            // Assign a random new value from the list. If it is a preferred node, it it two times less likely to change.
+                            Genes[item] = nodePreferred[Genes[item]] && random.NextDouble() < 0.5 ? pathList[item][random.Next(pathList[item].Count())] : Genes[item];
+                        }
+                        // Check if the chromosome is valid.
+                        if (IsValid(nodeIndices, matrixPowerList))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                        // Check if we reached the last try.
+                        else if (tries == 0)
+                        {
+                            // Reset the number of tries.
+                            tries = 10;
+                            // Get a random gene to remove from the list of genes to mutate.
+                            var randomGene = genesMutateDictionary[genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()))];
+                            // Assign to it the current value.
+                            Genes[randomGene] = genesMutateDictionary[randomGene];
+                            // Remove it from the list of genes to mutate.
+                            genesMutateDictionary.Remove(randomGene);
+                        }
+                    }
+                    // End the switch statement.
+                    break;
+                // If we have none of the above.
+                default:
+                    // Set the tries to 0, such that the chromosome will be reset.
+                    tries = 0;
+                    // End the switch statement.
+                    break;
+            }
+            // Check if the new chromosome is still not valid.
+            if (genesMutateDictionary.Any())
+            {
+                // Go over each gene selected for mutation.
+                foreach (var item in genesMutateDictionary)
+                {
+                    // Reset it to the initial values, no mutation taking place.
+                    Genes[item.Key] = item.Value;
+                }
+            }
         }
     }
 }
