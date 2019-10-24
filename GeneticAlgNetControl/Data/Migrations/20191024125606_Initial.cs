@@ -34,9 +34,7 @@ namespace GeneticAlgNetControl.Data.Migrations
                     ProbabilityMutation = table.Column<double>(nullable: false),
                     CrossoverType = table.Column<int>(nullable: false),
                     MutationType = table.Column<int>(nullable: false),
-                    LastPopulation = table.Column<string>(nullable: true),
-                    AverageFitnessOverIterations = table.Column<string>(nullable: true),
-                    BestFitnessOverIterations = table.Column<string>(nullable: true)
+                    Population = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

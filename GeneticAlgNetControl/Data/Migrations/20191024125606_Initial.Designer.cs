@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneticAlgNetControl.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191023130710_Initial")]
+    [Migration("20191024125606_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -21,12 +21,6 @@ namespace GeneticAlgNetControl.Data.Migrations
             modelBuilder.Entity("GeneticAlgNetControl.Data.Models.Algorithm", b =>
                 {
                     b.Property<string>("Id")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("AverageFitnessOverIterations")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("BestFitnessOverIterations")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("CrossoverType")
@@ -48,9 +42,6 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Edges")
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("LastPopulation")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("MaximumIterations")
@@ -76,6 +67,9 @@ namespace GeneticAlgNetControl.Data.Migrations
 
                     b.Property<double>("PercentageRandom")
                         .HasColumnType("REAL");
+
+                    b.Property<string>("Population")
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("PopulationSize")
                         .HasColumnType("INTEGER");

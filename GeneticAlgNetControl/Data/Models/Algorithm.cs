@@ -58,10 +58,6 @@ namespace GeneticAlgNetControl.Data.Models
 
         public AlgorithmMutationType MutationType { get; set; }
 
-        public List<List<string>> LastPopulation { get; set; }
-
-        public List<double> AverageFitnessOverIterations { get; set; }
-
-        public List<double> BestFitnessOverIterations { get; set; }
+        public Population Population { get; set; }
     }
 }
