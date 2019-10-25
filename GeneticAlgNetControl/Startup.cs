@@ -94,7 +94,7 @@ namespace GeneticAlgNetControl
             app.UseHangfireDashboard("/Hangfire");
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
-                WorkerCount = (Environment.ProcessorCount - 1) * 2
+                WorkerCount = 1//(Environment.ProcessorCount - 1) * 2
             });
             // Ensure that the database is created as per the model.
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())

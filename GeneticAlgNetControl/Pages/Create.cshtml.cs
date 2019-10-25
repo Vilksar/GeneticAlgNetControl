@@ -241,7 +241,9 @@ namespace GeneticAlgNetControl.Pages
                 PercentageElite = Input.PercentageElite,
                 PercentageRandom = Input.PercentageRandom,
                 ProbabilityMutation = Input.ProbabilityMutation,
-                Population = null
+                CrossoverType = Input.CrossoverType,
+                MutationType = Input.MutationType,
+                Population = new Population()
             };
             // Mark it for addition.
             _context.Algorithms.Add(algorithm);

@@ -83,12 +83,12 @@ namespace GeneticAlgNetControl.Helpers.Services
             var random = new Random(randomSeed);
             var currentIteration = algorithm.CurrentIteration;
             var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
-            algorithm.Population ??= new Population(populationSize, nodeIndices, targetNodes, pathDictionary, matrixPowerList, random, randomGenesPerChromosome);
+            algorithm.Population = !algorithm.Population.Chromosomes.Any() ? new Population(populationSize, nodeIndices, targetNodes, pathDictionary, matrixPowerList, random, randomGenesPerChromosome) : algorithm.Population;
             var bestFitness = algorithm.Population.HistoricBestFitness.Max();
             // Save the changes in the database.
             await _context.SaveChangesAsync();
             // Move through the generations.
-            while (algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < maximumIterations && currentIterationWithoutImprovement < maximumIterationsWithoutImprovement)
+            while (algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && algorithm.CurrentIteration < maximumIterations && algorithm.CurrentIterationWithoutImprovement < maximumIterationsWithoutImprovement)
             {
                 // Move on to the next iterations.
                 algorithm.CurrentIteration += 1;
@@ -102,6 +102,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 {
                     // Update the fitness.
                     bestFitness = fitness;
+                    algorithm.CurrentIterationWithoutImprovement = 0;
                 }
                 // Save the changes in the database.
                 await _context.SaveChangesAsync();
@@ -118,6 +119,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             algorithm.Status = algorithm.Status == AlgorithmStatus.ScheduledToStop ? AlgorithmStatus.Stopped : AlgorithmStatus.Completed;
             algorithm.DateTimeEnded = DateTime.Now;
             algorithm.DateTimePeriods.Last().DateTimeEnded = DateTime.Now;
+            // Save the changes in the database.
+            await _context.SaveChangesAsync();
         }
     }
 }

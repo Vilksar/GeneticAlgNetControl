@@ -130,17 +130,21 @@ namespace GeneticAlgNetControl.Helpers.Functions
             // Initialize the path dictionary with an empty list for each target node.
             var dictionary = targetNodes.ToDictionary(item => item, item => new List<string>());
             // For every power of the adjacency matrix.
-            for (int index = 0; index < adjacencyPowers.Count(); index++)
+            for (int index1 = 0; index1 < adjacencyPowers.Count(); index1++)
             {
-                // Add to the target node all of the nodes corresponding to the non-zero entries in the proper row of the matrix.
-                dictionary[targetNodes[index]].AddRange(adjacencyPowers[index]
-                    .Row(nodeIndices[targetNodes[index]])
-                    .Select((value, index) => value != 0 ? nodeIndices.FirstOrDefault(item => item.Value == value).Key : null)
-                    .Where(item => !string.IsNullOrEmpty(item))
-                    .ToList());
+                // For every target node.
+                for (int index2 = 0; index2 < targetNodes.Count(); index2++)
+                {
+                    // Add to the target node all of the nodes corresponding to the non-zero entries in the proper row of the matrix.
+                    dictionary[targetNodes[index2]].AddRange(adjacencyPowers[index1]
+                        .Row(nodeIndices[targetNodes[index2]])
+                        .Select((value, index) => value != 0 ? nodeIndices.FirstOrDefault(item => item.Value == index).Key : null)
+                        .Where(item => !string.IsNullOrEmpty(item))
+                        .ToList());
+                }
             }
             // For each item in the dictionary.
-            foreach (var item in dictionary.Keys)
+            foreach (var item in dictionary.Keys.ToList())
             {
                 // Remove all duplicate nodes.
                 dictionary[item] = dictionary[item].Distinct().ToList();

@@ -40,6 +40,16 @@ namespace GeneticAlgNetControl.Helpers.Models
         public List<double> HistoricAverageFitness { get; set; }
 
         /// <summary>
+        /// Constructor for an empty population.
+        /// </summary>
+        public Population()
+        {
+            Chromosomes = new List<Chromosome>();
+            HistoricBestFitness = new List<double>();
+            HistoricAverageFitness = new List<double>();
+        }
+
+        /// <summary>
         /// Constructor for the initial population.
         /// </summary>
         /// <param name="populationSize">The size of the population.</param>
@@ -71,7 +81,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 .Select(item => sum += item)
                 .ToList();
             // Repeat for each group.
-            for (int index1 = 1; index1 < numberOfGroups; index1++)
+            for (int index1 = 1; index1 < numberOfGroups + 1; index1++)
             {
                 // Get the lower and upper limits.
                 var lowerLimit = geneGroups[index1 - 1];
@@ -80,7 +90,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 for (int index2 = 0; index2 < chromosomeGroups[index1]; index2++)
                 {
                     // Add a new, initialized, chromosome.
-                    Chromosomes.Append(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
+                    Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
                 }
             }
             // Define the historic best and average fitness.
@@ -97,7 +107,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
             // Get the fitness list of the population.
-            var fitness = GetCombinedFitnessList();
+            var fitness = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
             Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(percentageElite * previousPopulation.Chromosomes.Count())));
             // Add the specified number of random chromosomes.

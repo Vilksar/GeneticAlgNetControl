@@ -178,12 +178,19 @@
                 var name = item.Name;
                 var id = item.Id;
                 var status = item.Status.ToString();
-                var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
-                var progressIterations = (double)item.CurrentIteration / item.MaximumIterations;
-                var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement;
+                var timeSpan = item.Status == Data.Enumerations.AlgorithmStatus.Scheduled ? TimeSpan.Zero : (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted;
+                    // item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
+                var progressIterations = (double)item.CurrentIteration / item.MaximumIterations * 100;
+                var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement * 100;
                 <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
                     <div class="row align-items-center">
-                        <div class="col-6 col-xl-3 text-center text-truncate">
+                        <div class="col-2 col-xl-1 text-center">
+                            <div class="custom-control custom-checkbox">
+                                <input type="checkbox" id="@id" name="id" value="@id" class="custom-control-input" title="Select" />
+                                <label for="@id" class="custom-control-label"></label>
+                            </div>
+                        </div>
+                        <div class="col-4 col-xl-2 text-center text-truncate">
                             <div>
                                 <span title="@name" class="font-weight-bold">@name</span>
                             </div>
@@ -215,6 +222,9 @@
                             </a>
                             <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-danger m-1" title="Delete">
                                 <span><i class="fas fa-trash"></i></span>
+                            </a>
+                            <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-primary m-1" title="Copy">
+                                <span><i class="fas fa-copy"></i></span>
                             </a>
                         </div>
                     </div>

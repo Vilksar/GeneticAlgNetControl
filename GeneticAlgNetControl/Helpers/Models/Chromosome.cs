@@ -29,6 +29,14 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Dictionary<string, string> Genes { get; set; }
 
         /// <summary>
+        /// Constructor for an empty chromosome.
+        /// </summary>
+        public Chromosome()
+        {
+            Genes = new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Constructor for the chromosome starting from the target nodes.
         /// </summary>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
