@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
+using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -62,13 +63,13 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => id.Contains(item.Id))
+                    .Where(item => id.Contains(item.Id) && (item.Status == AlgorithmStatus.Completed || item.Status == AlgorithmStatus.Stopped))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs.";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }
@@ -97,13 +98,13 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id))
+                    .Where(item => itemIds.Contains(item.Id) && (item.Status == AlgorithmStatus.Scheduled || item.Status == AlgorithmStatus.Completed || item.Status == AlgorithmStatus.Stopped))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs.";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }
