@@ -100,7 +100,7 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id) && item.Status != AlgorithmStatus.Stopped)
+                    .Where(item => itemIds.Contains(item.Id) && item.Status == AlgorithmStatus.Stopped)
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())

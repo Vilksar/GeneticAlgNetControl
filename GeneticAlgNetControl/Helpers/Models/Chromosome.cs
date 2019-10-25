@@ -67,7 +67,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public double GetFitness()
         {
             // Compute the fitness if it wasn't already computed.
-            _fitness = _fitness ?? GetUniqueControlNodes().Count();
+            _fitness = _fitness ?? (Genes.Count() - GetUniqueControlNodes().Count() + 1) * 100 / Genes.Count();
             // Return it.
             return _fitness.Value;
         }
