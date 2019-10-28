@@ -88,6 +88,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <returns>True if the chromosome is a solution, false otherwise</returns>
         public bool IsValid(Dictionary<string, int> nodeIndices, List<Matrix<double>> matrixPowerList)
         {
+            // Define the variable to return.
+            var isFullRank = false;
             // Get the unique control nodes.
             var uniqueControlNodes = Genes.Values.Distinct().ToList();
             // Initialize the B matrix.
@@ -99,15 +101,22 @@ namespace GeneticAlgNetControl.Helpers.Models
                 matrixB[nodeIndices[uniqueControlNodes[index]], index] = 1.0;
             }
             // Initialize the R matrix.
-            var matrixR = Matrix<Double>.Build.DenseOfMatrix(matrixPowerList[0]).Multiply(matrixB);
+            var matrixR = Matrix<double>.Build.DenseOfMatrix(matrixPowerList[0]).Multiply(matrixB);
             // Repeat until we reach the maximum power.
             for (int index = 1; index < matrixPowerList.Count(); index++)
             {
                 // Compute the current power matrix.
                 matrixR = matrixR.Append(matrixPowerList[index].Multiply(matrixB));
+                // Check if it is full rank.
+                isFullRank = matrixR.IsFullRank();
+                // Check if it is already full rank.
+                if (isFullRank)
+                {
+                    break;
+                }
             }
             // Return the validity.
-            return matrixR.IsFullRank();
+            return isFullRank;
         }
 
         /// <summary>
