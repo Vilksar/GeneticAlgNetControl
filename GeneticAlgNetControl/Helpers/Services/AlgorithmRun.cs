@@ -49,6 +49,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Update the algorithm status and stats.
             algorithm.Status = AlgorithmStatus.Ongoing;
             algorithm.DateTimeStarted = DateTime.Now;
+            algorithm.DateTimePeriods = algorithm.DateTimePeriods.Append(new DateTimePeriod { DateTimeStarted = algorithm.DateTimeStarted, DateTimeEnded = null }).ToList();
             // Save the changes in the database.
             await _context.SaveChangesAsync();
             // Reload it for a fresh start.
@@ -121,7 +122,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             algorithm.Population = population;
             algorithm.Status = algorithm.Status == AlgorithmStatus.ScheduledToStop ? AlgorithmStatus.Stopped : AlgorithmStatus.Completed;
             algorithm.DateTimeEnded = DateTime.Now;
-            algorithm.DateTimePeriods = algorithm.DateTimePeriods.Append(new DateTimePeriod { DateTimeStarted = algorithm.DateTimeStarted, DateTimeEnded = algorithm.DateTimeEnded }).ToList();
+            algorithm.DateTimePeriods = algorithm.DateTimePeriods.SkipLast(1).Append(new DateTimePeriod { DateTimeStarted = algorithm.DateTimeStarted, DateTimeEnded = algorithm.DateTimeEnded }).ToList();
             // Save the changes in the database.
             await _context.SaveChangesAsync();
         }
