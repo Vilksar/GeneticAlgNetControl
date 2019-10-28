@@ -128,6 +128,26 @@
 <hr />
 <form method="get">
     <ul class="list-group list-group-flush item-group">
+        <li class="list-group-item bg-transparent">
+            <div class="row align-items-center">
+                <div class="col-sm-6 text-center text-md-left">
+                    <span class="text-muted small">Showing items @Model.View.ItemsPerPageFirst to @Model.View.ItemsPerPageLast out of @Model.View.TotalItems.</span>
+                </div>
+                <div class="col-sm-6 text-center text-md-right">
+                    <div class="btn-group">
+                        <a href="@Model.View.PreviousPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.PreviousPageUrl) ? "disabled" : string.Empty)" title="Previous page">
+                            <span><i class="fas fa-angle-left"></i></span>
+                        </a>
+                        <button type="button" class="btn" title="Current page" disabled>
+                            <span>@Model.View.CurrentPage / @Model.View.TotalPages</span>
+                        </button>
+                        <a href="@Model.View.NextPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.NextPageUrl) ? "disabled" : string.Empty)" title="Next page">
+                            <span><i class="fas fa-angle-right"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </li>
         <li class="list-group-item list-group-item-action list-group-item-dark active">
             <div class="row align-items-center font-weight-bold">
                 <div class="col-2 col-xl-1 text-center">
@@ -152,9 +172,24 @@
                     <a asp-page="/Create" class="btn btn-success m-1" title="Create">
                         <span><i class="fas fa-plus"></i></span>
                     </a>
-                    <button type="submit" asp-page="/Delete" class="btn btn-danger m-1 item-group-button" title="Delete" disabled>
-                        <span><i class="fas fa-trash"></i></span>
-                    </button>
+                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Ongoing))
+                    {
+                        <button type="submit" asp-page="/Stop" class="btn btn-danger m-1 item-group-button" title="Stop" disabled>
+                            <span><i class="fas fa-stop"></i></span>
+                        </button>
+                    }
+                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Stopped))
+                    {
+                        <button type="submit" asp-page="/Start" class="btn btn-success m-1 item-group-button" title="Start" disabled>
+                            <span><i class="fas fa-play"></i></span>
+                        </button>
+                    }
+                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Scheduled || item.Status == Data.Enumerations.AlgorithmStatus.Stopped || item.Status == Data.Enumerations.AlgorithmStatus.Completed))
+                    {
+                        <button type="submit" asp-page="/Delete" class="btn btn-danger m-1 item-group-button" title="Delete" disabled>
+                            <span><i class="fas fa-trash"></i></span>
+                        </button>
+                    }
                 </div>
             </div>
         </li>
@@ -178,8 +213,7 @@
                 var name = item.Name;
                 var id = item.Id;
                 var status = item.Status.ToString();
-                var timeSpan = item.Status == Data.Enumerations.AlgorithmStatus.Scheduled ? TimeSpan.Zero : (item.DateTimeEnded ?? DateTime.Now) - item.DateTimeStarted;
-                    // item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
+                var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
                 var progressIterations = (double)item.CurrentIteration / item.MaximumIterations * 100;
                 var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement * 100;
                 <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
@@ -205,51 +239,46 @@
                         </div>
                         <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                             <div>
-                                <span title="@timeSpan">@timeSpan</span>
+                                <span title="@timeSpan">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
                             </div>
                         </div>
                         <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                             <div>
-                                <span title="@progressIterations %">@progressIterations %</span>
+                                <span title="@progressIterations %">@progressIterations.ToString("0.00") %</span>
                             </div>
                             <div>
-                                <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement %</span>
+                                <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement.ToString("0.00") %</span>
                             </div>
                         </div>
                         <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                            <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-info m-1" title="Details">
+                            <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
                                 <span><i class="fas fa-info-circle"></i></span>
                             </a>
-                            <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-danger m-1" title="Delete">
-                                <span><i class="fas fa-trash"></i></span>
-                            </a>
-                            <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-primary m-1" title="Copy">
+                            @if (item.Status == Data.Enumerations.AlgorithmStatus.Scheduled || item.Status == Data.Enumerations.AlgorithmStatus.Stopped || item.Status == Data.Enumerations.AlgorithmStatus.Completed)
+                            {
+                                <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Delete">
+                                    <span><i class="fas fa-trash"></i></span>
+                                </a>
+                            }
+                            @if (item.Status == Data.Enumerations.AlgorithmStatus.Ongoing)
+                            {
+                                <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Stop">
+                                    <span><i class="fas fa-stop"></i></span>
+                                </a>
+                            }
+                            @if (item.Status == Data.Enumerations.AlgorithmStatus.Stopped)
+                            {
+                                <a asp-page="/Start" asp-route-id="@item.Id" class="btn btn-outline-success m-1" title="Start">
+                                    <span><i class="fas fa-play"></i></span>
+                                </a>
+                            }
+                            <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
                                 <span><i class="fas fa-copy"></i></span>
                             </a>
                         </div>
                     </div>
                 </li>
             }
-            <li class="list-group-item">
-                <div class="row align-items-center">
-                    <div class="col-sm-6 text-center text-md-left">
-                        <span class="text-muted small">Showing items @Model.View.ItemsPerPageFirst to @Model.View.ItemsPerPageLast out of @Model.View.TotalItems.</span>
-                    </div>
-                    <div class="col-sm-6 text-center text-md-right">
-                        <div class="btn-group">
-                            <a href="@Model.View.PreviousPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.PreviousPageUrl) ? "disabled" : string.Empty)" title="Previous page">
-                                <span><i class="fas fa-angle-left"></i></span>
-                            </a>
-                            <button type="button" class="btn" title="Current page" disabled>
-                                <span>@Model.View.CurrentPage / @Model.View.TotalPages</span>
-                            </button>
-                            <a href="@Model.View.NextPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.NextPageUrl) ? "disabled" : string.Empty)" title="Next page">
-                                <span><i class="fas fa-angle-right"></i></span>
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </li>
         }
     </ul>
 </form>

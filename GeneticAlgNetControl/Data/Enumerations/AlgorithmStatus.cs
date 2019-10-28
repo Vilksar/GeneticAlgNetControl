@@ -31,11 +31,6 @@ namespace GeneticAlgNetControl.Data.Enumerations
         Stopped,
 
         /// <summary>
-        /// Represents an algorithm which has stopped because it has encountered an error.
-        /// </summary>
-        Error,
-
-        /// <summary>
         /// Represents an algorithm which has completed successfully.
         /// </summary>
         Completed

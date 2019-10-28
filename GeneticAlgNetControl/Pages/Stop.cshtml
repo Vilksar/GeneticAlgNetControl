@@ -11,6 +11,13 @@
     <span class="font-weight-bold">As long as the predefined maximum number of generations hasn't been reached, you can start it again later.</span>
 </div>
 <ul class="list-group list-group-flush item-group">
+    <li class="list-group-item bg-transparent">
+        <div class="row align-items-center">
+            <div class="col-sm-6 text-center text-md-left">
+                <span class="text-muted small">Showing items 1 to @Model.View.Items.Count().</span>
+            </div>
+        </div>
+    </li>
     <li class="list-group-item list-group-item-action list-group-item-dark active">
         <div class="row align-items-center font-weight-bold">
             <div class="col-6 col-xl-3 text-center text-truncate">
@@ -34,7 +41,7 @@
                         <span asp-validation-for="Input.Ids" class="text-danger small"></span>
                     </div>
                     <button type="submit" class="btn btn-block btn-danger text-wrap my-1" title="Delete all">
-                        <span>Delete all</span>
+                        <span>Stop all</span>
                     </button>
                 </form>
             </div>
@@ -61,11 +68,17 @@
             var id = item.Id;
             var status = item.Status.ToString();
             var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
-            var progressIterations = (double)item.CurrentIteration / item.MaximumIterations;
-            var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement;
+            var progressIterations = (double)item.CurrentIteration / item.MaximumIterations * 100;
+            var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement * 100;
             <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
                 <div class="row align-items-center">
-                    <div class="col-6 col-xl-3 text-center text-truncate">
+                    <div class="col-2 col-xl-1 text-center">
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="@id" name="id" value="@id" class="custom-control-input" title="Select" />
+                            <label for="@id" class="custom-control-label"></label>
+                        </div>
+                    </div>
+                    <div class="col-4 col-xl-2 text-center text-truncate">
                         <div>
                             <span title="@name" class="font-weight-bold">@name</span>
                         </div>
@@ -80,36 +93,30 @@
                     </div>
                     <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                         <div>
-                            <span title="@timeSpan">@timeSpan</span>
+                            <span title="@timeSpan">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
                         </div>
                     </div>
                     <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                         <div>
-                            <span title="@progressIterations %">@progressIterations %</span>
+                            <span title="@progressIterations %">@progressIterations.ToString("0.00") %</span>
                         </div>
                         <div>
-                            <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement %</span>
+                            <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement.ToString("0.00") %</span>
                         </div>
                     </div>
                     <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-info m-1" title="Details">
+                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
                             <span><i class="fas fa-info-circle"></i></span>
                         </a>
-                        <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-danger m-1" title="Delete">
-                            <span><i class="fas fa-trash"></i></span>
+                        <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Stop">
+                            <span><i class="fas fa-stop"></i></span>
+                        </a>
+                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
+                            <span><i class="fas fa-copy"></i></span>
                         </a>
                     </div>
                 </div>
             </li>
         }
-        <li class="list-group-item">
-            <div class="row align-items-center">
-                <div class="col-sm-6 text-center text-md-left">
-                    <span class="text-muted small">Showing items 1 to @Model.View.Items.Count().</span>
-                </div>
-                <div class="col-sm-6 text-center text-md-right">
-                </div>
-            </div>
-        </li>
     }
 </ul>
