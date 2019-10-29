@@ -64,58 +64,8 @@
     {
         foreach (var item in Model.View.Items)
         {
-            var name = item.Name;
-            var id = item.Id;
-            var status = item.Status.ToString();
-            var timeSpan = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, item) => sum + item);
-            var progressIterations = (double)item.CurrentIteration / item.MaximumIterations * 100;
-            var progressIterationsWithoutImprovement = (double)item.CurrentIterationWithoutImprovement / item.MaximumIterationsWithoutImprovement * 100;
-            <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
-                <div class="row align-items-center">
-                    <div class="col-2 col-xl-1 text-center">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" id="@id" name="id" value="@id" class="custom-control-input" title="Select" />
-                            <label for="@id" class="custom-control-label"></label>
-                        </div>
-                    </div>
-                    <div class="col-4 col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="@name" class="font-weight-bold">@name</span>
-                        </div>
-                        <div>
-                            <span title="@id" class="small">@id</span>
-                        </div>
-                    </div>
-                    <div class="col-2 col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="@status">@status</span>
-                        </div>
-                    </div>
-                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="@timeSpan">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
-                        </div>
-                    </div>
-                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="@progressIterations %">@progressIterations.ToString("0.00") %</span>
-                        </div>
-                        <div>
-                            <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement.ToString("0.00") %</span>
-                        </div>
-                    </div>
-                    <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
-                            <span><i class="fas fa-info-circle"></i></span>
-                        </a>
-                        <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Stop">
-                            <span><i class="fas fa-stop"></i></span>
-                        </a>
-                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
-                            <span><i class="fas fa-copy"></i></span>
-                        </a>
-                    </div>
-                </div>
+            <li id="algorithm-@item.Id" class="list-group-item list-group-item-action list-group-item-light item-group-item">
+                <partial name="_AlgorithmPartial" model="item" />
             </li>
         }
     }

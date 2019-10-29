@@ -7,7 +7,9 @@ using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.ViewFeatures;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -172,6 +174,23 @@ namespace GeneticAlgNetControl.Pages
                 .AsEnumerable();
             // Return the page.
             return Page();
+        }
+
+        public IActionResult OnGetRefresh(string id = null)
+        {
+            // Get the algorithm with the provided ID.
+            var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
+            // Define the partial view result to return.
+            var partialViewResult = new PartialViewResult
+            {
+                ViewName = "_AlgorithmPartial",
+                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                {
+                    Model = algorithm
+                }
+            };
+            // Return the partial view.
+            return partialViewResult;
         }
     }
 }

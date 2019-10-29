@@ -1,0 +1,99 @@
+﻿@model Data.Models.Algorithm
+
+@if (Model == null)
+{
+    <div class="row align-items-center py-2">
+        <div class="col-2 col-xl-1 text-center text-truncate">
+            <span class="text-danger"><i class="fas fa-exclamation-circle"></i></span>
+        </div>
+        <div class="col-10 col-xl-11 text-left text-wrap">
+            <span class="font-weight-bold">There was an error reloading this algorithm!</span>
+        </div>
+    </div>
+}
+else
+{
+    // Variables to display in the partial.
+    var name = Model.Name;
+    var id = Model.Id;
+    var status = Model.Status;
+    var timeSpan = Model.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+    var progressIterations = (double)Model.CurrentIteration / Model.MaximumIterations * 100;
+    var progressIterationsWithoutImprovement = (double)Model.CurrentIterationWithoutImprovement / Model.MaximumIterationsWithoutImprovement * 100;
+    // Helper variables.
+    var showStopButton = status == Data.Enumerations.AlgorithmStatus.Ongoing;
+    var showStartButton = status == Data.Enumerations.AlgorithmStatus.Stopped;
+    var showDeleteButton = status == Data.Enumerations.AlgorithmStatus.Scheduled || status == Data.Enumerations.AlgorithmStatus.Stopped || status == Data.Enumerations.AlgorithmStatus.Completed;
+    var showSaveButton = status == Data.Enumerations.AlgorithmStatus.Stopped || status == Data.Enumerations.AlgorithmStatus.Completed;
+    var needsRefresh = status == Data.Enumerations.AlgorithmStatus.Scheduled || status == Data.Enumerations.AlgorithmStatus.Ongoing || status == Data.Enumerations.AlgorithmStatus.ScheduledToStop;
+    @if (needsRefresh)
+    {
+        <div class="d-none algorithm-refresh-item" hidden></div>
+    }
+    <div class="row align-items-center">
+        <div class="col-2 col-xl-1 text-center">
+            <div class="custom-control custom-checkbox">
+                <input type="checkbox" id="input-@id" name="id" value="@id" class="custom-control-input" title="Select" />
+                <label for="input-@id" class="custom-control-label"></label>
+            </div>
+        </div>
+        <div class="col-4 col-xl-2 text-center text-truncate">
+            <div>
+                <span title="@name" class="font-weight-bold">@name</span>
+            </div>
+            <div>
+                <span title="@id" class="small">@id</span>
+            </div>
+        </div>
+        <div class="col-2 col-xl-2 text-center text-truncate">
+            <div>
+                <span title="@status">@status.ToString()</span>
+            </div>
+        </div>
+        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+            <div>
+                <span title="@timeSpan">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
+            </div>
+        </div>
+        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+            <div>
+                <span title="@progressIterations %">@progressIterations.ToString("0.00") %</span>
+            </div>
+            <div>
+                <span title="@progressIterationsWithoutImprovement %">@progressIterationsWithoutImprovement.ToString("0.00") %</span>
+            </div>
+        </div>
+        <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+            <a asp-page="/Details" asp-route-id="@Model.Id" class="btn btn-outline-info m-1" title="Details">
+                <span><i class="fas fa-info-circle"></i></span>
+            </a>
+            <a asp-page="/Create" asp-route-id="@Model.Id" class="btn btn-outline-dark m-1" title="Copy">
+                <span><i class="fas fa-copy"></i></span>
+            </a>
+            @if (showStopButton)
+            {
+                <a asp-page="/Stop" asp-route-id="@Model.Id" class="btn btn-outline-danger m-1" title="Stop">
+                    <span><i class="fas fa-stop"></i></span>
+                </a>
+            }
+            @if (showStartButton)
+            {
+                <a asp-page="/Start" asp-route-id="@Model.Id" class="btn btn-outline-success m-1" title="Start">
+                    <span><i class="fas fa-play"></i></span>
+                </a>
+            }
+            @if (showSaveButton)
+            {
+                <a asp-page="/Save" asp-route-id="@Model.Id" class="btn btn-outline-primary m-1" title="Save">
+                    <span><i class="fas fa-save"></i></span>
+                </a>
+            }
+            @if (showDeleteButton)
+            {
+                <a asp-page="/Delete" asp-route-id="@Model.Id" class="btn btn-outline-danger m-1" title="Delete">
+                    <span><i class="fas fa-trash"></i></span>
+                </a>
+            }
+        </div>
+    </div>
+}

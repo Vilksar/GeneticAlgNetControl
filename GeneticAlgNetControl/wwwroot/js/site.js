@@ -239,4 +239,20 @@ $(window).on('load', () => {
         })();
     }
 
+    // Check if there is any algorithm item on page.
+    if ($('.algorithm-refresh-item').length !== 0) {
+        // Repeat the function every 30 seconds.
+        setInterval(function () {
+            // Go over each element on the page to refresh.
+            $('.algorithm-refresh-item').each((index, element) => {
+                // Get the parent element.
+                let parent = $(element).closest('.item-group-item');
+                // Get the ID.
+                let id = $(parent).attr('id').replace('algorithm-', '');
+                // Refresh it with ajax.
+                $(parent).load(`/Overview?handler=Refresh&id=${id}`);
+            });
+        }, 5000);
+    }
+
 });
