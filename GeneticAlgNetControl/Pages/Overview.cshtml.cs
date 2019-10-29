@@ -180,17 +180,35 @@ namespace GeneticAlgNetControl.Pages
         {
             // Get the algorithm with the provided ID.
             var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
-            // Define the partial view result to return.
-            var partialViewResult = new PartialViewResult
+            // Check if there wasn't any algorithm found.
+            if (algorithm == null)
             {
-                ViewName = "_AlgorithmPartial",
-                ViewData = new ViewDataDictionary(new EmptyModelMetadataProvider(), new ModelStateDictionary())
+                // Return an empty JSON object.
+                return new JsonResult(new
                 {
-                    Model = algorithm
-                }
-            };
-            // Return the partial view.
-            return partialViewResult;
+                    Status = string.Empty,
+                    TimeSpan = string.Empty,
+                    ProgressIterations = string.Empty,
+                    ProgressIterationsWithoutImprovement = string.Empty
+                });
+            }
+            // Get the required data.
+            var status = algorithm.Status;
+            var timeSpan = algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var progressIterations = (double)algorithm.CurrentIteration / algorithm.MaximumIterations * 100;
+            var progressIterationsWithoutImprovement = (double)algorithm.CurrentIterationWithoutImprovement / algorithm.MaximumIterationsWithoutImprovement * 100;
+            // Return a new JSON object.
+            return new JsonResult(new
+            {
+                StatusTitle = status.ToString(),
+                StatusText = status.ToString(),
+                TimeSpanTitle = timeSpan.ToString(),
+                TimeSpanText = timeSpan.ToString("dd\\:hh\\:mm\\:ss"),
+                ProgressIterationsTitle = progressIterations.ToString(),
+                ProgressIterationsText = progressIterations.ToString("0.00") + "%",
+                ProgressIterationsWithoutImprovementTitle = progressIterationsWithoutImprovement.ToString(),
+                ProgressIterationsWithoutImprovementText = progressIterationsWithoutImprovement.ToString("0.00") + "%"
+            });
         }
     }
 }

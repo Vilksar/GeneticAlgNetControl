@@ -56,5 +56,29 @@ namespace GeneticAlgNetControl.Pages
             // Return the page.
             return Page();
         }
+
+        public IActionResult OnGetRefresh(string id)
+        {
+            // Get the algorithm with the provided ID.
+            var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
+            // Check if there wasn't any algorithm found.
+            if (algorithm == null)
+            {
+                // Return an empty JSON object.
+                return new JsonResult(new
+                {
+                    Status = string.Empty,
+                    CurrentIteration = string.Empty,
+                    CurrentIterationWithoutImprovement = string.Empty
+                });
+            }
+            // Return a new JSON object.
+            return new JsonResult(new
+            {
+                Status = algorithm.Status.ToString(),
+                CurrentIteration = algorithm.CurrentIteration,
+                CurrentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement
+            });
+        }
     }
 }
