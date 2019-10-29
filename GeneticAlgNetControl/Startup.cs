@@ -47,13 +47,13 @@ namespace GeneticAlgNetControl
             // Add the database context and connection.
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("SQLConnection"));
-                //options.UseSqlite(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServer(Configuration.GetConnectionString("SQLServerConnection"));
+                //options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
             });
             services.AddHangfire(options =>
             {
-                options.UseSqlServerStorage(Configuration.GetConnectionString("SQLConnection"));
-                //options.UseSQLiteStorage(Configuration.GetConnectionString("DefaultConnection"));
+                options.UseSqlServerStorage(Configuration.GetConnectionString("SQLServerConnection"));
+                //options.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection"));
             });
             // Add Razor pages.
             services.AddRazorPages();
