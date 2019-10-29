@@ -11,7 +11,7 @@
     <span class="font-weight-bold">As long as the predefined maximum number of generations hasn't been reached, you can start it again later.</span>
 </div>
 <ul class="list-group list-group-flush item-group">
-    <li class="list-group-item bg-transparent">
+    <li class="list-group-item bg-transparent border-0">
         <div class="row align-items-center">
             <div class="col-sm-6 text-center text-md-left">
                 <span class="text-muted small">Showing items 1 to @Model.View.Items.Count().</span>
@@ -20,27 +20,21 @@
     </li>
     <li class="list-group-item list-group-item-action list-group-item-dark active">
         <div class="row align-items-center font-weight-bold">
-            <div class="col-6 col-xl-3 text-center text-truncate">
+            <div class="col-6 col-xl-6 text-center text-truncate">
                 <span>Name</span>
             </div>
             <div class="col-2 col-xl-2 text-center text-truncate">
                 <span>Status</span>
             </div>
-            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                <span>Time elapsed</span>
-            </div>
-            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                <span>Progress</span>
-            </div>
-            <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+            <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
                 <form method="post">
                     <div class="form-group" hidden>
                         <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
                         <input asp-for="Input.Ids" type="hidden" class="form-control" />
-                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the custom analyses to be deleted, formatted as a JSON string array.</span>
+                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithms to be stopped, formatted as a JSON string array.</span>
                         <span asp-validation-for="Input.Ids" class="text-danger small"></span>
                     </div>
-                    <button type="submit" class="btn btn-block btn-danger text-wrap my-1" title="Delete all">
+                    <button type="submit" class="btn btn-block btn-danger text-wrap my-1" title="Stop all">
                         <span>Stop all</span>
                     </button>
                 </form>
@@ -66,56 +60,28 @@
         {
             <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
                 <div class="row align-items-center">
-                    <div class="col-2 col-xl-1 text-center">
-                        <div class="custom-control custom-checkbox">
-                            <input type="checkbox" id="@item.Id" name="id" value="@item.Id" class="custom-control-input" title="Select" />
-                            <label for="@item.Id" class="custom-control-label"></label>
-                        </div>
-                    </div>
-                    <div class="col-4 col-xl-2 text-center text-truncate">
+                    <div class="col-6 col-xl-6 text-center text-truncate">
                         <div>
-                            <span title="@item.Name" class="font-weight-bold algorithm-item-name">@item.Name</span>
+                            <span title="@item.Name" class="font-weight-bold">@item.Name</span>
                         </div>
                         <div>
-                            <span title="@item.Id" class="small algorithm-item-id">@item.Id</span>
+                            <span title="@item.Id" class="small">@item.Id</span>
                         </div>
                     </div>
                     <div class="col-2 col-xl-2 text-center text-truncate">
                         <div>
-                            <span title="" class="algorithm-item-status"></span>
+                            <span title="@item.Status.ToString()" class="">@item.Status.ToString()</span>
                         </div>
                     </div>
-                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="" class="algorithm-item-time-span"></span>
-                        </div>
-                    </div>
-                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="" class="algorithm-item-progress-iterations"></span>
-                        </div>
-                        <div>
-                            <span title="" class="algorithm-item-progress-iterations-without-improvement"></span>
-                        </div>
-                    </div>
-                    <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1 algorithm-item-button-details" title="Details">
+                    <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
                             <span><i class="fas fa-info-circle"></i></span>
                         </a>
-                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1 algorithm-item-button-copy" title="Copy">
+                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
                             <span><i class="fas fa-copy"></i></span>
                         </a>
-                        <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1 algorithm-item-button-stop" title="Stop">
+                        <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Stop">
                             <span><i class="fas fa-stop"></i></span>
-                        </a>
-                        <a asp-page="/Start" asp-route-id="@item.Id" class="btn btn-outline-success m-1 algorithm-item-button-start" title="Start">
-                            <span><i class="fas fa-play"></i></span>
-                        </a>
-                        <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-outline-primary m-1 algorithm-item-button-save" title="Save">
-                            <span><i class="fas fa-save"></i></span>
-                        </a>
-                        <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-outline-danger m-1 algorithm-item-button-delete" title="Delete">
-                            <span><i class="fas fa-trash"></i></span>
                         </a>
                     </div>
                 </div>

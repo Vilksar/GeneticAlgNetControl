@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.IO;
+using System.IO.Compression;
 using System.Linq;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
@@ -15,11 +18,11 @@ using Microsoft.AspNetCore.Mvc.RazorPages;
 namespace GeneticAlgNetControl.Pages
 {
     [AllowAnonymous]
-    public class DeleteModel : PageModel
+    public class SaveModel : PageModel
     {
         private readonly ApplicationDbContext _context;
 
-        public DeleteModel(ApplicationDbContext context)
+        public SaveModel(ApplicationDbContext context)
         {
             _context = context;
         }
@@ -31,6 +34,9 @@ namespace GeneticAlgNetControl.Pages
         {
             [Required(ErrorMessage = "This field is required.")]
             public string Ids { get; set; }
+
+            [Required(ErrorMessage = "This field is required.")]
+            public string Type { get; set; }
 
             public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
             {
@@ -63,26 +69,27 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => id.Contains(item.Id) && (item.Status == AlgorithmStatus.Scheduled || item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
+                    .Where(item => id.Contains(item.Id) && (item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }
             // Get the IDs of the items found.
             Input = new InputModel
             {
-                Ids = JsonSerializer.Serialize(View.Items.Select(item => item.Id))
+                Ids = JsonSerializer.Serialize(View.Items.Select(item => item.Id)),
+                Type = "Json"
             };
             // Return the page.
             return Page();
         }
 
-        public async Task<IActionResult> OnPostAsync()
+        public IActionResult OnPost()
         {
             // Check if the provided model is not valid.
             if (!ModelState.IsValid)
@@ -98,37 +105,51 @@ namespace GeneticAlgNetControl.Pages
             View = new ViewModel
             {
                 Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id) && (item.Status == AlgorithmStatus.Scheduled || item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
+                    .Where(item => itemIds.Contains(item.Id) && (item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
             {
                 // Display a message.
-                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
+                TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
                 return RedirectToPage("/Overview");
             }
             // Save the number of items found.
             var itemCount = View.Items.Count();
-            // Mark the items for removal.
-            _context.RemoveRange(View.Items);
-            // Try to update the database.
-            try
+            // Define the stream of the file to return.
+            var zipStream = new MemoryStream();
+            // Define a new ZIP archive.
+            using (var archive = new ZipArchive(zipStream, ZipArchiveMode.Create))
             {
-                // Save the changes in the database.
-                await _context.SaveChangesAsync();
+                // Go over each of the items.
+                foreach (var item in View.Items)
+                {
+                    // Define a new memory stream.
+                    var memoryStream = new MemoryStream();
+                    // Check the file type to return.
+                    if (Input.Type == "Json")
+                    {
+                        // Define the stream of the file to be downloaded.
+                        memoryStream.Write(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(item, new JsonSerializerOptions { WriteIndented = true })));
+                    }
+                    else
+                    {
+                        // Add an error to the model.
+                        ModelState.AddModelError(string.Empty, "The provided file type is not valid or not yet implemented.");
+                        // Redisplay the page.
+                        return Page();
+                    }
+                    // Create a new entry in the archive and open it for writing.
+                    using (var stream = archive.CreateEntry($"{item.Name}_{item.Id}.{Input.Type.ToLower()}", CompressionLevel.Fastest).Open())
+                    {
+                        // Write the memory stream to the new archive entry.
+                        stream.Write(memoryStream.ToArray());
+                    }
+                }
             }
-            catch (Exception exception)
-            {
-                // If we made it this far, something went wrong with adding to the database, so we add an error to the model.
-                ModelState.AddModelError(string.Empty, exception.Message);
-                // And re-display the page.
-                return Page();
-            }
-            // Display a message.
-            TempData["StatusMessage"] = $"Success: {itemCount.ToString()} algorithm{(itemCount != 1 ? "s" : string.Empty)} deleted successfully.";
-            // Redirect to the index page.
-            return RedirectToPage("/Overview");
+            // Return the file.
+            return File(zipStream.ToArray(), "application/zip", $"Algorithms-{DateTime.Now.ToShortDateString()}.zip");
         }
     }
 }

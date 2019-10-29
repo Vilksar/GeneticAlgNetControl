@@ -1,14 +1,13 @@
 ﻿@page
-@model DeleteModel
+@model SaveModel
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Save";
     ViewData["ActivePage"] = "Overview";
 }
 
-<div class="alert alert-danger mb-3">
-    <span><i class="fas fa-exclamation-circle"></i></span>
-    <span>The following item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be deleted.</span>
-    <span class="font-weight-bold">This action can't be reversed!</span>
+<div class="alert alert-info mb-3">
+    <span><i class="fas fa-info-circle"></i></span>
+    <span>The following item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be downloaded in a ZIP archive containing the specified file format.</span>
 </div>
 <ul class="list-group list-group-flush item-group">
     <li class="list-group-item bg-transparent border-0">
@@ -31,12 +30,24 @@
                     <div class="form-group" hidden>
                         <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
                         <input asp-for="Input.Ids" type="hidden" class="form-control" />
-                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithm to be deleted, formatted as a JSON string array.</span>
+                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithms to be downloaded, formatted as a JSON string array.</span>
                         <span asp-validation-for="Input.Ids" class="text-danger small"></span>
                     </div>
-                    <button type="submit" class="btn btn-block btn-danger text-wrap my-1" title="Delete all">
-                        <span>Delete all</span>
-                    </button>
+                    <div class="row align-items-center">
+                        <div class="col-xl-6 mb-3 mb-xl-0 px-1">
+                            <label asp-for="Input.Type" class="font-weight-bold" hidden>File type</label>
+                            <select asp-for="Input.Type" class="custom-select">
+                                <option value="Json">JSON (".json")</option>
+                            </select>
+                            <span asp-description-for="Input.Type" class="text-muted small" hidden>The type of the file to download.</span>
+                            <span asp-validation-for="Input.Type" class="text-danger small" hidden></span>
+                        </div>
+                        <div class="col-xl-6 px-1">
+                            <button type="submit" class="btn btn-block btn-primary text-wrap" title="Download all">
+                                <span>Download all</span>
+                            </button>
+                        </div>
+                    </div>
                 </form>
             </div>
         </div>
@@ -80,8 +91,8 @@
                         <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
                             <span><i class="fas fa-copy"></i></span>
                         </a>
-                        <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-outline-danger m-1" title="Delete">
-                            <span><i class="fas fa-trash"></i></span>
+                        <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-outline-primary m-1" title="Save">
+                            <span><i class="fas fa-save"></i></span>
                         </a>
                     </div>
                 </div>
