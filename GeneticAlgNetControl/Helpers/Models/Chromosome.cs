@@ -200,8 +200,11 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over each of the target nodes.
                         foreach (var item in Genes.Keys)
                         {
+                            // Get the number of occurances in each chromosome.
+                            var inFirst = occurancesInFirst.ContainsKey(Genes[item]) ? occurancesInFirst[Genes[item]] : 0;
+                            var inSecond = occurancesInSecond.ContainsKey(secondChromosome.Genes[item]) ? occurancesInSecond[secondChromosome.Genes[item]] : 0;
                             // Assign to the gene in the chromosome its corresponding random parent value with the a probability depending on the occurances.
-                            chromosome.Genes[item] = random.NextDouble() < (double)occurancesInFirst[Genes[item]] / (double)(occurancesInFirst[Genes[item]] + occurancesInSecond[secondChromosome.Genes[item]]) ? Genes[item] : secondChromosome.Genes[item];
+                            chromosome.Genes[item] = random.NextDouble() < (double)inFirst / (double)(inFirst + inSecond) ? Genes[item] : secondChromosome.Genes[item];
                         }
                         // Check if the chromosome is valid.
                         if (chromosome.IsValid(nodeIndices, matrixPowerList))
@@ -222,6 +225,9 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over each of the target nodes.
                         foreach (var item in Genes.Keys)
                         {
+                            // Get the number of occurances in each chromosome.
+                            var inFirst = occurancesInFirst.ContainsKey(Genes[item]) ? occurancesInFirst[Genes[item]] : 0;
+                            var inSecond = occurancesInSecond.ContainsKey(secondChromosome.Genes[item]) ? occurancesInSecond[secondChromosome.Genes[item]] : 0;
                             // Check if the gene in any of the chromosomes is a preferred node.
                             var isPreferredFirst = nodePreferred[Genes[item]];
                             var isPreferredSecond = nodePreferred[secondChromosome.Genes[item]];
@@ -231,7 +237,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                                 // Keep the first value.
                                 //chromosome.Genes[item] = Genes[item];
                                 // Choose one of the parent genes with a probability depending on their occurances, the preferred node being two times more likely to be selected.
-                                chromosome.Genes[item] = random.NextDouble() < (double)(occurancesInFirst[Genes[item]] * 2) / (double)(occurancesInFirst[Genes[item]] * 2 + occurancesInSecond[secondChromosome.Genes[item]]) ? Genes[item] : secondChromosome.Genes[item];
+                                chromosome.Genes[item] = random.NextDouble() < (double)inFirst * 2 / (double)(inFirst * 2 + inSecond) ? Genes[item] : secondChromosome.Genes[item];
                             }
                             // Check if the second corresponding gene is preferred, and the first one isn't.
                             else if (!isPreferredFirst && isPreferredSecond)
@@ -239,13 +245,13 @@ namespace GeneticAlgNetControl.Helpers.Models
                                 // Keep the second value.
                                 //chromosome.Genes[item] = secondChromosome.Genes[item];
                                 // Choose one of the parent genes with a probability depending on their occurances, the preferred node being two times more likely to be selected.
-                                chromosome.Genes[item] = random.NextDouble() < (double)(occurancesInSecond[secondChromosome.Genes[item]] * 2) / (double)(occurancesInFirst[Genes[item]] + occurancesInSecond[secondChromosome.Genes[item]] * 2) ? Genes[item] : secondChromosome.Genes[item];
+                                chromosome.Genes[item] = random.NextDouble() < (double)inSecond * 2 / (double)(inFirst + inSecond * 2) ? Genes[item] : secondChromosome.Genes[item];
                             }
                             // Otherwise they both have the same state
                             else
                             {
                                 // Choose one of the parent genes with a probability depending on their occurances.
-                                chromosome.Genes[item] = random.NextDouble() < (double)occurancesInFirst[Genes[item]] / (double)(occurancesInFirst[Genes[item]] + occurancesInSecond[secondChromosome.Genes[item]]) ? Genes[item] : secondChromosome.Genes[item];
+                                chromosome.Genes[item] = random.NextDouble() < (double)inFirst / (double)(inFirst + inSecond) ? Genes[item] : secondChromosome.Genes[item];
                             }
                         }
                         // Check if the chromosome is valid.
@@ -318,7 +324,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             // Reset the number of tries.
                             tries = 10;
                             // Get a random gene to remove from the list of genes to mutate.
-                            var randomGene = genesMutateDictionary[genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()))];
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
                             // Assign to it the current value.
                             Genes[randomGene] = genesMutateDictionary[randomGene];
                             // Remove it from the list of genes to mutate.
@@ -352,7 +358,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             // Reset the number of tries.
                             tries = 10;
                             // Get a random gene to remove from the list of genes to mutate.
-                            var randomGene = genesMutateDictionary[genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()))];
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
                             // Assign to it the current value.
                             Genes[randomGene] = genesMutateDictionary[randomGene];
                             // Remove it from the list of genes to mutate.
