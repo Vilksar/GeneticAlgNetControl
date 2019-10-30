@@ -35,7 +35,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No ID has been provided.";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Get the item.
             var algorithm = _context.Algorithms
@@ -46,7 +46,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No item has been found with the provided ID.";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Define the view.
             View = new ViewModel

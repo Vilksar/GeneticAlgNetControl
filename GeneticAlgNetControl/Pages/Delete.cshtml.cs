@@ -57,7 +57,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No or invalid IDs have been provided.";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Define the view.
             View = new ViewModel
@@ -71,7 +71,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Get the IDs of the items found.
             Input = new InputModel
@@ -90,7 +90,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No or invalid IDs have been provided.";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Get all of the individual IDs to look for.
             var itemIds = JsonSerializer.Deserialize<IEnumerable<string>>(Input.Ids);
@@ -106,7 +106,7 @@ namespace GeneticAlgNetControl.Pages
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No items have been found with the provided IDs or none of the items have the required status of \"Scheduled\", \"Stopped\", or \"Completed\".";
                 // Redirect to the index page.
-                return RedirectToPage("/Overview");
+                return RedirectToPage("/Dashboard");
             }
             // Save the number of items found.
             var itemCount = View.Items.Count();
@@ -128,7 +128,7 @@ namespace GeneticAlgNetControl.Pages
             // Display a message.
             TempData["StatusMessage"] = $"Success: {itemCount.ToString()} algorithm{(itemCount != 1 ? "s" : string.Empty)} deleted successfully.";
             // Redirect to the index page.
-            return RedirectToPage("/Overview");
+            return RedirectToPage("/Dashboard");
         }
     }
 }

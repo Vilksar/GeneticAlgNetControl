@@ -154,8 +154,8 @@ namespace GeneticAlgNetControl.Pages
             {
                 // Display a message.
                 TempData["StatusMessage"] = "Error: There is no algorithm with the specified ID.";
-                // Redirect to the overview page.
-                return RedirectToPage("/Overview");
+                // Redirect to the dashboard page.
+                return RedirectToPage("/Dashboard");
             }
             // Define the input.
             Input = new InputModel
@@ -266,7 +266,7 @@ namespace GeneticAlgNetControl.Pages
             // Display a message.
             TempData["StatusMessage"] = "Success: 1 algorithm created successfully and started.";
             // Redirect to the index page.
-            return RedirectToPage("/Overview");
+            return RedirectToPage("/Dashboard");
         }
     }
 }

@@ -17,13 +17,13 @@ using Microsoft.Extensions.Logging;
 namespace GeneticAlgNetControl.Pages
 {
     [AllowAnonymous]
-    public class OverviewModel : PageModel
+    public class DashboardModel : PageModel
     {
         private readonly ApplicationDbContext _context;
         private readonly ILogger<IndexModel> _logger;
         private readonly LinkGenerator _linkGenerator;
 
-        public OverviewModel(ILogger<IndexModel> logger, ApplicationDbContext context, LinkGenerator linkGenerator)
+        public DashboardModel(ILogger<IndexModel> logger, ApplicationDbContext context, LinkGenerator linkGenerator)
         {
             _logger = logger;
             _context = context;
