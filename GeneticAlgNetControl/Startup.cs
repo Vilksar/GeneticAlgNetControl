@@ -47,13 +47,11 @@ namespace GeneticAlgNetControl
             // Add the database context and connection.
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("SQLServerConnection"));
-                //options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
+                options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
             });
             services.AddHangfire(options =>
             {
-                options.UseSqlServerStorage(Configuration.GetConnectionString("SQLServerConnection"));
-                //options.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection"));
+                options.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection"));
             });
             // Add Razor pages.
             services.AddRazorPages();
@@ -96,7 +94,7 @@ namespace GeneticAlgNetControl
             app.UseHangfireDashboard("/Hangfire");
             app.UseHangfireServer(new BackgroundJobServerOptions
             {
-                WorkerCount = (Environment.ProcessorCount - 1) * 2
+                WorkerCount = 1
             });
             // Ensure that the database is created as per the model.
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())

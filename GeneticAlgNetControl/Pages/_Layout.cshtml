@@ -48,13 +48,25 @@
                 </div>
             </div>
             <div class="flex-grow-0">
-                <div class="text-light">
-                    <span>&copy; @DateTime.Now.Year - Victor Popescu</span>
+                <div class="navbar navbar-dark">
+                    <ul class="navbar-nav d-flex flex-column justify-content-around align-items-center">
+                        <li class="nav-item">
+                            <a href="/Hangfire" class="nav-link d-flex flex-row justify-content-between align-items-center">
+                                <span class="mx-1"><i class="fas fa-tasks"></i></span>
+                                <span class="mx-1">Tasks</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <div class="text-light">
+                                <span>&copy; @DateTime.Now.Year - Victor Popescu</span>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
         <div class="col-8 col-lg-9 px-4 pt-4 pb-3 bg-light">
-            @{ 
+            @{
                 var statusMessage = (string)TempData["StatusMessage"];
             }
             @if (!string.IsNullOrEmpty(statusMessage))
