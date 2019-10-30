@@ -255,7 +255,7 @@ $(window).on('load', () => {
                     const id = $(parent).find('.algorithm-item-id').first().text();
                     // Retrieve the new data for the algorithm with the mentioned ID.
                     const json = $.ajax({
-                        url: `/Overview?handler=Refresh&id=${id}`,
+                        url: `/Dashboard?handler=Refresh&id=${id}`,
                         async: false,
                         dataType: 'json'
                     }).responseJSON;
@@ -343,5 +343,120 @@ $(window).on('load', () => {
                 $('.algorithm-details-current-iteration-without-improvement').val(json.currentIterationWithoutImprovement);
             }, 5000);
         }
+    }
+
+    // Check if there is any details modal on the page.
+    if ($('.details-modal').length !== 0) {
+        // Add a listener for modal opening.
+        $('.details-modal').on('show.bs.modal', (event) => {
+            // Get the group that trigerred the modal.
+            const group = $(event.relatedTarget).closest('.modal-group');
+            // Update the modal's content.
+            $('.details-modal').first().find('.modal-title').html($(group.find('.modal-group-title').first().html()));
+            $('.details-modal').first().find('.modal-body').html($(group.find('.modal-group-body').first().html()));
+        });
+    }
+
+    // Check if there is any chart on the page.
+    if ($('.chart-js-chart').length !== 0) {
+        // Go over each of the charts.
+        $('.chart-js-chart').each((index, element) => {
+            // Get the type, data and the canvas element.
+            const chartType = $(element).data('type');
+            const chartData = JSON.parse($(element).find('.chart-js-data').first().text());
+            const chartCanvas = $(element).find('.chart-js-canvas').first();
+            // Set the chart based on the type.
+            if (chartType === 'dashboard') {
+                // Define the chart.
+                const chart = new Chart(chartCanvas, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Algorithms'],
+                        datasets: [{
+                            label: 'Scheduled',
+                            data: chartData.Scheduled,
+                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
+                            borderColor: 'rgba(255, 206, 86, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Ongoing',
+                            data: chartData.Ongoing,
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Stopped',
+                            data: chartData.Stopped,
+                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                            borderColor: 'rgba(255, 99, 132, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Completed',
+                            data: chartData.Completed,
+                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Current algorithms'
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    beginAtZero: true
+                                }
+                            }]
+                        }
+                    }
+                });
+            } else if (chartType === 'details') {
+                // Define the chart.
+                const chart = new Chart(chartCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: [...Array(chartData.AverageFitness.length).keys()],
+                        datasets: [{
+                            label: 'Average fitness',
+                            data: chartData.AverageFitness,
+                            backgroundColor: 'rgba(54, 162, 235, 0)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1
+                        },
+                        {
+                            label: 'Best fitness',
+                            data: chartData.BestFitness,
+                            backgroundColor: 'rgba(75, 192, 192, 0)',
+                            borderColor: 'rgba(75, 192, 192, 1)',
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        title: {
+                            display: true,
+                            text: 'Progress'
+                        },
+                        scales: {
+                            yAxes: [{
+                                ticks: {
+                                    min: 0,
+                                    max: 100
+                                }
+                            }]
+                        },
+                        elements: {
+                            line: {
+                                tension: 0
+                            }
+                        }
+                    }
+                });
+            }
+        });
     }
 });

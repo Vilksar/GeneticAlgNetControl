@@ -5,6 +5,35 @@
     ViewData["ActivePage"] = "Overview";
 }
 
+<div class="sticky-top d-flex flex-row flex-wrap justify-content-end">
+    <a asp-page="/Create" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-dark mx-1 my-2 algorithm-item-button-copy" title="Copy">
+        <span><i class="fas fa-copy"></i></span>
+    </a>
+    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped)
+    {
+        <a asp-page="/Start" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-success mx-1 my-2 algorithm-item-button-start" title="Start">
+            <span><i class="fas fa-play"></i></span>
+        </a>
+    }
+    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Ongoing)
+    {
+        <a asp-page="/Stop" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-danger mx-1 my-2 algorithm-item-button-stop" title="Stop">
+            <span><i class="fas fa-stop"></i></span>
+        </a>
+    }
+    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
+    {
+        <a asp-page="/Save" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-primary mx-1 my-2 algorithm-item-button-save" title="Save">
+            <span><i class="fas fa-save"></i></span>
+        </a>
+    }
+    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Scheduled || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
+    {
+        <a asp-page="/Delete" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-danger mx-1 my-2 algorithm-item-button-delete" title="Delete">
+            <span><i class="fas fa-trash"></i></span>
+        </a>
+    }
+</div>
 <div class="row h4">
     <div class="col-1 text-center">
         <span><i class="fas fa-font"></i></span>
@@ -70,18 +99,95 @@
 </div>
 @if (Model.View.Algorithm.Population != null && Model.View.Algorithm.Population.Chromosomes != null)
 {
-    <div class="row h4">
+    <div class="row h4 mt-3">
         <div class="col-1 text-center">
-            <span><i class="fas fa-lightbulb"></i></span>
+            <span><i class="fas fa-chart-line"></i></span>
+        </div>
+        <div class="col-11 text-left">
+            <span>Progress</span>
+        </div>
+    </div>
+    <hr />
+    <div class="row">
+        <div class="offset-1 col-11">
+            <div class="row">
+                <div class="col-lg-12">
+                    <div class="chart-js-chart" data-type="details">
+                        <span class="chart-js-data" hidden>@JsonSerializer.Serialize(new { AverageFitness = Model.View.Algorithm.Population.HistoricAverageFitness, BestFitness = Model.View.Algorithm.Population.HistoricBestFitness })</span>
+                        <canvas class="chart-js-canvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row h4 mt-3">
+        <div class="col-1 text-center">
+            <span><i class="fas fa-list"></i></span>
         </div>
         <div class="col-11 text-left">
             <span>Solutions</span>
         </div>
     </div>
     <hr />
-
+    <div class="row">
+        <div class="offset-1 col-11">
+            @foreach (var solution in Model.View.Algorithm.Population.GetSolutions())
+            {
+                var fitness = solution.GetFitness();
+                var controlNodes = solution.GetUniqueControlNodes();
+                <div class="row">
+                    <div class="col-lg-3 order-1 order-lg-1">
+                        <label class="font-weight-bold">Fitness</label>
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                        <input class="form-control form-control-plaintext" disabled value="@fitness" />
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-1">
+                        <label class="font-weight-bold">Control nodes</label>
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                        <input class="form-control form-control-plaintext" disabled value="@controlNodes.Count()" />
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-1">
+                        <label class="font-weight-bold">Control nodes</label>
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                        <input class="form-control form-control-plaintext" disabled value="@string.Join(", ", controlNodes)" />
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-1">
+                        <label class="font-weight-bold">View</label>
+                    </div>
+                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                        <div class="modal-group">
+                            <button type="button" class="btn btn-dark btn-block" data-toggle="modal" data-target=".details-modal">
+                                <span>View</span>
+                            </button>
+                            <div class="modal-group-data" hidden>
+                                <div class="modal-group-title">
+                                    <span class="font-weight-bold">Solution</span>
+                                </div>
+                                <div class="modal-group-body">
+                                    <ul class="list-group list-group-flush">
+                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                            <span class="font-weight-bold">Node</span>
+                                        </li>
+                                        @foreach (var item in controlNodes)
+                                        {
+                                            <li class="list-group-item list-group-item-action">
+                                                <span>@item</span>
+                                            </li>
+                                        }
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
 }
-<div class="row h4">
+<div class="row h4 mt-3">
     <div class="col-1 text-center">
         <span><i class="fas fa-share-alt"></i></span>
     </div>
@@ -97,95 +203,77 @@
                 <label asp-for="View.Algorithm.Nodes" class="font-weight-bold">Nodes</label>
             </div>
             <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group">
+                <div class="input-group modal-group">
                     <input asp-for="View.Algorithm.Nodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.Nodes.Count()" disabled />
                     <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target="#nodes-modal" disabled>
+                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
                             <span>View</span>
                         </button>
                     </div>
-                </div>
-                @*<div id="nodes-modal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="modal-title">
-                                        <span class="font-weight-bold">Nodes</span>
-                                    </div>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span><i class="fas fa-times"></i></span>
-                                    </button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                            <span class="font-weight-bold">Node</span>
-                                        </li>
-                                        @foreach (var item in Model.View.Algorithm.Nodes)
-                                        {
-                                            <li class="list-group-item list-group-item-action">
-                                                <span>@item</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="modal-group-data" hidden>
+                        <div class="modal-group-title">
+                            <span class="font-weight-bold">Nodes</span>
                         </div>
-                    </div>*@
+                        <div class="modal-group-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                    <span class="font-weight-bold">Node</span>
+                                </li>
+                                @foreach (var item in Model.View.Algorithm.Nodes)
+                                {
+                                    <li class="list-group-item list-group-item-action">
+                                        <span>@item</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-6 order-1 order-lg-1">
                 <label asp-for="View.Algorithm.Edges" class="font-weight-bold">Edges</label>
             </div>
             <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group">
+                <div class="input-group modal-group">
                     <input asp-for="View.Algorithm.Edges" class="form-control form-control-plaintext" value="@Model.View.Algorithm.Edges.Count()" disabled />
                     <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target="#edges-modal" disabled>
+                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
                             <span>View</span>
                         </button>
                     </div>
-                </div>
-                @*<div id="edges-modal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="modal-title">
-                                        <span class="font-weight-bold">Edges</span>
-                                    </div>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span><i class="fas fa-times"></i></span>
-                                    </button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <span class="font-weight-bold">Source node</span>
-                                                </div>
-                                                <div class="col-6">
-                                                    <span class="font-weight-bold">Target node</span>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        @foreach (var item in Model.View.Algorithm.Edges)
-                                        {
-                                            <li class="list-group-item list-group-item-action">
-                                                <div class="row">
-                                                    <div class="col-6">
-                                                        <span>@item.SourceNode</span>
-                                                    </div>
-                                                    <div class="col-6">
-                                                        <span>@item.TargetNode</span>
-                                                    </div>
-                                                </div>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="modal-group-data" hidden>
+                        <div class="modal-group-title">
+                            <span class="font-weight-bold">Edges</span>
                         </div>
-                    </div>*@
+                        <div class="modal-group-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                    <div class="row">
+                                        <div class="col-6">
+                                            <span class="font-weight-bold">Source node</span>
+                                        </div>
+                                        <div class="col-6">
+                                            <span class="font-weight-bold">Target node</span>
+                                        </div>
+                                    </div>
+                                </li>
+                                @foreach (var item in Model.View.Algorithm.Edges)
+                                {
+                                    <li class="list-group-item list-group-item-action">
+                                        <div class="row">
+                                            <div class="col-6">
+                                                <span>@item.SourceNode</span>
+                                            </div>
+                                            <div class="col-6">
+                                                <span>@item.TargetNode</span>
+                                            </div>
+                                        </div>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="row">
@@ -193,86 +281,68 @@
                 <label asp-for="View.Algorithm.TargetNodes" class="font-weight-bold">Target nodes</label>
             </div>
             <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group">
+                <div class="input-group modal-group">
                     <input asp-for="View.Algorithm.TargetNodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.TargetNodes.Count()" disabled />
                     <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target="#target-nodes-modal" disabled>
+                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
                             <span>View</span>
                         </button>
                     </div>
-                </div>
-                @*<div id="target-nodes-modal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="modal-title">
-                                        <span class="font-weight-bold">Target nodes</span>
-                                    </div>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span><i class="fas fa-times"></i></span>
-                                    </button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                            <span class="font-weight-bold">Node</span>
-                                        </li>
-                                        @foreach (var item in Model.View.Algorithm.TargetNodes)
-                                        {
-                                            <li class="list-group-item list-group-item-action">
-                                                <span>@item</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="modal-group-data" hidden>
+                        <div class="modal-group-title">
+                            <span class="font-weight-bold">Target nodes</span>
                         </div>
-                    </div>*@
+                        <div class="modal-group-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                    <span class="font-weight-bold">Node</span>
+                                </li>
+                                @foreach (var item in Model.View.Algorithm.TargetNodes)
+                                {
+                                    <li class="list-group-item list-group-item-action">
+                                        <span>@item</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-lg-6 order-1 order-lg-1">
                 <label asp-for="View.Algorithm.PreferredNodes" class="font-weight-bold">Preferred nodes</label>
             </div>
             <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group">
+                <div class="input-group modal-group">
                     <input asp-for="View.Algorithm.PreferredNodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.PreferredNodes.Count()" disabled />
                     <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target="#preferred-nodes-modal" disabled="@(!Model.View.Algorithm.PreferredNodes.Any() ? "disabled" : null)">
+                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
                             <span>View</span>
                         </button>
                     </div>
-                </div>
-                @*<div id="preferred-nodes-modal" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <div class="modal-title">
-                                        <span class="font-weight-bold">Preferred nodes</span>
-                                    </div>
-                                    <button type="button" class="close" data-dismiss="modal">
-                                        <span><i class="fas fa-times"></i></span>
-                                    </button>
-                                </div>
-                                <div class="modal-body text-center">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                            <span class="font-weight-bold">Node</span>
-                                        </li>
-                                        @foreach (var item in Model.View.Algorithm.PreferredNodes)
-                                        {
-                                            <li class="list-group-item list-group-item-action">
-                                                <span>@item</span>
-                                            </li>
-                                        }
-                                    </ul>
-                                </div>
-                            </div>
+                    <div class="modal-group-data" hidden>
+                        <div class="modal-group-title">
+                            <span class="font-weight-bold">Preferred nodes</span>
                         </div>
-                    </div>*@
+                        <div class="modal-group-body">
+                            <ul class="list-group list-group-flush">
+                                <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                    <span class="font-weight-bold">Node</span>
+                                </li>
+                                @foreach (var item in Model.View.Algorithm.PreferredNodes)
+                                {
+                                    <li class="list-group-item list-group-item-action">
+                                        <span>@item</span>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </div>
-<div class="row h4">
+<div class="row h4 mt-3">
     <div class="col-1 text-center">
         <span><i class="fas fa-code"></i></span>
     </div>
@@ -303,10 +373,6 @@
                 <input asp-for="View.Algorithm.MaximumIterationsWithoutImprovement" class="form-control form-control-plaintext" disabled />
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="offset-1 col-11">
         <div class="row">
             <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                 <label asp-for="View.Algorithm.MaximumPathLength" class="font-weight-bold">Maximum path length</label>
@@ -327,10 +393,6 @@
                 <input asp-for="View.Algorithm.RandomGenesPerChromosome" class="form-control form-control-plaintext" disabled />
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="offset-1 col-11">
         <div class="row">
             <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                 <label asp-for="View.Algorithm.PercentageRandom" class="font-weight-bold">Percentage of random chromosomes</label>
@@ -351,10 +413,6 @@
                 <input asp-for="View.Algorithm.ProbabilityMutation" class="form-control form-control-plaintext" disabled />
             </div>
         </div>
-    </div>
-</div>
-<div class="row">
-    <div class="offset-1 col-11">
         <div class="row">
             <div class="col-lg-6 order-1 order-lg-1 align-self-center">
                 <label asp-for="View.Algorithm.CrossoverType" class="font-weight-bold">Crossover type</label>
@@ -367,6 +425,24 @@
             </div>
             <div class="col-lg-6 order-2 order-lg-2 mb-3">
                 <select asp-for="View.Algorithm.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmMutationType>()" class="form-control form-control-plaintext" disabled></select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade details-modal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+
+                </div>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span><i class="fas fa-times"></i></span>
+                </button>
+            </div>
+            <div class="modal-body text-center">
+
             </div>
         </div>
     </div>

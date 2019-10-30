@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
@@ -71,6 +72,8 @@ namespace GeneticAlgNetControl.Pages
             public Dictionary<string, string> AppliedFilters { get; set; }
 
             public IEnumerable<Algorithm> Items { get; set; }
+
+            public string ChartData { get; set; }
         }
 
         public IActionResult OnGet(InputModel input = null)
@@ -172,6 +175,26 @@ namespace GeneticAlgNetControl.Pages
                 .Skip((Input.CurrentPage - 1) * Input.ItemsPerPage)
                 .Take(Input.ItemsPerPage)
                 .AsEnumerable();
+            // Assign the data to the charts.
+            View.ChartData = JsonSerializer.Serialize(new
+            {
+                Scheduled = new List<int>
+                {
+                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Scheduled)
+                },
+                Ongoing = new List<int>
+                {
+                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Ongoing)
+                },
+                Stopped = new List<int>
+                {
+                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Stopped)
+                },
+                Completed = new List<int>
+                {
+                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Completed)
+                }
+            });
             // Return the page.
             return Page();
         }

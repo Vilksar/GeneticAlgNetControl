@@ -37,6 +37,13 @@
         "js/bootstrap.bundle.min.js",
         "css/bootstrap.min.css"
       ]
+    },
+    {
+      "library": "Chart.js@2.8.0",
+      "destination": "wwwroot/lib/chart-js/",
+      "files": [
+        "Chart.min.js"
+      ]
     }
   ]
 }

@@ -191,5 +191,29 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Return the chromosome at the specified index.
             return Chromosomes[index];
         }
+
+        /// <summary>
+        /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
+        /// </summary>
+        /// <returns></returns>
+        public List<Chromosome> GetSolutions()
+        {
+            // Get the best fitness of the population.
+            var bestFitness = GetFitnessList().Max();
+            // Define the variable to return.
+            var solutions = new List<Chromosome>();
+            // Go over all of the chromosomes with the best fitness.
+            foreach (var chromosome in Chromosomes.Where(item => item.GetFitness() == bestFitness))
+            {
+                // Check if the current combination already exists in the list of solutions.
+                if (!solutions.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
+                {
+                    // If not, then add it.
+                    solutions.Add(chromosome);
+                }
+            }
+            // Return the solutions.
+            return solutions;
+        }
     }
 }
