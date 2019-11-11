@@ -2,10 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using ElectronNET.API;
 using GeneticAlgNetControl.Data;
-using Hangfire;
-using Hangfire.SQLite;
+using GeneticAlgNetControl.Helpers.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -49,10 +47,8 @@ namespace GeneticAlgNetControl
             {
                 options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
             });
-            services.AddHangfire(options =>
-            {
-                options.UseSQLiteStorage(Configuration.GetConnectionString("SQLiteConnection"));
-            });
+            // Add the algorithm run service.
+            services.AddHostedService<AlgorithmRunHostedService>();
             // Add Razor pages.
             services.AddRazorPages();
         }
@@ -90,20 +86,12 @@ namespace GeneticAlgNetControl
             {
                 endpoints.MapRazorPages();
             });
-            // Use Hangfire.
-            app.UseHangfireDashboard("/Hangfire");
-            app.UseHangfireServer(new BackgroundJobServerOptions
-            {
-                WorkerCount = 1
-            });
             // Ensure that the database is created as per the model.
             using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
             {
                 var context = serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 context.Database.Migrate();
             }
-            // Use Electron.
-            Task.Run(async () => await Electron.WindowManager.CreateWindowAsync());
         }
     }
 }
