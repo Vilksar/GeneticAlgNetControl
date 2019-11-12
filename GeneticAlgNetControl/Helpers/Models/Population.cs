@@ -58,12 +58,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
         /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <param name="random">The random seed.</param>
-        public Population(int populationSize, Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Random random, int randomGenesPerChromosome)
+        public Population(Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
             // Get the number of elements in each group and the minimum number of elements per group.
-            var numberOfGroups = (int)Math.Ceiling((double)targetNodes.Count() / (double)randomGenesPerChromosome);
+            var numberOfGroups = (int)Math.Ceiling((double)targetNodes.Count() / (double)parameters.RandomGenesPerChromosome);
             var chromosomesPerGroup = (int)Math.Floor((double)populationSize / (double)numberOfGroups);
             var genesPerGroup = (int)Math.Floor((double)targetNodes.Count() / (double)numberOfGroups);
             var numberOfChromosomeGroupsExtra = populationSize - chromosomesPerGroup * numberOfGroups;
@@ -102,20 +102,20 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// Constructor for a subsequent population.
         /// </summary>
         /// <param name="populationSize"></param>
-        public Population(Population previousPopulation, Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, AlgorithmCrossoverType crossoverType, AlgorithmMutationType mutationType, int randomGenesPerChromosome, double percentageElite, double percentageRandom, double probabilityMutation, Random random)
+        public Population(Population previousPopulation, Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
             // Get the fitness list of the population.
             var fitness = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
-            Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(percentageElite * previousPopulation.Chromosomes.Count())));
+            Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(parameters.PercentageElite * previousPopulation.Chromosomes.Count())));
             // Add the specified number of random chromosomes.
-            for (int index = 0; index < (int)Math.Floor(percentageRandom * previousPopulation.Chromosomes.Count()); index++)
+            for (int index = 0; index < (int)Math.Floor(parameters.PercentageRandom * previousPopulation.Chromosomes.Count()); index++)
             {
                 // Get the lower and upper limits.
-                var lowerLimit = random.Next(Math.Max(Math.Min(pathList.Count(), pathList.Count() - randomGenesPerChromosome), 0));
-                var upperLimit = Math.Min(lowerLimit + randomGenesPerChromosome, pathList.Count());
+                var lowerLimit = random.Next(Math.Max(Math.Min(pathList.Count(), pathList.Count() - parameters.RandomGenesPerChromosome), 0));
+                var upperLimit = Math.Min(lowerLimit + parameters.RandomGenesPerChromosome, pathList.Count());
                 // Add a new, initialized, chromosome.
                 Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
             }
@@ -125,8 +125,8 @@ namespace GeneticAlgNetControl.Helpers.Models
             {
                 // Get a new offspring of two random chromosomes.
                 var offspring = previousPopulation.Select(random)
-                    .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, crossoverType, random)
-                    .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, mutationType, probabilityMutation, random);
+                    .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
+                    .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
                 // Add the offspring to the concurrent bag.
                 bag.Add(offspring);
             });
