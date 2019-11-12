@@ -261,14 +261,14 @@ namespace GeneticAlgNetControl.Helpers.Services
             var currentIterationWithoutImprovement = 0;
             var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random);
             var bestFitness = population.HistoricBestFitness.Max();
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
             // Move through the generations.
             while (!cancellationToken.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
             {
                 // Move on to the next iterations.
                 currentIteration += 1;
                 currentIterationWithoutImprovement += 1;
-                // Log a message.
-                _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
                 // Move on to the next population.
                 population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
                 // Get the best fitness of the current population.
@@ -280,6 +280,29 @@ namespace GeneticAlgNetControl.Helpers.Services
                     bestFitness = fitness;
                     currentIterationWithoutImprovement = 0;
                 }
+                // Log a message.
+                _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
+            }
+            // Get the path of the output file.
+            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output.json");
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Writing the results in JSON format to \"{outputFilepath}\".");
+            // Get the text to write to the file.
+            var outputText = JsonSerializer.Serialize(population.GetSolutions(), new JsonSerializerOptions { WriteIndented = true });
+            // Try to write to the specified file.
+            try
+            {
+                // Write the text to the file.
+                File.WriteAllText(outputFilepath, outputText);
+            }
+            catch (Exception ex)
+            {
+                // Log an error.
+                _logger.LogError($"The error {ex.Message} occured while writing to the results to the file \"{outputFilepath}\". The results will be displayed in the console window instead.");
+                // Log a message.
+                _logger.LogError($"\n{outputText}");
+                // Return a successfully completed task.
+                return Task.CompletedTask;
             }
             // Stop the measuring watch.
             stopwatch.Stop();
