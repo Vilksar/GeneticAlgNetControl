@@ -23,17 +23,7 @@ namespace GeneticAlgNetControl.Data.Migrations
                     PreferredNodes = table.Column<string>(nullable: true),
                     CurrentIteration = table.Column<int>(nullable: false),
                     CurrentIterationWithoutImprovement = table.Column<int>(nullable: false),
-                    RandomSeed = table.Column<int>(nullable: false),
-                    MaximumIterations = table.Column<int>(nullable: false),
-                    MaximumIterationsWithoutImprovement = table.Column<int>(nullable: false),
-                    MaximumPathLength = table.Column<int>(nullable: false),
-                    PopulationSize = table.Column<int>(nullable: false),
-                    RandomGenesPerChromosome = table.Column<int>(nullable: false),
-                    PercentageRandom = table.Column<double>(nullable: false),
-                    PercentageElite = table.Column<double>(nullable: false),
-                    ProbabilityMutation = table.Column<double>(nullable: false),
-                    CrossoverType = table.Column<int>(nullable: false),
-                    MutationType = table.Column<int>(nullable: false),
+                    Parameters = table.Column<string>(nullable: true),
                     Population = table.Column<string>(nullable: true)
                 },
                 constraints: table =>

@@ -1,5 +1,6 @@
 ﻿using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
+using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -79,47 +80,36 @@ namespace GeneticAlgNetControl.Helpers.Services
                 await context.SaveChangesAsync();
                 // Reload it for a fresh start.
                 await context.Entry(algorithm).ReloadAsync();
-                // Get the edges, nodes, target nodes and preferred nodes.
+                // Get the edges, nodes, target nodes, preferred nodes and parameters.
                 var nodes = algorithm.Nodes;
                 var edges = algorithm.Edges;
                 var targetNodes = algorithm.TargetNodes;
                 var preferredNodes = algorithm.PreferredNodes;
-                // Get the parameters.
-                var randomSeed = algorithm.RandomSeed;
-                var maximumIterations = algorithm.MaximumIterations;
-                var maximumIterationsWithoutImprovement = algorithm.MaximumIterationsWithoutImprovement;
-                var maximumPathLength = algorithm.MaximumPathLength;
-                var populationSize = algorithm.PopulationSize;
-                var randomGenesPerChromosome = algorithm.RandomGenesPerChromosome;
-                var percentageElite = algorithm.PercentageElite;
-                var percentageRandom = algorithm.PercentageRandom;
-                var probabilityMutation = algorithm.ProbabilityMutation;
-                var crossoverType = algorithm.CrossoverType;
-                var mutationType = algorithm.MutationType;
+                var parameters = algorithm.Parameters;
                 // Get the additional needed variables.
-                var nodeIndices = Functions.Functions.GetNodeIndices(nodes);
-                var nodePreferred = Functions.Functions.GetNodePreferred(nodes, preferredNodes);
-                var matrixA = Functions.Functions.GetMatrixA(nodeIndices, edges);
-                var matrixC = Functions.Functions.GetMatrixC(nodeIndices, targetNodes);
-                var adjacencyPowerList = Functions.Functions.GetAdjacencyMatrixPowers(matrixA, maximumPathLength);
-                var pathDictionary = Functions.Functions.GetPathList(adjacencyPowerList, targetNodes, nodeIndices);
-                var matrixPowerList = Functions.Functions.GetMatrixPowers(matrixC, adjacencyPowerList);
+                var nodeIndex = Algorithm.GetNodeIndex(nodes);
+                var nodeIsPreferred = Algorithm.GetNodeIsPreferred(nodes, preferredNodes);
+                var matrixA = Algorithm.GetMatrixA(nodeIndex, edges);
+                var matrixC = Algorithm.GetMatrixC(nodeIndex, targetNodes);
+                var powersMatrixA = Algorithm.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
+                var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
+                var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
                 // Set up the current iteration.
-                var random = new Random(randomSeed);
+                var random = new Random(parameters.RandomSeed);
                 var currentIteration = algorithm.CurrentIteration;
                 var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
-                var population = !algorithm.Population.Chromosomes.Any() ? new Population(populationSize, nodeIndices, targetNodes, pathDictionary, matrixPowerList, random, randomGenesPerChromosome) : algorithm.Population;
+                var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random) : algorithm.Population;
                 var bestFitness = population.HistoricBestFitness.Max();
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
                 // Move through the generations.
-                while (algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < maximumIterations && currentIterationWithoutImprovement < maximumIterationsWithoutImprovement)
+                while (!stopToken.IsCancellationRequested && algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
                 {
                     // Move on to the next iterations.
                     currentIteration += 1;
                     currentIterationWithoutImprovement += 1;
                     // Move on to the next population.
-                    population = new Population(population, nodeIndices, targetNodes, pathDictionary, matrixPowerList, nodePreferred, crossoverType, mutationType, randomGenesPerChromosome, percentageElite, percentageRandom, probabilityMutation, random);
+                    population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
                     // Get the best fitness of the current population.
                     var fitness = population.HistoricBestFitness.Last();
                     // Check if the current solution is better than the previous solution.

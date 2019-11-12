@@ -1,8 +1,10 @@
-﻿using GeneticAlgNetControl.Helpers.Models;
+﻿using GeneticAlgNetControl.Data.Models;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
@@ -236,6 +238,53 @@ namespace GeneticAlgNetControl.Helpers.Services
             _logger.LogInformation($"Data loaded! There were {nodes.Count()} nodes, {edges.Count()} edges, {targetNodes.Count()} target nodes and {preferredNodes.Count()} preferred nodes found.");
             // Log a message about the parameters.
             _logger.LogInformation($"The following parameters will be used.\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
+            // Define a new stopwatch to measure the running time and start it.
+            var stopwatch = new Stopwatch();
+            stopwatch.Start();
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm started.");
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Computing the variables needed for the algorithm.");
+            // Get the additional needed variables.
+            var nodeIndex = Algorithm.GetNodeIndex(nodes);
+            var nodeIsPreferred = Algorithm.GetNodeIsPreferred(nodes, preferredNodes);
+            var matrixA = Algorithm.GetMatrixA(nodeIndex, edges);
+            var matrixC = Algorithm.GetMatrixC(nodeIndex, targetNodes);
+            var powersMatrixA = Algorithm.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
+            var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
+            var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
+            // Set up the first iteration.
+            var random = new Random(parameters.RandomSeed);
+            var currentIteration = 0;
+            var currentIterationWithoutImprovement = 0;
+            var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random);
+            var bestFitness = population.HistoricBestFitness.Max();
+            // Move through the generations.
+            while (!cancellationToken.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+            {
+                // Move on to the next iterations.
+                currentIteration += 1;
+                currentIterationWithoutImprovement += 1;
+                // Log a message.
+                _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
+                // Move on to the next population.
+                population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
+                // Get the best fitness of the current population.
+                var fitness = population.HistoricBestFitness.Last();
+                // Check if the current solution is better than the previous solution.
+                if (bestFitness < fitness)
+                {
+                    // Update the fitness.
+                    bestFitness = fitness;
+                    currentIterationWithoutImprovement = 0;
+                }
+            }
+            // Stop the measuring watch.
+            stopwatch.Stop();
+            // Log a message.
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm ended in {stopwatch.Elapsed}.");
             // Return a successfully completed task.
             return Task.CompletedTask;
         }

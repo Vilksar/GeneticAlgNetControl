@@ -48,6 +48,9 @@ namespace GeneticAlgNetControl.Data
                 .Property(ar => ar.DateTimePeriods)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<List<DateTimePeriod>>(item, null));
             modelBuilder.Entity<Algorithm>()
+                .Property(ad => ad.Parameters)
+                .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<Parameters>(item, null));
+            modelBuilder.Entity<Algorithm>()
                 .Property(ad => ad.Population)
                 .HasConversion(item => JsonSerializer.Serialize(item, null), item => JsonSerializer.Deserialize<Population>(item, null));
         }

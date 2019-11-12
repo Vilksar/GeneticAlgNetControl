@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneticAlgNetControl.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191030080114_Initial")]
+    [Migration("20191112152102_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -22,9 +22,6 @@ namespace GeneticAlgNetControl.Data.Migrations
                 {
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("CrossoverType")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("CurrentIteration")
                         .HasColumnType("INTEGER");
@@ -44,47 +41,20 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("Edges")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("MaximumIterations")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MaximumIterationsWithoutImprovement")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MaximumPathLength")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MutationType")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Nodes")
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("PercentageElite")
-                        .HasColumnType("REAL");
-
-                    b.Property<double>("PercentageRandom")
-                        .HasColumnType("REAL");
+                    b.Property<string>("Parameters")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("Population")
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("PopulationSize")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("PreferredNodes")
                         .HasColumnType("TEXT");
-
-                    b.Property<double>("ProbabilityMutation")
-                        .HasColumnType("REAL");
-
-                    b.Property<int>("RandomGenesPerChromosome")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("RandomSeed")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Status")
                         .HasColumnType("INTEGER");

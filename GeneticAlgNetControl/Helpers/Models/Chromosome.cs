@@ -29,6 +29,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Dictionary<string, string> Genes { get; set; }
 
         /// <summary>
+        /// Represents the fitness of the chromosome.
+        /// </summary>
+        public double Fitness { get => GetFitness(); }
+
+        /// <summary>
         /// Constructor for an empty chromosome.
         /// </summary>
         public Chromosome()

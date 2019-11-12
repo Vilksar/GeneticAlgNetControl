@@ -50,39 +50,39 @@ namespace GeneticAlgNetControl.Pages
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(0, int.MaxValue, ErrorMessage = "The value must be a positive integer.")]
-            public int RandomSeed { get; set; } = DefaultValues.RandomSeed;
+            public int RandomSeed { get; set; } = Parameters.DefaultValues.RandomSeed;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(1, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
-            public int MaximumIterations { get; set; } = DefaultValues.MaximumIterations;
+            public int MaximumIterations { get; set; } = Parameters.DefaultValues.MaximumIterations;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(1, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
-            public int MaximumIterationsWithoutImprovement { get; set; } = DefaultValues.MaximumIterationsWithoutImprovement;
+            public int MaximumIterationsWithoutImprovement { get; set; } = Parameters.DefaultValues.MaximumIterationsWithoutImprovement;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(1, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
-            public int MaximumPathLength { get; set; } = DefaultValues.MaximumPathLength;
+            public int MaximumPathLength { get; set; } = Parameters.DefaultValues.MaximumPathLength;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(2, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
-            public int PopulationSize { get; set; } = DefaultValues.PopulationSize;
+            public int PopulationSize { get; set; } = Parameters.DefaultValues.PopulationSize;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(1, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
-            public int RandomGenesPerChromosome { get; set; } = DefaultValues.RandomGenesPerChromosome;
+            public int RandomGenesPerChromosome { get; set; } = Parameters.DefaultValues.RandomGenesPerChromosome;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(0.00, 1.00, ErrorMessage = "The value must be between {1} and {2}.")]
-            public double PercentageRandom { get; set; } = DefaultValues.PercentageRandom;
+            public double PercentageRandom { get; set; } = Parameters.DefaultValues.PercentageRandom;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(0.00, 1.00, ErrorMessage = "The value must be between {1} and {2}.")]
-            public double PercentageElite { get; set; } = DefaultValues.PercentageElite;
+            public double PercentageElite { get; set; } = Parameters.DefaultValues.PercentageElite;
 
             [Required(ErrorMessage = "This field is required.")]
             [Range(0.00, 1.00, ErrorMessage = "The value must be between {1} and {2}.")]
-            public double ProbabilityMutation { get; set; } = DefaultValues.ProbabilityMutation;
+            public double ProbabilityMutation { get; set; } = Parameters.DefaultValues.ProbabilityMutation;
 
             [Required(ErrorMessage = "This field is required.")]
             public AlgorithmCrossoverType CrossoverType { get; set; }
@@ -107,31 +107,6 @@ namespace GeneticAlgNetControl.Pages
                 {
                     yield return new ValidationResult("The value is not a valid JSON string.", new List<string> { nameof(PreferredNodes) });
                 }
-            }
-
-            public static class DefaultValues
-            {
-                public static int RandomSeed { get; } = (new Random()).Next();
-
-                public static int MaximumIterations { get; } = 10000;
-
-                public static int MaximumIterationsWithoutImprovement { get; } = 1000;
-
-                public static int MaximumPathLength { get; } = 5;
-
-                public static int PopulationSize { get; } = 80;
-
-                public static int RandomGenesPerChromosome { get; } = 25;
-
-                public static double PercentageRandom { get; } = 0.25;
-
-                public static double PercentageElite { get; } = 0.25;
-
-                public static double ProbabilityMutation { get; } = 0.01;
-
-                public static int CrossoverType { get; } = 0;
-
-                public static int MutationType { get; } = 0;
             }
         }
 
@@ -163,15 +138,17 @@ namespace GeneticAlgNetControl.Pages
                 Edges = JsonSerializer.Serialize(algorithm.Edges),
                 TargetNodes = JsonSerializer.Serialize(algorithm.TargetNodes),
                 PreferredNodes = JsonSerializer.Serialize(algorithm.PreferredNodes),
-                RandomSeed = algorithm.RandomSeed,
-                MaximumIterations = algorithm.MaximumIterations,
-                MaximumIterationsWithoutImprovement = algorithm.MaximumIterationsWithoutImprovement,
-                MaximumPathLength = algorithm.MaximumPathLength,
-                PopulationSize = algorithm.PopulationSize,
-                RandomGenesPerChromosome = algorithm.RandomGenesPerChromosome,
-                PercentageRandom = algorithm.PercentageRandom,
-                PercentageElite = algorithm.PercentageElite,
-                ProbabilityMutation = algorithm.ProbabilityMutation
+                RandomSeed = algorithm.Parameters.RandomSeed,
+                MaximumIterations = algorithm.Parameters.MaximumIterations,
+                MaximumIterationsWithoutImprovement = algorithm.Parameters.MaximumIterationsWithoutImprovement,
+                MaximumPathLength = algorithm.Parameters.MaximumPathLength,
+                PopulationSize = algorithm.Parameters.PopulationSize,
+                RandomGenesPerChromosome = algorithm.Parameters.RandomGenesPerChromosome,
+                PercentageRandom = algorithm.Parameters.PercentageRandom,
+                PercentageElite = algorithm.Parameters.PercentageElite,
+                ProbabilityMutation = algorithm.Parameters.ProbabilityMutation,
+                CrossoverType = algorithm.Parameters.CrossoverType,
+                MutationType = algorithm.Parameters.MutationType
             };
             // Return the page.
             return Page();
@@ -216,6 +193,29 @@ namespace GeneticAlgNetControl.Pages
                 // Redisplay the page.
                 return Page();
             }
+            // Define the parameters.
+            var parameters = new Parameters
+            {
+                RandomSeed = Input.RandomSeed,
+                MaximumIterations = Input.MaximumIterations,
+                MaximumIterationsWithoutImprovement = Input.MaximumIterationsWithoutImprovement,
+                MaximumPathLength = Input.MaximumPathLength,
+                PopulationSize = Input.PopulationSize,
+                RandomGenesPerChromosome = Input.RandomGenesPerChromosome,
+                PercentageElite = Input.PercentageElite,
+                PercentageRandom = Input.PercentageRandom,
+                ProbabilityMutation = Input.ProbabilityMutation,
+                CrossoverType = Input.CrossoverType,
+                MutationType = Input.MutationType
+            };
+            // Check if all of the parameters are valid.
+            if (!parameters.IsValid())
+            {
+                // Add an error to the model.
+                ModelState.AddModelError(string.Empty, "One or more of the given parameters are invalid. Please check again the corresponding fields.");
+                // Redisplay the page.
+                return Page();
+            }
             // Define the new algorithm instance.
             var algorithm = new Algorithm
             {
@@ -231,17 +231,7 @@ namespace GeneticAlgNetControl.Pages
                 PreferredNodes = preferredNodes.ToList(),
                 CurrentIteration = 0,
                 CurrentIterationWithoutImprovement = 0,
-                RandomSeed = Input.RandomSeed,
-                MaximumIterations = Input.MaximumIterations,
-                MaximumIterationsWithoutImprovement = Input.MaximumIterationsWithoutImprovement,
-                MaximumPathLength = Input.MaximumPathLength,
-                PopulationSize = Input.PopulationSize,
-                RandomGenesPerChromosome = Input.RandomGenesPerChromosome,
-                PercentageElite = Input.PercentageElite,
-                PercentageRandom = Input.PercentageRandom,
-                ProbabilityMutation = Input.ProbabilityMutation,
-                CrossoverType = Input.CrossoverType,
-                MutationType = Input.MutationType,
+                Parameters = parameters,
                 Population = new Population()
             };
             // Mark it for addition.
@@ -260,7 +250,7 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Display a message.
-            TempData["StatusMessage"] = "Success: 1 algorithm created successfully and started.";
+            TempData["StatusMessage"] = "Success: 1 algorithm created successfully and scheduled.";
             // Redirect to the index page.
             return RedirectToPage("/Dashboard");
         }

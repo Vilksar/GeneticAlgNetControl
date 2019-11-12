@@ -52,7 +52,6 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Constructor for the initial population.
         /// </summary>
-        /// <param name="populationSize">The size of the population.</param>
         /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
         /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
@@ -64,9 +63,9 @@ namespace GeneticAlgNetControl.Helpers.Models
             Chromosomes = new List<Chromosome>();
             // Get the number of elements in each group and the minimum number of elements per group.
             var numberOfGroups = (int)Math.Ceiling((double)targetNodes.Count() / (double)parameters.RandomGenesPerChromosome);
-            var chromosomesPerGroup = (int)Math.Floor((double)populationSize / (double)numberOfGroups);
+            var chromosomesPerGroup = (int)Math.Floor((double)parameters.PopulationSize / (double)numberOfGroups);
             var genesPerGroup = (int)Math.Floor((double)targetNodes.Count() / (double)numberOfGroups);
-            var numberOfChromosomeGroupsExtra = populationSize - chromosomesPerGroup * numberOfGroups;
+            var numberOfChromosomeGroupsExtra = parameters.PopulationSize - chromosomesPerGroup * numberOfGroups;
             var numberOfGeneGroupsExtra = targetNodes.Count() - genesPerGroup * numberOfGroups;
             // Get the actual number of chromosomes in each group.
             var chromosomeGroups = new List<int> { 0 }
@@ -101,7 +100,6 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Constructor for a subsequent population.
         /// </summary>
-        /// <param name="populationSize"></param>
         public Population(Population previousPopulation, Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.

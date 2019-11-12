@@ -218,8 +218,8 @@ namespace GeneticAlgNetControl.Pages
             // Get the required data.
             var status = algorithm.Status;
             var timeSpan = algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
-            var progressIterations = (double)algorithm.CurrentIteration / algorithm.MaximumIterations * 100;
-            var progressIterationsWithoutImprovement = (double)algorithm.CurrentIterationWithoutImprovement / algorithm.MaximumIterationsWithoutImprovement * 100;
+            var progressIterations = (double)algorithm.CurrentIteration / algorithm.Parameters.MaximumIterations * 100;
+            var progressIterationsWithoutImprovement = (double)algorithm.CurrentIterationWithoutImprovement / algorithm.Parameters.MaximumIterationsWithoutImprovement * 100;
             // Return a new JSON object.
             return new JsonResult(new
             {
