@@ -117,18 +117,29 @@ namespace GeneticAlgNetControl.Helpers.Models
                 // Add a new, initialized, chromosome.
                 Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
             }
+            //// Add new chromosomes.
+            //var bag = new ConcurrentBag<Chromosome>();
+            //Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
+            //{
+            //    // Get a new offspring of two random chromosomes.
+            //    var offspring = previousPopulation.Select(random)
+            //        .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
+            //        .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
+            //    // Add the offspring to the concurrent bag.
+            //    bag.Add(offspring);
+            //});
+            //// Add all chromosomes to the current population.
+            //Chromosomes.AddRange(bag);
             // Add new chromosomes.
-            var bag = new ConcurrentBag<Chromosome>();
-            Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
+            for (int index = Chromosomes.Count(); index < previousPopulation.Chromosomes.Count(); index++)
             {
                 // Get a new offspring of two random chromosomes.
                 var offspring = previousPopulation.Select(random)
                     .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
                     .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
-                // Add the offspring to the concurrent bag.
-                bag.Add(offspring);
-            });
-            Chromosomes.AddRange(bag);
+                // Add the offspring to the current population.
+                Chromosomes.Add(offspring);
+            }
             // Get the historic best and average fitness.
             HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
             HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
