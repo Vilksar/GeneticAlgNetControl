@@ -191,6 +191,12 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Read the parameters file content as a JSON object.
                 parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(_arguments.ParametersFilepath));
+                // Check if we should generate a new random seed.
+                if (parameters.RandomSeed == -1)
+                {
+                    // Generate a random random seed.
+                    parameters.RandomSeed = (new Random()).Next();
+                }
             }
             catch (Exception ex)
             {
@@ -284,7 +290,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
             }
             // Get the solutions to the algorithm.
-            var solutions = population.GetSolutions(nodeIsPreferred);
+            var solutions = population.GetSolutions(nodeIndex, nodeIsPreferred, powersMatrixCA);
             // Stop the measuring watch.
             stopwatch.Stop();
             // Get the path of the output file.
@@ -298,7 +304,9 @@ namespace GeneticAlgNetControl.Helpers.Services
                 TimeElapsed = stopwatch.Elapsed,
                 Parameters = parameters,
                 NumberOfSolutions = solutions.Count(),
-                Solutions = solutions
+                Solutions = solutions,
+                HistoricAverageFitness = population.HistoricAverageFitness,
+                HistoricBestFitness = population.HistoricBestFitness
             }, new JsonSerializerOptions { WriteIndented = true });
             // Try to write to the specified file.
             try

@@ -14,6 +14,11 @@ namespace GeneticAlgNetControl.Helpers.Models
     public class Chromosome
     {
         /// <summary>
+        /// Represents the number of times that each chromosome operations will try to find a valid chromosomes with the given options.
+        /// </summary>
+        private readonly int _tries = 5;
+
+        /// <summary>
         /// Represents the genes of the chromosome, as a dictionary of a target node to its control node.
         /// </summary>
         public Dictionary<string, string> Genes { get; set; }
@@ -150,7 +155,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Chromosome Initialize(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, int lowerLimit, int upperLimit, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.
-            var tries = 10;
+            var tries = _tries;
             // Get the genes for which to generate randomly the values.
             var genesRandom = Genes.Keys.ToList().GetRange(lowerLimit, upperLimit - lowerLimit);
             // Repeat while the chromosome is not valid.
@@ -202,7 +207,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Define a new chromosome.
             var chromosome = new Chromosome(Genes.Keys.ToList());
             // Define the number of tries in which to try and find a valid chromosome.
-            var tries = 10;
+            var tries = _tries;
             // Get the number of occurances of each gene in this chromosome and which genes of each are preferred.
             var occurancesInFirst = GetUniqueControlNodes().ToDictionary(item => item, item => Genes.Count(item1 => item1.Value == item));
             var occurancesInSecond = secondChromosome.GetUniqueControlNodes().ToDictionary(item => item, item => Genes.Count(item1 => item1.Value == item));
@@ -312,7 +317,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Chromosome Mutate(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, AlgorithmMutationType mutationType, double mutationProbability, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.
-            var tries = 10;
+            var tries = _tries;
             // Get the genes which will suffer a mutation, together with their current value.
             var genesMutateDictionary = Genes.Where(item => random.NextDouble() < mutationProbability).ToDictionary(item => item.Key, item => item.Value);
             // Use the specified mutation type.

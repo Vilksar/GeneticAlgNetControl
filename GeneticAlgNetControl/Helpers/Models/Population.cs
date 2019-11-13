@@ -69,8 +69,10 @@ namespace GeneticAlgNetControl.Helpers.Models
                 .Concat(Enumerable.Range(numberOfGeneGroupsExtra, numberOfGroups).Select(item => genesPerGroup))
                 .Select(item => sum += item)
                 .ToList();
+            // Define a new concurrent bag for chromosomes.
+            var bag = new ConcurrentBag<Chromosome>();
             // Repeat for each group.
-            for (int index1 = 1; index1 < numberOfGroups + 1; index1++)
+            Parallel.For(1, numberOfGroups + 1, index1 =>
             {
                 // Get the lower and upper limits.
                 var lowerLimit = geneGroups[index1 - 1];
@@ -79,9 +81,11 @@ namespace GeneticAlgNetControl.Helpers.Models
                 for (int index2 = 0; index2 < chromosomeGroups[index1]; index2++)
                 {
                     // Add a new, initialized, chromosome.
-                    Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
+                    bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
                 }
-            }
+            });
+            // Add all chromosomes to the current population.
+            Chromosomes.AddRange(bag);
             // Define the historic best and average fitness.
             HistoricBestFitness = new List<double> { GetFitnessList().Max() };
             HistoricAverageFitness = new List<double> { GetFitnessList().Average() };
@@ -106,17 +110,21 @@ namespace GeneticAlgNetControl.Helpers.Models
             var combinedFitnessList = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
             Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(parameters.PercentageElite * previousPopulation.Chromosomes.Count())));
+            // Define a new concurrent bag for chromosomes.
+            var bag = new ConcurrentBag<Chromosome>();
             // Add the specified number of random chromosomes.
-            for (int index = 0; index < (int)Math.Floor(parameters.PercentageRandom * previousPopulation.Chromosomes.Count()); index++)
-            {
+            Parallel.For(Chromosomes.Count(), (int)Math.Min(Chromosomes.Count() + (int)Math.Floor(parameters.PercentageRandom * previousPopulation.Chromosomes.Count()), parameters.PopulationSize), index => {
                 // Get the lower and upper limits.
                 var lowerLimit = random.Next(Math.Max(Math.Min(targetAncestors.Count(), targetAncestors.Count() - parameters.RandomGenesPerChromosome), 0));
                 var upperLimit = Math.Min(lowerLimit + parameters.RandomGenesPerChromosome, targetAncestors.Count());
                 // Add a new, initialized, chromosome.
-                Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
-            }
+                bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
+            });
+            // Add all chromosomes to the current population.
+            Chromosomes.AddRange(bag);
+            // Reset the concurrent bag for chromosomes.
+            bag = new ConcurrentBag<Chromosome>();
             // Add new chromosomes.
-            var bag = new ConcurrentBag<Chromosome>();
             Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
             {
                 // Get a new offspring of two random chromosomes.
