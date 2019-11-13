@@ -14,21 +14,6 @@ namespace GeneticAlgNetControl.Helpers.Models
     public class Chromosome
     {
         /// <summary>
-        /// Represents the fitness of the chromosome.
-        /// </summary>
-        private double? _fitness = null;
-
-        /// <summary>
-        /// Represents the unique control nodes in the chromosome.
-        /// </summary>
-        private IEnumerable<string> _uniqueControlNodes = null;
-
-        /// <summary>
-        /// Represents the unique preferred control nodes in the chromosome.
-        /// </summary>
-        private IEnumerable<string> _uniquePreferredControlNodes = null;
-
-        /// <summary>
         /// Represents the genes of the chromosome, as a dictionary of a target node to its control node.
         /// </summary>
         public Dictionary<string, string> Genes { get; set; }
@@ -57,10 +42,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <returns>The unique control nodes in the chromosome.</returns>
         public IEnumerable<string> GetUniqueControlNodes()
         {
-            // Compute the unique control nodes if they weren't already computed.
-            _uniqueControlNodes = _uniqueControlNodes ?? Genes.Values.Distinct();
-            // Return them.
-            return _uniqueControlNodes;
+            // Return the unique control nodes.
+            return Genes.Values.Distinct();
         }
 
         /// <summary>
@@ -69,10 +52,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <returns>The fitness of the chromosome.</returns>
         public double GetFitness()
         {
-            // Compute the fitness if it wasn't already computed.
-            _fitness = _fitness ?? (Genes.Count() - GetUniqueControlNodes().Count() + 1) * 100 / Genes.Count();
-            // Return it.
-            return _fitness.Value;
+            // Return the fitness of the chromosome.
+            return (double)(Genes.Count() - GetUniqueControlNodes().Count() + 1) * 100 / (double)Genes.Count();
         }
 
         /// <summary>
@@ -113,6 +94,48 @@ namespace GeneticAlgNetControl.Helpers.Models
             }
             // Return the validity.
             return isFullRank;
+        }
+
+        /// <summary>
+        /// Gets the actual maximum path length of the solution represented by the chromosome.
+        /// </summary>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <returns>The maximum path length.</returns>
+        public int GetMaximumPathLength(Dictionary<string, int> nodeIndex, List<Matrix<double>> powersMatrixCA)
+        {
+            // Define the variable to return.
+            var maximumPathLength = -1;
+            // Get the unique control nodes.
+            var uniqueControlNodes = GetUniqueControlNodes().ToList();
+            // Initialize the B matrix.
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
+            // Go over each control node.
+            for (int index = 0; index < uniqueControlNodes.Count(); index++)
+            {
+                // Update the corresponding field.
+                matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
+            }
+            // Initialize the R matrix.
+            var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
+            // Repeat until we reach the maximum power.
+            for (int index = 1; index < powersMatrixCA.Count(); index++)
+            {
+                // Compute the current power matrix.
+                matrixR = matrixR.Append(powersMatrixCA[index].Multiply(matrixB));
+                // Check if it is full rank.
+                var isFullRank = matrixR.IsFullRank();
+                // Check if it is already full rank.
+                if (isFullRank)
+                {
+                    // Save the maximum path length.
+                    maximumPathLength = index;
+                    // Break the loop.
+                    break;
+                }
+            }
+            // Return the validity.
+            return maximumPathLength;
         }
 
         /// <summary>
@@ -194,7 +217,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Decrease the number of tries.
                         tries--;
                         // Go over each of the target nodes.
-                        foreach (var item in Genes.Keys)
+                        foreach (var item in chromosome.Genes.Keys.ToList())
                         {
                             // Get the number of occurances in each chromosome.
                             var inFirst = occurancesInFirst.ContainsKey(Genes[item]) ? occurancesInFirst[Genes[item]] : 0;
@@ -219,7 +242,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Decrease the number of tries.
                         tries--;
                         // Go over each of the target nodes.
-                        foreach (var item in Genes.Keys)
+                        foreach (var item in chromosome.Genes.Keys.ToList())
                         {
                             // Get the number of occurances in each chromosome.
                             var inFirst = occurancesInFirst.ContainsKey(Genes[item]) ? occurancesInFirst[Genes[item]] : 0;
@@ -303,7 +326,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Decrease the number of tries.
                         tries--;
                         // Go over all of the values in the genes to mutate.
-                        foreach (var item in genesMutateDictionary.Keys)
+                        foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
                             // Assign a random new value from the list.
                             Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
@@ -337,7 +360,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Decrease the number of tries.
                         tries--;
                         // Go over all of the values in the genes to mutate.
-                        foreach (var item in genesMutateDictionary.Keys)
+                        foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
                             // Assign a random new value from the list. If it is a preferred node, it it two times less likely to change.
                             Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count())] : Genes[item];

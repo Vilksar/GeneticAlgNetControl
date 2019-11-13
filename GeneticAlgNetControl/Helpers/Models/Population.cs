@@ -15,16 +15,6 @@ namespace GeneticAlgNetControl.Helpers.Models
     public class Population
     {
         /// <summary>
-        /// Represents the fitness of the chromosomes in the population (with the same length as the population).
-        /// </summary>
-        private List<double> _fitnessList = null;
-
-        /// <summary>
-        /// Represents the combined fitness of the chromosomes in the population (one element bigger than the population, an extra 0.0 as first element).
-        /// </summary>
-        private List<double> _fitnessCombinedList = null;
-
-        /// <summary>
         /// Represents the chromosomes in the population.
         /// </summary>
         public List<Chromosome> Chromosomes { get; set; }
@@ -112,8 +102,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
-            // Get the fitness list of the population.
-            var fitness = previousPopulation.GetCombinedFitnessList();
+            // Get the combined fitness list of the population.
+            var combinedFitnessList = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
             Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(parameters.PercentageElite * previousPopulation.Chromosomes.Count())));
             // Add the specified number of random chromosomes.
@@ -130,24 +120,14 @@ namespace GeneticAlgNetControl.Helpers.Models
             Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
             {
                 // Get a new offspring of two random chromosomes.
-                var offspring = previousPopulation.Select(random)
-                    .Crossover(previousPopulation.Select(random), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, random)
+                var offspring = previousPopulation.Select(combinedFitnessList, random)
+                    .Crossover(previousPopulation.Select(combinedFitnessList, random), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, random)
                     .Mutate(nodeIndex, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
                 // Add the offspring to the concurrent bag.
                 bag.Add(offspring);
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
-            //// Add new chromosomes.
-            //for (int index = Chromosomes.Count(); index < previousPopulation.Chromosomes.Count(); index++)
-            //{
-            //    // Get a new offspring of two random chromosomes.
-            //    var offspring = previousPopulation.Select(random)
-            //        .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
-            //        .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
-            //    // Add the offspring to the current population.
-            //    Chromosomes.Add(offspring);
-            //}
             // Get the historic best and average fitness.
             HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
             HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
@@ -159,14 +139,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <returns>The fitness list.</returns>
         public List<double> GetFitnessList()
         {
-            // Check if the fitness hasn't already been computed.
-            if (_fitnessList == null)
-            {
-                // Compute the fitness.
-                _fitnessList = Chromosomes.Select(item => item.GetFitness()).ToList();
-            }
-            // Return the fitness.
-            return _fitnessList;
+            // Return the fitness list.
+            return Chromosomes.Select(item => item.GetFitness()).ToList();
         }
 
         /// <summary>
@@ -175,21 +149,15 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <returns>The combined fitness list of the population.</returns>
         public List<double> GetCombinedFitnessList()
         {
-            // Check if the fitness list hasn't already been computed.
-            if (_fitnessCombinedList == null)
-            {
-                // Get the fitness of each chromosome.
-                var fitness = new List<double> { 0.0 };
-                fitness.AddRange(GetFitnessList());
-                // Get the total fitness.
-                var totalFitness = fitness.Sum();
-                // Define a variable to store the temporary sum.
-                var sum = 0.0;
-                // Compute the combined fitness.
-                _fitnessCombinedList = fitness.Select(item => sum += item / totalFitness).ToList();
-            }
+            // Get the fitness of each chromosome.
+            var fitness = new List<double> { 0.0 };
+            fitness.AddRange(GetFitnessList());
+            // Get the total fitness.
+            var totalFitness = fitness.Sum();
+            // Define a variable to store the temporary sum.
+            var sum = 0.0;
             // Return the combined fitness.
-            return _fitnessCombinedList;
+            return fitness.Select(item => sum += item / totalFitness).ToList();
         }
 
         /// <summary>
@@ -197,14 +165,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// </summary>
         /// <param name="random">The random seed.</param>
         /// <returns></returns>
-        public Chromosome Select(Random random)
+        public Chromosome Select(List<double> combinedFitnessList, Random random)
         {
-            // Get the fitness list.
-            var fitnessList = GetCombinedFitnessList();
             // Generate a random value.
             var randomValue = random.NextDouble();
             // Find the index corresponding to the random value.
-            var index = fitnessList.FindLastIndex(item => item <= randomValue);
+            var index = combinedFitnessList.FindLastIndex(item => item <= randomValue);
             // Return the chromosome at the specified index.
             return Chromosomes[index];
         }
@@ -212,9 +178,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>The chromosome solutions of the population.</returns>
-        public IEnumerable<ChromosomeSolution> GetSolutions(Dictionary<string, bool> nodeIsPreferred)
+        public IEnumerable<ChromosomeSolution> GetSolutions(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
         {
             // Get the best fitness of the population.
             var bestFitness = GetFitnessList().Max();
@@ -231,7 +199,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 }
             }
             // Return the solutions.
-            return solutions.Select(item => new ChromosomeSolution(item, nodeIsPreferred));
+            return solutions.Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA));
         }
     }
 }
