@@ -52,12 +52,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Constructor for the initial population.
         /// </summary>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
-        /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
-        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="targetAncestors">The list containing, for each target nodes, the nodes from which it can be reached.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <param name="random">The random seed.</param>
-        public Population(Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Parameters parameters, Random random)
+        public Population(Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
@@ -89,7 +89,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 for (int index2 = 0; index2 < chromosomeGroups[index1]; index2++)
                 {
                     // Add a new, initialized, chromosome.
-                    Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
+                    Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
                 }
             }
             // Define the historic best and average fitness.
@@ -100,7 +100,15 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Constructor for a subsequent population.
         /// </summary>
-        public Population(Population previousPopulation, Dictionary<string, int> nodeIndices, List<string> targetNodes, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, Parameters parameters, Random random)
+        /// <param name="previousPopulation">The previous population.</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="targetNodes">The target nodes for the algorithm.</param>
+        /// <param name="targetAncestors">The list containing, for each target nodes, the nodes from which it can be reached.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
+        /// <param name="parameters">The parameters of the algorithm.</param>
+        /// <param name="random">The random seed.</param>
+        public Population(Population previousPopulation, Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
@@ -112,34 +120,34 @@ namespace GeneticAlgNetControl.Helpers.Models
             for (int index = 0; index < (int)Math.Floor(parameters.PercentageRandom * previousPopulation.Chromosomes.Count()); index++)
             {
                 // Get the lower and upper limits.
-                var lowerLimit = random.Next(Math.Max(Math.Min(pathList.Count(), pathList.Count() - parameters.RandomGenesPerChromosome), 0));
-                var upperLimit = Math.Min(lowerLimit + parameters.RandomGenesPerChromosome, pathList.Count());
+                var lowerLimit = random.Next(Math.Max(Math.Min(targetAncestors.Count(), targetAncestors.Count() - parameters.RandomGenesPerChromosome), 0));
+                var upperLimit = Math.Min(lowerLimit + parameters.RandomGenesPerChromosome, targetAncestors.Count());
                 // Add a new, initialized, chromosome.
-                Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndices, pathList, matrixPowerList, lowerLimit, upperLimit, random));
+                Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
             }
+            // Add new chromosomes.
+            var bag = new ConcurrentBag<Chromosome>();
+            Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
+            {
+                // Get a new offspring of two random chromosomes.
+                var offspring = previousPopulation.Select(random)
+                    .Crossover(previousPopulation.Select(random), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, random)
+                    .Mutate(nodeIndex, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
+                // Add the offspring to the concurrent bag.
+                bag.Add(offspring);
+            });
+            // Add all chromosomes to the current population.
+            Chromosomes.AddRange(bag);
             //// Add new chromosomes.
-            //var bag = new ConcurrentBag<Chromosome>();
-            //Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
+            //for (int index = Chromosomes.Count(); index < previousPopulation.Chromosomes.Count(); index++)
             //{
             //    // Get a new offspring of two random chromosomes.
             //    var offspring = previousPopulation.Select(random)
             //        .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
             //        .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
-            //    // Add the offspring to the concurrent bag.
-            //    bag.Add(offspring);
-            //});
-            //// Add all chromosomes to the current population.
-            //Chromosomes.AddRange(bag);
-            // Add new chromosomes.
-            for (int index = Chromosomes.Count(); index < previousPopulation.Chromosomes.Count(); index++)
-            {
-                // Get a new offspring of two random chromosomes.
-                var offspring = previousPopulation.Select(random)
-                    .Crossover(previousPopulation.Select(random), nodeIndices, matrixPowerList, nodePreferred, parameters.CrossoverType, random)
-                    .Mutate(nodeIndices, pathList, matrixPowerList, nodePreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
-                // Add the offspring to the current population.
-                Chromosomes.Add(offspring);
-            }
+            //    // Add the offspring to the current population.
+            //    Chromosomes.Add(offspring);
+            //}
             // Get the historic best and average fitness.
             HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
             HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
@@ -148,7 +156,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Gets the fitness list of the population.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The fitness list.</returns>
         public List<double> GetFitnessList()
         {
             // Check if the fitness hasn't already been computed.
@@ -164,7 +172,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Gets the combined fitness list of the population, for a Monte-Carlo style selection.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>The combined fitness list of the population.</returns>
         public List<double> GetCombinedFitnessList()
         {
             // Check if the fitness list hasn't already been computed.
@@ -204,8 +212,9 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
-        /// <returns></returns>
-        public List<Chromosome> GetSolutions()
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
+        /// <returns>The chromosome solutions of the population.</returns>
+        public IEnumerable<ChromosomeSolution> GetSolutions(Dictionary<string, bool> nodeIsPreferred)
         {
             // Get the best fitness of the population.
             var bestFitness = GetFitnessList().Max();
@@ -222,7 +231,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 }
             }
             // Return the solutions.
-            return solutions;
+            return solutions.Select(item => new ChromosomeSolution(item, nodeIsPreferred));
         }
     }
 }

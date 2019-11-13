@@ -24,14 +24,14 @@ namespace GeneticAlgNetControl.Helpers.Models
         private IEnumerable<string> _uniqueControlNodes = null;
 
         /// <summary>
+        /// Represents the unique preferred control nodes in the chromosome.
+        /// </summary>
+        private IEnumerable<string> _uniquePreferredControlNodes = null;
+
+        /// <summary>
         /// Represents the genes of the chromosome, as a dictionary of a target node to its control node.
         /// </summary>
         public Dictionary<string, string> Genes { get; set; }
-
-        /// <summary>
-        /// Represents the fitness of the chromosome.
-        /// </summary>
-        public double Fitness { get => GetFitness(); }
 
         /// <summary>
         /// Constructor for an empty chromosome.
@@ -49,16 +49,6 @@ namespace GeneticAlgNetControl.Helpers.Models
         {
             // Assign to each gene its default value (the corresponding target node).
             Genes = targetNodes.ToDictionary(item => item, item => item);
-        }
-
-        /// <summary>
-        /// Constructor for the chromosome starting from a different chromosome.
-        /// </summary>
-        /// <param name="chromosome">The chromosome from which to build a new one.</param>
-        public Chromosome(Chromosome chromosome)
-        {
-            // Assign to each gene its default value (the corresponding target node).
-            Genes = chromosome.Genes.ToDictionary(item => item.Key, item => item.Key);
         }
 
         /// <summary>
@@ -88,35 +78,36 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Checks if the chromosome is a solution or not.
         /// </summary>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>True if the chromosome is a solution, false otherwise</returns>
-        public bool IsValid(Dictionary<string, int> nodeIndices, List<Matrix<double>> matrixPowerList)
+        public bool IsValid(Dictionary<string, int> nodeIndex, List<Matrix<double>> powersMatrixCA)
         {
             // Define the variable to return.
             var isFullRank = false;
             // Get the unique control nodes.
-            var uniqueControlNodes = Genes.Values.Distinct().ToList();
+            var uniqueControlNodes = GetUniqueControlNodes().ToList();
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndices.Count(), uniqueControlNodes.Count());
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
             // Go over each control node.
             for (int index = 0; index < uniqueControlNodes.Count(); index++)
             {
                 // Update the corresponding field.
-                matrixB[nodeIndices[uniqueControlNodes[index]], index] = 1.0;
+                matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
             }
             // Initialize the R matrix.
-            var matrixR = Matrix<double>.Build.DenseOfMatrix(matrixPowerList[0]).Multiply(matrixB);
+            var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
             // Repeat until we reach the maximum power.
-            for (int index = 1; index < matrixPowerList.Count(); index++)
+            for (int index = 1; index < powersMatrixCA.Count(); index++)
             {
                 // Compute the current power matrix.
-                matrixR = matrixR.Append(matrixPowerList[index].Multiply(matrixB));
+                matrixR = matrixR.Append(powersMatrixCA[index].Multiply(matrixB));
                 // Check if it is full rank.
                 isFullRank = matrixR.IsFullRank();
                 // Check if it is already full rank.
                 if (isFullRank)
                 {
+                    // Break the loop.
                     break;
                 }
             }
@@ -127,18 +118,18 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Initializes the chromosome with randomly generated gene values between the lower and the upper limit.
         /// </summary>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
-        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="targetAncestors">The list containing, for each target nodes, the nodes from which it can be reached.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <param name="lowerLimit">The lower limit of the interval in which to randomly generate the values.</param>
         /// <param name="upperLimit">The upper limit of the interval in which to randomly generate the values.</param>
         /// <param name="random">The random seed.</param>
-        public Chromosome Initialize(Dictionary<string, int> nodeIndices, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, int lowerLimit, int upperLimit, Random random)
+        public Chromosome Initialize(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, int lowerLimit, int upperLimit, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.
             var tries = 10;
             // Get the genes for which to generate randomly the values.
-            var genesRandom = Genes.Keys.ToList().GetRange(lowerLimit, upperLimit - lowerLimit).ToList();
+            var genesRandom = Genes.Keys.ToList().GetRange(lowerLimit, upperLimit - lowerLimit);
             // Repeat while the chromosome is not valid.
             while (genesRandom.Any())
             {
@@ -148,10 +139,10 @@ namespace GeneticAlgNetControl.Helpers.Models
                 foreach (var item in genesRandom)
                 {
                     // Assign a random value from the corresponding list.
-                    Genes[item] = pathList[item][random.Next(pathList[item].Count())];
+                    Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
                 }
                 // Check if the chromosome is valid.
-                if (IsValid(nodeIndices, matrixPowerList))
+                if (IsValid(nodeIndex, powersMatrixCA))
                 {
                     // Exit the loop.
                     break;
@@ -177,23 +168,23 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// Creates a new offspring chromosome from this and a second chromosome parents.
         /// </summary>
         /// <param name="secondChromosome">The second parent chromosome of the offspring.</param>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
-        /// <param name="nodePreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
-        /// <param name="type">The crossover type for the algorithm.</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
+        /// <param name="crossoverType">The crossover type for the algorithm.</param>
         /// <param name="random">The random seed.</param>
         /// <returns></returns>
-        public Chromosome Crossover(Chromosome secondChromosome, Dictionary<string, int> nodeIndices, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, AlgorithmCrossoverType type, Random random)
+        public Chromosome Crossover(Chromosome secondChromosome, Dictionary<string, int> nodeIndex, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, AlgorithmCrossoverType crossoverType, Random random)
         {
             // Define a new chromosome.
-            var chromosome = new Chromosome(this);
+            var chromosome = new Chromosome(Genes.Keys.ToList());
             // Define the number of tries in which to try and find a valid chromosome.
             var tries = 10;
             // Get the number of occurances of each gene in this chromosome and which genes of each are preferred.
             var occurancesInFirst = GetUniqueControlNodes().ToDictionary(item => item, item => Genes.Count(item1 => item1.Value == item));
             var occurancesInSecond = secondChromosome.GetUniqueControlNodes().ToDictionary(item => item, item => Genes.Count(item1 => item1.Value == item));
             // Use the specified crossover type.
-            switch (type)
+            switch (crossoverType)
             {
                 // If we have a standard crossover.
                 case AlgorithmCrossoverType.Standard:
@@ -212,7 +203,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             chromosome.Genes[item] = random.NextDouble() < (double)inFirst / (double)(inFirst + inSecond) ? Genes[item] : secondChromosome.Genes[item];
                         }
                         // Check if the chromosome is valid.
-                        if (chromosome.IsValid(nodeIndices, matrixPowerList))
+                        if (chromosome.IsValid(nodeIndex, powersMatrixCA))
                         {
                             // Exit the loop.
                             break;
@@ -234,8 +225,8 @@ namespace GeneticAlgNetControl.Helpers.Models
                             var inFirst = occurancesInFirst.ContainsKey(Genes[item]) ? occurancesInFirst[Genes[item]] : 0;
                             var inSecond = occurancesInSecond.ContainsKey(secondChromosome.Genes[item]) ? occurancesInSecond[secondChromosome.Genes[item]] : 0;
                             // Check if the gene in any of the chromosomes is a preferred node.
-                            var isPreferredFirst = nodePreferred[Genes[item]];
-                            var isPreferredSecond = nodePreferred[secondChromosome.Genes[item]];
+                            var isPreferredFirst = nodeIsPreferred[Genes[item]];
+                            var isPreferredSecond = nodeIsPreferred[secondChromosome.Genes[item]];
                             // Check if the first corresponding gene is preferred, and the second one isn't.
                             if (isPreferredFirst && !isPreferredSecond)
                             {
@@ -260,7 +251,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             }
                         }
                         // Check if the chromosome is valid.
-                        if (chromosome.IsValid(nodeIndices, matrixPowerList))
+                        if (chromosome.IsValid(nodeIndex, powersMatrixCA))
                         {
                             // Exit the loop.
                             break;
@@ -288,21 +279,21 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Mutates the current chromosome based on the given mutation probability.
         /// </summary>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="pathList">The list containing, for each target nodes, the nodes from which it can be reached.</param>
-        /// <param name="matrixPowerList">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
-        /// <param name="nodePreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
-        /// <param name="type">The mutation type for the algorithm.</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="targetAncestors">The list containing, for each target nodes, the nodes from which it can be reached.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
+        /// <param name="mutationType">The mutation type for the algorithm.</param>
         /// <param name="mutationProbability">The probability of mutation for any gene of the chromosome.</param>
         /// <param name="random">The random seed.</param>
-        public Chromosome Mutate(Dictionary<string, int> nodeIndices, Dictionary<string, List<string>> pathList, List<Matrix<double>> matrixPowerList, Dictionary<string, bool> nodePreferred, AlgorithmMutationType type, double mutationProbability, Random random)
+        public Chromosome Mutate(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, AlgorithmMutationType mutationType, double mutationProbability, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.
             var tries = 10;
             // Get the genes which will suffer a mutation, together with their current value.
             var genesMutateDictionary = Genes.Where(item => random.NextDouble() < mutationProbability).ToDictionary(item => item.Key, item => item.Value);
             // Use the specified mutation type.
-            switch (type)
+            switch (mutationType)
             {
                 // If we have a standard crossover.
                 case AlgorithmMutationType.Standard:
@@ -315,10 +306,10 @@ namespace GeneticAlgNetControl.Helpers.Models
                         foreach (var item in genesMutateDictionary.Keys)
                         {
                             // Assign a random new value from the list.
-                            Genes[item] = pathList[item][random.Next(pathList[item].Count())];
+                            Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
                         }
                         // Check if the chromosome is valid.
-                        if (IsValid(nodeIndices, matrixPowerList))
+                        if (IsValid(nodeIndex, powersMatrixCA))
                         {
                             // Exit the loop.
                             break;
@@ -349,10 +340,10 @@ namespace GeneticAlgNetControl.Helpers.Models
                         foreach (var item in genesMutateDictionary.Keys)
                         {
                             // Assign a random new value from the list. If it is a preferred node, it it two times less likely to change.
-                            Genes[item] = nodePreferred[Genes[item]] && random.NextDouble() < 0.5 ? pathList[item][random.Next(pathList[item].Count())] : Genes[item];
+                            Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count())] : Genes[item];
                         }
                         // Check if the chromosome is valid.
-                        if (IsValid(nodeIndices, matrixPowerList))
+                        if (IsValid(nodeIndex, powersMatrixCA))
                         {
                             // Exit the loop.
                             break;

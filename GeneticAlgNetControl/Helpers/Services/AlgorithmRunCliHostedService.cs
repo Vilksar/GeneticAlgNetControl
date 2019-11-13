@@ -223,7 +223,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
-            // Get the actual target nodes in the network.
+            // Get the actual preferred nodes in the network.
             preferredNodes = preferredNodes.Intersect(nodes)
                 .ToList();
             // Check if the provided parameters are not valid.
@@ -283,12 +283,23 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Log a message.
                 _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
             }
+            // Get the solutions to the algorithm.
+            var solutions = population.GetSolutions(nodeIsPreferred);
+            // Stop the measuring watch.
+            stopwatch.Stop();
             // Get the path of the output file.
-            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output.json");
+            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}.json");
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Writing the results in JSON format to \"{outputFilepath}\".");
             // Get the text to write to the file.
-            var outputText = JsonSerializer.Serialize(population.GetSolutions(), new JsonSerializerOptions { WriteIndented = true });
+            var outputText = JsonSerializer.Serialize(new
+            {
+                Name = Path.GetFileNameWithoutExtension(_arguments.EdgesFilepath),
+                TimeElapsed = stopwatch.Elapsed,
+                Parameters = parameters,
+                NumberOfSolutions = solutions.Count(),
+                Solutions = solutions
+            }, new JsonSerializerOptions { WriteIndented = true });
             // Try to write to the specified file.
             try
             {
@@ -304,8 +315,6 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
-            // Stop the measuring watch.
-            stopwatch.Stop();
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm ended in {stopwatch.Elapsed}.");
             // Return a successfully completed task.
