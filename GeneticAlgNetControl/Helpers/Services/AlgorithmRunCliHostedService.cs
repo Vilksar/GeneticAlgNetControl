@@ -1,5 +1,6 @@
 ﻿using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Models;
+using MathNet.Numerics.Random;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -241,9 +242,9 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return Task.CompletedTask;
             }
             // Log a message about the loaded data.
-            _logger.LogInformation($"Data loaded! There were {nodes.Count()} nodes, {edges.Count()} edges, {targetNodes.Count()} target nodes and {preferredNodes.Count()} preferred nodes found.");
+            _logger.LogInformation($"Data loaded successfully.\n\t{edges.Count} edges and {nodes.Count} nodes loaded from \"{_arguments.EdgesFilepath}\".\n\t{targetNodes.Count} target nodes loaded from \"{_arguments.TargetNodesFilepath}\". {preferredNodes.Count} preferred nodes loaded{(string.IsNullOrEmpty(_arguments.PreferredNodesFilepath) ? string.Empty : $" from {_arguments.PreferredNodesFilepath}")}.");
             // Log a message about the parameters.
-            _logger.LogInformation($"The following parameters will be used.\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
+            _logger.LogInformation($"The following parameters were loaded from \"{_arguments.ParametersFilepath}\".\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
             // Define a new stopwatch to measure the running time and start it.
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -262,13 +263,14 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
             // Set up the first iteration.
-            var random = new Random(parameters.RandomSeed);
+            //var random = new Random(parameters.RandomSeed);
+            var random = SystemRandomSource.Default;
             var currentIteration = 0;
             var currentIterationWithoutImprovement = 0;
             var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random);
             var bestFitness = population.HistoricBestFitness.Max();
             // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
+            _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}");
             // Move through the generations.
             while (!cancellationToken.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
             {
@@ -287,10 +289,10 @@ namespace GeneticAlgNetControl.Helpers.Services
                     currentIterationWithoutImprovement = 0;
                 }
                 // Log a message.
-                _logger.LogInformation($"{DateTime.Now.ToString()}: Population\t{currentIteration}\t/\t{parameters.MaximumIterations}\t,\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\tBest fitness: {bestFitness}.");
+                _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}");
             }
             // Get the solutions to the algorithm.
-            var solutions = population.GetSolutions(nodeIndex, nodeIsPreferred, powersMatrixCA);
+            var solutions = population.GetSolutions().Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA));
             // Stop the measuring watch.
             stopwatch.Stop();
             // Get the path of the output file.
