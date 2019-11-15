@@ -1,5 +1,6 @@
 ﻿using GeneticAlgNetControl.Data.Enumerations;
 using MathNet.Numerics.LinearAlgebra;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
@@ -58,31 +59,31 @@ namespace GeneticAlgNetControl.Helpers.Models
             var numberOfChromosomeGroupsExtra = parameters.PopulationSize - chromosomesPerGroup * numberOfGroups;
             var numberOfGeneGroupsExtra = targetNodes.Count() - genesPerGroup * numberOfGroups;
             // Get the actual number of chromosomes in each group.
-            var chromosomeGroups = new List<int> { 0 }
+            var chromosomeGroups = new List<int>()
                 .Concat(Enumerable.Range(0, numberOfChromosomeGroupsExtra).Select(item => chromosomesPerGroup + 1))
-                .Concat(Enumerable.Range(numberOfChromosomeGroupsExtra, numberOfGroups).Select(item => chromosomesPerGroup))
+                .Concat(Enumerable.Range(numberOfChromosomeGroupsExtra, numberOfGroups - numberOfChromosomeGroupsExtra).Select(item => chromosomesPerGroup))
                 .ToList();
             // Get the actual numer of genes in each group.
             var sum = 0;
             var geneGroups = new List<int> { 0 }
                 .Concat(Enumerable.Range(0, numberOfGeneGroupsExtra).Select(item => genesPerGroup + 1))
-                .Concat(Enumerable.Range(numberOfGeneGroupsExtra, numberOfGroups).Select(item => genesPerGroup))
+                .Concat(Enumerable.Range(numberOfGeneGroupsExtra, numberOfGroups - numberOfGeneGroupsExtra).Select(item => genesPerGroup))
                 .Select(item => sum += item)
                 .ToList();
             // Define a new concurrent bag for chromosomes.
             var bag = new ConcurrentBag<Chromosome>();
             // Repeat for each group.
-            Parallel.For(1, numberOfGroups + 1, index1 =>
+            Parallel.For(0, numberOfGroups, index1 =>
             {
                 // Get the lower and upper limits.
-                var lowerLimit = geneGroups[index1 - 1];
-                var upperLimit = geneGroups[index1];
+                var lowerLimit = geneGroups[index1];
+                var upperLimit = geneGroups[index1 + 1];
                 // Repeat for the number of elements in the group.
-                for (int index2 = 0; index2 < chromosomeGroups[index1]; index2++)
+                Parallel.For(0, chromosomeGroups[index1], index2 =>
                 {
                     // Add a new, initialized, chromosome.
                     bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
-                }
+                });
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
@@ -102,18 +103,19 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
         /// <param name="parameters">The parameters of the algorithm.</param>
         /// <param name="random">The random seed.</param>
-        public Population(Population previousPopulation, Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, Parameters parameters, Random random)
+        public Population(Population previousPopulation, Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, Parameters parameters, Random random, ILogger logger)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
             // Get the combined fitness list of the population.
             var combinedFitnessList = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
-            Chromosomes.AddRange(previousPopulation.Chromosomes.OrderByDescending(item => item.GetFitness()).Take((int)Math.Floor(parameters.PercentageElite * previousPopulation.Chromosomes.Count())));
+            Chromosomes.AddRange(previousPopulation.GetBestChromosomes().OrderBy(item => random.NextDouble()).Take((int)Math.Min((int)Math.Floor(parameters.PercentageElite * parameters.PopulationSize), parameters.PopulationSize)));
+            logger.LogInformation($"Population size after adding elites: {Chromosomes.Count()}");
             // Define a new concurrent bag for chromosomes.
             var bag = new ConcurrentBag<Chromosome>();
             // Add the specified number of random chromosomes.
-            Parallel.For(Chromosomes.Count(), (int)Math.Min(Chromosomes.Count() + (int)Math.Floor(parameters.PercentageRandom * previousPopulation.Chromosomes.Count()), parameters.PopulationSize), index => {
+            Parallel.For(Chromosomes.Count(), (int)Math.Min(Chromosomes.Count() + (int)Math.Floor(parameters.PercentageRandom * parameters.PopulationSize), parameters.PopulationSize), index => {
                 // Get the lower and upper limits.
                 var lowerLimit = random.Next(Math.Max(Math.Min(targetAncestors.Count(), targetAncestors.Count() - parameters.RandomGenesPerChromosome), 0));
                 var upperLimit = Math.Min(lowerLimit + parameters.RandomGenesPerChromosome, targetAncestors.Count());
@@ -122,10 +124,11 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
+            logger.LogInformation($"Population size after adding random: {Chromosomes.Count()}");
             // Reset the concurrent bag for chromosomes.
             bag = new ConcurrentBag<Chromosome>();
             // Add new chromosomes.
-            Parallel.For(Chromosomes.Count(), previousPopulation.Chromosomes.Count(), index =>
+            Parallel.For(Chromosomes.Count(), parameters.PopulationSize, index =>
             {
                 // Get a new offspring of two random chromosomes.
                 var offspring = previousPopulation.Select(combinedFitnessList, random)
@@ -136,6 +139,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
+            logger.LogInformation($"Population size after adding offspring: {Chromosomes.Count()}");
             // Get the historic best and average fitness.
             HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
             HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
@@ -158,14 +162,13 @@ namespace GeneticAlgNetControl.Helpers.Models
         public List<double> GetCombinedFitnessList()
         {
             // Get the fitness of each chromosome.
-            var fitness = new List<double> { 0.0 };
-            fitness.AddRange(GetFitnessList());
+            var fitness = new List<double> { 0.0 }.Concat(GetFitnessList());
             // Get the total fitness.
             var totalFitness = fitness.Sum();
             // Define a variable to store the temporary sum.
             var sum = 0.0;
             // Return the combined fitness.
-            return fitness.Select(item => sum += item / totalFitness).ToList();
+            return fitness.Select(item => sum += item).Select(item => item / totalFitness).ToList();
         }
 
         /// <summary>
@@ -190,24 +193,51 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>The chromosome solutions of the population.</returns>
-        public IEnumerable<ChromosomeSolution> GetSolutions(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
+        public IEnumerable<Chromosome> GetBestChromosomes()
         {
             // Get the best fitness of the population.
             var bestFitness = GetFitnessList().Max();
             // Define the variable to return.
-            var solutions = new List<Chromosome>();
+            var bestChromosomes = new List<Chromosome>();
             // Go over all of the chromosomes with the best fitness.
             foreach (var chromosome in Chromosomes.Where(item => item.GetFitness() == bestFitness))
             {
                 // Check if the current combination already exists in the list of solutions.
-                if (!solutions.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
+                if (!bestChromosomes.Any(item => item.IsEqual(chromosome)))
                 {
                     // If not, then add it.
-                    solutions.Add(chromosome);
+                    bestChromosomes.Add(chromosome);
                 }
             }
             // Return the solutions.
-            return solutions.Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA));
+            return bestChromosomes;
+        }
+
+        /// <summary>
+        /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
+        /// </summary>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <returns>The chromosome solutions of the population.</returns>
+        public IEnumerable<Chromosome> GetSolutions()
+        {
+            // Get the best fitness of the population.
+            var bestFitness = GetFitnessList().Max();
+            // Define the variable to return.
+            var bestChromosomes = new List<Chromosome>();
+            // Go over all of the chromosomes with the best fitness.
+            foreach (var chromosome in Chromosomes.Where(item => item.GetFitness() == bestFitness))
+            {
+                // Check if the current combination already exists in the list of solutions.
+                if (!bestChromosomes.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
+                {
+                    // If not, then add it.
+                    bestChromosomes.Add(chromosome);
+                }
+            }
+            // Return the solutions.
+            return bestChromosomes;
         }
     }
 }
