@@ -70,10 +70,10 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// Computes and gets the unique control nodes in the chromosome.
         /// </summary>
         /// <returns>The unique control nodes in the chromosome.</returns>
-        public List<string> GetUniqueControlNodes()
+        public IEnumerable<string> GetUniqueControlNodes()
         {
             // Return the unique control nodes.
-            return Genes.Values.Distinct().ToList();
+            return Genes.Values.Distinct();
         }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public double GetFitness()
         {
             // Return the fitness of the chromosome.
-            return (double)(Genes.Count - GetUniqueControlNodes().Count + 1) * 100 / (double)Genes.Count;
+            return (double)(Genes.Count() - GetUniqueControlNodes().Count() + 1) * 100 / (double)Genes.Count();
         }
 
         /// <summary>
@@ -99,9 +99,9 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Get the unique control nodes.
             var uniqueControlNodes = GetUniqueControlNodes().ToList();
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count, uniqueControlNodes.Count);
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
             // Go over each control node.
-            for (int index = 0; index < uniqueControlNodes.Count; index++)
+            for (int index = 0; index < uniqueControlNodes.Count(); index++)
             {
                 // Update the corresponding field.
                 matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
@@ -109,7 +109,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Initialize the R matrix.
             var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
             // Repeat until we reach the maximum power.
-            for (int index = 1; index < powersMatrixCA.Count; index++)
+            for (int index = 1; index < powersMatrixCA.Count(); index++)
             {
                 // Compute the current power matrix.
                 matrixR = matrixR.Append(powersMatrixCA[index].Multiply(matrixB));
@@ -139,9 +139,9 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Get the unique control nodes.
             var uniqueControlNodes = GetUniqueControlNodes().ToList();
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count, uniqueControlNodes.Count);
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
             // Go over each control node.
-            for (int index = 0; index < uniqueControlNodes.Count; index++)
+            for (int index = 0; index < uniqueControlNodes.Count(); index++)
             {
                 // Update the corresponding field.
                 matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
@@ -149,7 +149,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Initialize the R matrix.
             var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
             // Repeat until we reach the maximum power.
-            for (int index = 1; index < powersMatrixCA.Count; index++)
+            for (int index = 1; index < powersMatrixCA.Count(); index++)
             {
                 // Compute the current power matrix.
                 matrixR = matrixR.Append(powersMatrixCA[index].Multiply(matrixB));
@@ -192,7 +192,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             else
             {
                 // Get the genes for which to generate randomly the values.
-                genesRandom = genesRandom.GetRange(0, upperLimit).Concat(genesRandom.GetRange(lowerLimit, genesRandom.Count - lowerLimit)).ToList();
+                genesRandom = genesRandom.GetRange(0, upperLimit).Concat(genesRandom.GetRange(lowerLimit, genesRandom.Count() - lowerLimit)).ToList();
             }
             // Repeat while the chromosome is not valid.
             while (genesRandom.Any())
@@ -203,7 +203,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                 foreach (var item in genesRandom)
                 {
                     // Assign a random value from the corresponding list.
-                    Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count)];
+                    Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
                 }
                 // Check if the chromosome is valid.
                 if (IsValid(nodeIndex, powersMatrixCA))
@@ -217,7 +217,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // Reset the number of tries.
                     tries = _tries;
                     // Get a random gene to remove from the list of genes to generate randomly.
-                    var randomGene = genesRandom[random.Next(genesRandom.Count)];
+                    var randomGene = genesRandom[random.Next(genesRandom.Count())];
                     // Assign to it the default value.
                     Genes[randomGene] = randomGene;
                     // Remove it from the list of genes to generate randomly.
@@ -368,7 +368,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
                             // Assign a random new value from the list.
-                            Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count)];
+                            Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
                         }
                         // Check if the chromosome is valid.
                         if (IsValid(nodeIndex, powersMatrixCA))
@@ -382,7 +382,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             // Reset the number of tries.
                             tries = _tries;
                             // Get a random gene to remove from the list of genes to mutate.
-                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count));
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
                             // Assign to it the current value.
                             Genes[randomGene] = genesMutateDictionary[randomGene];
                             // Remove it from the list of genes to mutate.
@@ -402,7 +402,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
                             // Assign a random new value from the list. If it is a preferred node, it it two times less likely to change.
-                            Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count)] : Genes[item];
+                            Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count())] : Genes[item];
                         }
                         // Check if the chromosome is valid.
                         if (IsValid(nodeIndex, powersMatrixCA))
@@ -416,7 +416,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                             // Reset the number of tries.
                             tries = _tries;
                             // Get a random gene to remove from the list of genes to mutate.
-                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count));
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
                             // Assign to it the current value.
                             Genes[randomGene] = genesMutateDictionary[randomGene];
                             // Remove it from the list of genes to mutate.
