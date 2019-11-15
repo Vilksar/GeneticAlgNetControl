@@ -270,7 +270,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random);
             var bestFitness = population.HistoricBestFitness.Max();
             // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}");
+            _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
             // Move through the generations.
             while (!cancellationToken.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
             {
@@ -289,7 +289,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                     currentIterationWithoutImprovement = 0;
                 }
                 // Log a message.
-                _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}");
+                _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
             }
             // Get the solutions to the algorithm.
             var solutions = population.GetSolutions().Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA));

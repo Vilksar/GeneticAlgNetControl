@@ -332,7 +332,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             if (tries == 0)
             {
                 // Choose randomly a parent to give all of its genes.
-                chromosome.Genes = random.NextDouble() < 0.5 ? Genes : secondChromosome.Genes;
+                chromosome.Genes = random.NextDouble() < 0.5 ? new Dictionary<string, string>(Genes) : new Dictionary<string, string>(secondChromosome.Genes);
             }
             // Return the new chromosome.
             return chromosome;
