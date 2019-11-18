@@ -2,6 +2,7 @@
 using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Models;
+using MathNet.Numerics.Random;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -46,10 +47,11 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <returns></returns>
         protected override async Task ExecuteAsync(CancellationToken stopToken)
         {
+            // Use the current scope.
             using var scope = _serviceScopeFactory.CreateScope();
             // Get the application context.
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            // Go over each algorithm in the database that are ongoing at start.
+            // Go over each algorithm in the database that is ongoing at start.
             foreach (var algorithm in context.Algorithms.Where(item => item.Status == AlgorithmStatus.Ongoing))
             {
                 // Update its status.
@@ -60,7 +62,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Repeat the task.
             while (!stopToken.IsCancellationRequested)
             {
-                // Get the first scheduled algorithms in the database.
+                // Get the first scheduled algorithm in the database.
                 var algorithm = context.Algorithms.FirstOrDefault(item => item.Status == AlgorithmStatus.Scheduled);
                 // Check if there wasn't any algorithm found.
                 if (algorithm == null)
@@ -95,10 +97,11 @@ namespace GeneticAlgNetControl.Helpers.Services
                 var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
                 var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
                 // Set up the current iteration.
-                var random = new Random(parameters.RandomSeed);
+                //var random = new Random(parameters.RandomSeed);
+                var random = SystemRandomSource.Default;
                 var currentIteration = algorithm.CurrentIteration;
                 var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
-                var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random) : algorithm.Population;
+                var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random) : algorithm.Population;
                 var bestFitness = population.HistoricBestFitness.Max();
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
@@ -119,9 +122,10 @@ namespace GeneticAlgNetControl.Helpers.Services
                         bestFitness = fitness;
                         currentIterationWithoutImprovement = 0;
                     }
-                    // Update the iteration count.
+                    // Update the iteration count and last population.
                     algorithm.CurrentIteration = currentIteration;
                     algorithm.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
+                    algorithm.Population = population;
                     // Save the changes in the database.
                     await context.SaveChangesAsync();
                     // Reload it for a fresh start.
@@ -134,7 +138,6 @@ namespace GeneticAlgNetControl.Helpers.Services
                     continue;
                 }
                 // Update the solutions, end time and the status.
-                algorithm.Population = population;
                 algorithm.Status = algorithm.Status == AlgorithmStatus.ScheduledToStop ? AlgorithmStatus.Stopped : AlgorithmStatus.Completed;
                 algorithm.DateTimeEnded = DateTime.Now;
                 algorithm.DateTimePeriods = algorithm.DateTimePeriods.SkipLast(1).Append(new DateTimePeriod { DateTimeStarted = algorithm.DateTimeStarted, DateTimeEnded = algorithm.DateTimeEnded }).ToList();

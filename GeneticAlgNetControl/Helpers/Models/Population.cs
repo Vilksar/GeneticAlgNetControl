@@ -21,6 +21,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         public List<Chromosome> Chromosomes { get; set; }
 
         /// <summary>
+        /// Represents the solutions of the current population.
+        /// </summary>
+        public List<ChromosomeSolution> Solutions { get; set; }
+
+        /// <summary>
         /// Represents the list of best fitnesses over consequent populations.
         /// </summary>
         public List<double> HistoricBestFitness { get; set; }
@@ -48,7 +53,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="targetAncestors">The list containing, for each target nodes, the nodes from which it can be reached.</param>
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <param name="random">The random seed.</param>
-        public Population(Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Parameters parameters, Random random)
+        public Population(Dictionary<string, int> nodeIndex, List<string> targetNodes, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, Parameters parameters, Random random)
         {
             // Initialize the list of chromosomes.
             Chromosomes = new List<Chromosome>();
@@ -100,6 +105,8 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
+            // Get the solutions.
+            Solutions = GetSolutions().Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)).ToList();
             // Define the historic best and average fitness.
             HistoricBestFitness = new List<double> { GetFitnessList().Max() };
             HistoricAverageFitness = new List<double> { GetFitnessList().Average() };
@@ -171,6 +178,8 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
+            // Get the solutions.
+            Solutions = GetSolutions().Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)).ToList();
             // Get the historic best and average fitness.
             HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
             HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
@@ -205,6 +214,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Selects a chromosome based on its fitness (the better the fitness, the more chances to be selected).
         /// </summary>
+        /// <param name="combinedFitnessList">The combined fitness list for the population.</param>
         /// <param name="random">The random seed.</param>
         /// <returns></returns>
         public Chromosome Select(List<double> combinedFitnessList, Random random)
@@ -220,9 +230,6 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
-        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
-        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>The chromosome solutions of the population.</returns>
         public IEnumerable<Chromosome> GetBestChromosomes()
         {
@@ -247,28 +254,25 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
-        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
-        /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
-        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>The chromosome solutions of the population.</returns>
         public IEnumerable<Chromosome> GetSolutions()
         {
             // Get the best fitness of the population.
             var bestFitness = GetFitnessList().Max();
             // Define the variable to return.
-            var bestChromosomes = new List<Chromosome>();
+            var solutions = new List<Chromosome>();
             // Go over all of the chromosomes with the best fitness.
             foreach (var chromosome in Chromosomes.Where(item => item.GetFitness() == bestFitness))
             {
                 // Check if the current combination already exists in the list of solutions.
-                if (!bestChromosomes.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
+                if (!solutions.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
                 {
                     // If not, then add it.
-                    bestChromosomes.Add(chromosome);
+                    solutions.Add(chromosome);
                 }
             }
             // Return the solutions.
-            return bestChromosomes;
+            return solutions;
         }
     }
 }

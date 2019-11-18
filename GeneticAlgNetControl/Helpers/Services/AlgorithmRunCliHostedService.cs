@@ -267,7 +267,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             var random = SystemRandomSource.Default;
             var currentIteration = 0;
             var currentIterationWithoutImprovement = 0;
-            var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, parameters, random);
+            var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
             var bestFitness = population.HistoricBestFitness.Max();
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
@@ -291,8 +291,6 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Log a message.
                 _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
             }
-            // Get the solutions to the algorithm.
-            var solutions = population.GetSolutions().Select(item => new ChromosomeSolution(item, nodeIndex, nodeIsPreferred, powersMatrixCA));
             // Stop the measuring watch.
             stopwatch.Stop();
             // Get the path of the output file.
@@ -304,9 +302,10 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 Name = Path.GetFileNameWithoutExtension(_arguments.EdgesFilepath),
                 TimeElapsed = stopwatch.Elapsed,
+                NumberOfGenerations = population.HistoricBestFitness.Count(),
                 Parameters = parameters,
-                NumberOfSolutions = solutions.Count(),
-                Solutions = solutions,
+                NumberOfSolutions = population.Solutions.Count(),
+                Solutions = population.Solutions,
                 HistoricAverageFitness = population.HistoricAverageFitness,
                 HistoricBestFitness = population.HistoricBestFitness
             }, new JsonSerializerOptions { WriteIndented = true });
