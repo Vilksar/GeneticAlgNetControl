@@ -5,20 +5,45 @@ using System.Threading.Tasks;
 
 namespace GeneticAlgNetControl.Helpers.Models
 {
+    /// <summary>
+    /// Represents the program arguments when the application is ran through the command line.
+    /// </summary>
     public class ProgramArguments
     {
+        /// <summary>
+        /// Represents the given command-line arguments.
+        /// </summary>
         public string[] Arguments { get; set; }
 
+        /// <summary>
+        /// Represents a boolean showing if displaying the help message was requested.
+        /// </summary>
         public bool DisplayHelp { get; set; }
 
+        /// <summary>
+        /// Represents the path to the file containing the network edges.
+        /// </summary>
         public string EdgesFilepath { get; set; }
 
+        /// <summary>
+        /// Represents the path to the file containing the target nodes.
+        /// </summary>
         public string TargetNodesFilepath { get; set; }
 
+        /// <summary>
+        /// Represents the path to the file containing the preferred nodes.
+        /// </summary>
         public string PreferredNodesFilepath { get; set; }
 
+        /// <summary>
+        /// Represents the path to the file containing the parameters.
+        /// </summary>
         public string ParametersFilepath { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="args">The command-line arguments.</param>
         public ProgramArguments(string[] args)
         {
             // Get the indices of the arguments.

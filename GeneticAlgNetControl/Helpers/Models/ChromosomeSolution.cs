@@ -47,6 +47,20 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Dictionary<string, string> Genes { get; set; }
 
         /// <summary>
+        /// Constructor for an empty solution.
+        /// </summary>
+        public ChromosomeSolution()
+        {
+            Fitness = 0.0;
+            NumberOfUniqueControlNodes = 0;
+            NumberOfUniquePreferredControlNodes = 0;
+            MaximumControlPathLength = -1;
+            UniqueControlNodes = Enumerable.Empty<string>();
+            UniquePreferredControlNodes = Enumerable.Empty<string>();
+            Genes = new Dictionary<string, string>();
+        }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="chromosome">The chromosome corresponding to the solution.</param>
