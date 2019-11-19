@@ -43,15 +43,9 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Launches the algorithm run execution.
         /// </summary>
-        /// <param name="stoppingToken">The cancellation token corresponding to the task.</param>
+        /// <param name="cancellationToken">The cancellation token corresponding to the task.</param>
         /// <returns></returns>
-        protected override Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            // Return a successfully completed task.
-            return Task.CompletedTask;
-        }
-
-        public override Task StartAsync(CancellationToken cancellationToken)
+        protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             // Check if there is any request for displaying the help details.
             if (_arguments.DisplayHelp)

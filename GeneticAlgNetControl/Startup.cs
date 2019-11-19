@@ -90,9 +90,6 @@ namespace GeneticAlgNetControl
             // Check if we are in production.
             if (env.IsProduction())
             {
-                // Ensure that the database is created as per the model (we don't need migrations here).
-                using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
-                serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
                 // Open a browser to the default address for the localhost.
                 Process.Start(new ProcessStartInfo
                 {
