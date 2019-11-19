@@ -169,6 +169,43 @@ namespace GeneticAlgNetControl.Helpers.Models
         }
 
         /// <summary>
+        /// Gets the number of target nodes that can be controlled only by the preferred nodes in the solution.
+        /// </summary>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
+        /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
+        /// <returns></returns>
+        public int GetNumberOfTargetsControlledByPreferred(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
+        {
+            // Get the unique preferred nodes.
+            var uniquePreferredNodes = GetUniqueControlNodes().Where(item => nodeIsPreferred[item]).ToList();
+            // Check if there aren't any preferred nodes.
+            if (!uniquePreferredNodes.Any())
+            {
+                // Return zero.
+                return 0;
+            }
+            // Initialize the B matrix.
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniquePreferredNodes.Count());
+            // Go over each control node.
+            for (int index = 0; index < uniquePreferredNodes.Count(); index++)
+            {
+                // Update the corresponding field.
+                matrixB[nodeIndex[uniquePreferredNodes[index]], index] = 1.0;
+            }
+            // Initialize the R matrix.
+            var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
+            // Repeat until we reach the maximum power.
+            for (int index = 1; index < powersMatrixCA.Count(); index++)
+            {
+                // Compute the current power matrix.
+                matrixR = matrixR.Append(powersMatrixCA[index].Multiply(matrixB));
+            }
+            // Return the rank of the matrix.
+            return matrixR.Rank();
+        }
+
+        /// <summary>
         /// Initializes the chromosome with randomly generated gene values between the lower and the upper limit.
         /// </summary>
         /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>

@@ -17,6 +17,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         public double Fitness { get; set; }
 
         /// <summary>
+        /// Represents the actual maximum control path length.
+        /// </summary>
+        public int MaximumControlPathLength { get; set; }
+
+        /// <summary>
         /// Represents the number of unique control nodes of the chromosome.
         /// </summary>
         public int NumberOfUniqueControlNodes { get; set; }
@@ -27,9 +32,9 @@ namespace GeneticAlgNetControl.Helpers.Models
         public int NumberOfUniquePreferredControlNodes { get; set; }
 
         /// <summary>
-        /// Represents the actual maximum control path length.
+        /// Represents the number of target nodes controlled by the preferred control nodes.
         /// </summary>
-        public int MaximumControlPathLength { get; set; }
+        public int NumberOfTargetNodesControlledByPreferredControlNodes { get; set; }
 
         /// <summary>
         /// Represents the unique control nodes of the chromosome.
@@ -51,10 +56,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// </summary>
         public ChromosomeSolution()
         {
+            // Assign the default values.
             Fitness = 0.0;
+            MaximumControlPathLength = -1;
             NumberOfUniqueControlNodes = 0;
             NumberOfUniquePreferredControlNodes = 0;
-            MaximumControlPathLength = -1;
+            NumberOfTargetNodesControlledByPreferredControlNodes = 0;
             UniqueControlNodes = Enumerable.Empty<string>();
             UniquePreferredControlNodes = Enumerable.Empty<string>();
             Genes = new Dictionary<string, string>();
@@ -72,8 +79,9 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Assign the values.
             Genes = chromosome.Genes;
             Fitness = chromosome.GetFitness();
-            UniqueControlNodes = chromosome.GetUniqueControlNodes();
             MaximumControlPathLength = chromosome.GetMaximumPathLength(nodeIndex, powersMatrixCA);
+            UniqueControlNodes = chromosome.GetUniqueControlNodes();
+            NumberOfTargetNodesControlledByPreferredControlNodes = chromosome.GetNumberOfTargetsControlledByPreferred(nodeIndex, nodeIsPreferred, powersMatrixCA);
             UniquePreferredControlNodes = UniqueControlNodes.Where(item => nodeIsPreferred[item]);
             NumberOfUniqueControlNodes = UniqueControlNodes.Count();
             NumberOfUniquePreferredControlNodes = UniquePreferredControlNodes.Count();

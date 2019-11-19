@@ -97,8 +97,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
                 var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
                 // Set up the current iteration.
-                //var random = new Random(parameters.RandomSeed);
-                var random = SystemRandomSource.Default;
+                var random = new Random(parameters.RandomSeed);
                 var currentIteration = algorithm.CurrentIteration;
                 var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
                 var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random) : algorithm.Population;

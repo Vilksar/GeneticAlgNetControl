@@ -263,8 +263,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
             // Set up the first iteration.
-            //var random = new Random(parameters.RandomSeed);
-            var random = SystemRandomSource.Default;
+            var random = new Random(parameters.RandomSeed);
             var currentIteration = 0;
             var currentIterationWithoutImprovement = 0;
             var population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);

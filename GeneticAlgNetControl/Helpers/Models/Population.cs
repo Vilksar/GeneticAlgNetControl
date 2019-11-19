@@ -75,21 +75,11 @@ namespace GeneticAlgNetControl.Helpers.Models
                 .Concat(Enumerable.Range(numberOfGeneGroupsExtra, numberOfGroups - numberOfGeneGroupsExtra).Select(item => genesPerGroup))
                 .Select(item => sum += item)
                 .ToList();
-            //// Repeat for each group.
-            //for (int index1 = 0; index1 < numberOfGroups; index1++)
-            //{
-            //    // Get the lower and upper limits.
-            //    var lowerLimit = geneGroups[index1];
-            //    var upperLimit = geneGroups[index1 + 1];
-            //    // Repeat for the number of elements in the group.
-            //    for (int index2 = 0; index2 < chromosomeGroups[index1]; index2++)
-            //    {
-            //        // Add a new, initialized, chromosome.
-            //        Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
-            //    }
-            //}
             // Define a new concurrent bag for chromosomes.
             var bag = new ConcurrentBag<Chromosome>();
+            // Define a new thread-safe queue of random seeds, as well as a default random seed.
+            var randomSeeds = new ConcurrentQueue<int>(Enumerable.Range(0, parameters.PopulationSize).Select(item => random.Next()));
+            var defaultRandomSeed = random.Next();
             // Repeat for each group.
             Parallel.For(0, numberOfGroups, index1 =>
             {
@@ -99,8 +89,16 @@ namespace GeneticAlgNetControl.Helpers.Models
                 // Repeat for the number of elements in the group.
                 Parallel.For(0, chromosomeGroups[index1], index2 =>
                 {
+                    // Try to get a new random seed from the list of random random seeds.
+                    if (!randomSeeds.TryDequeue(out var randomSeed))
+                    {
+                        // If no seed could be gotten, then assign to it the default value.
+                        randomSeed = defaultRandomSeed;
+                    }
+                    // Define a local random variable for only this thread.
+                    var localRandom = new Random(randomSeed);
                     // Add a new, initialized, chromosome.
-                    bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
+                    bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, localRandom));
                 });
             });
             // Add all chromosomes to the current population.
@@ -131,48 +129,47 @@ namespace GeneticAlgNetControl.Helpers.Models
             var combinedFitnessList = previousPopulation.GetCombinedFitnessList();
             // Add the specified number of elite chromosomes from the previous population.
             Chromosomes.AddRange(previousPopulation.GetBestChromosomes().OrderBy(item => random.NextDouble()).Take((int)Math.Min((int)Math.Floor(parameters.PercentageElite * parameters.PopulationSize), parameters.PopulationSize)));
-            //// Add the specified number of random chromosomes.
-            //var randomChromosomesLimit = (int)Math.Min(Chromosomes.Count() + (int)Math.Floor(parameters.PercentageRandom * parameters.PopulationSize), parameters.PopulationSize);
-            //for (int index = Chromosomes.Count(); index < randomChromosomesLimit; index++)
-            //{
-            //    // Get the lower and upper limits.
-            //    var lowerLimit = random.Next(targetAncestors.Count());
-            //    var upperLimit = (lowerLimit + parameters.RandomGenesPerChromosome) % targetAncestors.Count();
-            //    // Add a new, initialized, chromosome.
-            //    Chromosomes.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
-            //}
+            // Define a new thread-safe queue of random seeds, as well as a default random seed.
+            var randomSeeds = new ConcurrentQueue<int>(Enumerable.Range(0, parameters.PopulationSize).Select(item => random.Next()));
+            var defaultRandomSeed = random.Next();
             // Define a new concurrent bag for chromosomes.
             var bag = new ConcurrentBag<Chromosome>();
             // Add the specified number of random chromosomes.
             Parallel.For(Chromosomes.Count(), (int)Math.Min(Chromosomes.Count() + (int)Math.Floor(parameters.PercentageRandom * parameters.PopulationSize), parameters.PopulationSize), index =>
             {
+                // Try to get a new random seed from the list of random random seeds.
+                if (!randomSeeds.TryDequeue(out var randomSeed))
+                {
+                    // If no seed could be gotten, then assign to it the default value.
+                    randomSeed = defaultRandomSeed;
+                }
+                // Define a local random variable for only this thread.
+                var localRandom = new Random(randomSeed);
                 // Get the lower and upper limits.
-                var lowerLimit = random.Next(targetAncestors.Count());
+                var lowerLimit = localRandom.Next(targetAncestors.Count());
                 var upperLimit = (lowerLimit + parameters.RandomGenesPerChromosome) % targetAncestors.Count();
                 // Add a new, initialized, chromosome.
-                bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, random));
+                bag.Add(new Chromosome(targetNodes).Initialize(nodeIndex, targetAncestors, powersMatrixCA, lowerLimit, upperLimit, localRandom));
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
-            //// Add new chromosomes.
-            //for (int index = Chromosomes.Count(); index < parameters.PopulationSize; index++)
-            //{
-            //    // Get a new offspring of two random chromosomes.
-            //    var offspring = previousPopulation.Select(combinedFitnessList, random)
-            //        .Crossover(previousPopulation.Select(combinedFitnessList, random), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, random)
-            //        .Mutate(nodeIndex, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
-            //    // Add the offspring to the concurrent bag.
-            //    Chromosomes.Add(offspring);
-            //}
             // Reset the concurrent bag for chromosomes.
             bag = new ConcurrentBag<Chromosome>();
             // Add new chromosomes.
             Parallel.For(Chromosomes.Count(), parameters.PopulationSize, index =>
             {
+                // Try to get a new random seed from the list of random random seeds.
+                if (!randomSeeds.TryDequeue(out var randomSeed))
+                {
+                    // If no seed could be gotten, then assign to it the default value.
+                    randomSeed = defaultRandomSeed;
+                }
+                // Define a local random variable for only this thread.
+                var localRandom = new Random(randomSeed);
                 // Get a new offspring of two random chromosomes.
-                var offspring = previousPopulation.Select(combinedFitnessList, random)
-                    .Crossover(previousPopulation.Select(combinedFitnessList, random), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, random)
-                    .Mutate(nodeIndex, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters.MutationType, parameters.ProbabilityMutation, random);
+                var offspring = previousPopulation.Select(combinedFitnessList, localRandom)
+                    .Crossover(previousPopulation.Select(combinedFitnessList, localRandom), nodeIndex, powersMatrixCA, nodeIsPreferred, parameters.CrossoverType, localRandom)
+                    .Mutate(nodeIndex, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters.MutationType, parameters.ProbabilityMutation, localRandom);
                 // Add the offspring to the concurrent bag.
                 bag.Add(offspring);
             });
