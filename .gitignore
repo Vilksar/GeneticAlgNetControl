@@ -339,3 +339,5 @@ ASALocalRun/
 # BeatPulse healthcheck temp database
 healthchecksdb
 /GeneticAlgNetControl/database.db
+/GeneticAlgNetControl/database.db-wal
+/GeneticAlgNetControl/database.db-shm

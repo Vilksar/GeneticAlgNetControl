@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
@@ -86,10 +87,18 @@ namespace GeneticAlgNetControl
             {
                 endpoints.MapRazorPages();
             });
-            // Ensure that the database is created as per the model.
-            using (var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope())
+            // Check if we are in production.
+            if (env.IsProduction())
             {
-                serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.Migrate();
+                // Ensure that the database is created as per the model (we don't need migrations here).
+                using var serviceScope = app.ApplicationServices.GetService<IServiceScopeFactory>().CreateScope();
+                serviceScope.ServiceProvider.GetRequiredService<ApplicationDbContext>().Database.EnsureCreated();
+                // Open a browser to the default address for the localhost.
+                Process.Start(new ProcessStartInfo
+                {
+                    FileName = "https://localhost:5001",
+                    UseShellExecute = true
+                });
             }
         }
     }
