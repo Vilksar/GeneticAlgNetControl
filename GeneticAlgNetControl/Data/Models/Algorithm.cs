@@ -84,10 +84,60 @@ namespace GeneticAlgNetControl.Data.Models
         public Population Population { get; set; }
 
         /// <summary>
+        /// Initializes a new default instance of the class.
+        /// </summary>
+        public Algorithm()
+        {
+            // Assign the default value for each property.
+            Id = Guid.NewGuid().ToString();
+            Name = null;
+            DateTimeStarted = null;
+            DateTimeEnded = null;
+            DateTimePeriods = new List<DateTimePeriod>();
+            Status = AlgorithmStatus.Scheduled;
+            Nodes = new List<string>();
+            Edges = new List<Edge>();
+            TargetNodes = new List<string>();
+            PreferredNodes = new List<string>();
+            CurrentIteration = 0;
+            CurrentIterationWithoutImprovement = 0;
+            Parameters = new Parameters();
+            Population = new Population();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="name">The name of the algorithm.</param>
+        /// <param name="edges">The edges of the network corresponding to the algorithm.</param>
+        /// <param name="nodes">The nodes of the network corresponding to the algorithm.</param>
+        /// <param name="targetNodes">The target nodes of the network corresponding to the algorithm.</param>
+        /// <param name="preferredNodes">The preferred nodes of the network corresponding to the algorithm.</param>
+        /// <param name="parameters">The parameters of the algorithm.</param>
+        public Algorithm(string name, IEnumerable<Edge> edges, IEnumerable<string> nodes, IEnumerable<string> targetNodes, IEnumerable<string> preferredNodes, Parameters parameters)
+        {
+            // Assign the value for each property.
+            Id = Guid.NewGuid().ToString();
+            Name = name;
+            DateTimeStarted = null;
+            DateTimeEnded = null;
+            DateTimePeriods = new List<DateTimePeriod>();
+            Status = AlgorithmStatus.Scheduled;
+            Nodes = nodes.ToList();
+            Edges = edges.ToList();
+            TargetNodes = targetNodes.ToList();
+            PreferredNodes = preferredNodes.ToList();
+            CurrentIteration = 0;
+            CurrentIterationWithoutImprovement = 0;
+            Parameters = parameters;
+            Population = new Population();
+        }
+
+        /// <summary>
         /// Gets the dictionary containing, for each node, its index in the node list, for faster reference.
         /// </summary>
         /// <param name="nodes">The nodes of the graph.</param>
-        /// <returns></returns>
+        /// <returns>The dictionary containing, for each node, its index in the node list, for faster reference.</returns>
         public static Dictionary<string, int> GetNodeIndex(List<string> nodes)
         {
             // Return the dictionary for nodes and their indices.
@@ -99,7 +149,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// </summary>
         /// <param name="nodes">The nodes of the graph.</param>
         /// <param name="preferredNodes">The preferred nodes of the graph.</param>
-        /// <returns></returns>
+        /// <returns>The dictionary containing, for each node, its preferred status, for faster reference.</returns>
         public static Dictionary<string, bool> GetNodeIsPreferred(List<string> nodes, List<string> preferredNodes)
         {
             // Return the dictionary for nodes and preferred status.
@@ -111,7 +161,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// </summary>
         /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="edges">The edges of the graph.</param>
-        /// <returns></returns>
+        /// <returns>The A matrix (corresponding to the adjacency matrix).</returns>
         public static Matrix<double> GetMatrixA(Dictionary<string, int> nodeIndices, List<Edge> edges)
         {
             // Initialize the adjacency matrix with zero.
@@ -131,7 +181,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// </summary>
         /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
-        /// <returns></returns>
+        /// <returns>The C matrix (corresponding to the target nodes).</returns>
         public static Matrix<double> GetMatrixC(Dictionary<string, int> nodeIndices, List<string> targetNodes)
         {
             // Initialize the C matrix with zero.
@@ -151,7 +201,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// </summary>
         /// <param name="matrixA">The adjacency matrix of the graph.</param>
         /// <param name="maximumPathLength">The maximum path length for control in the graph.</param>
-        /// <returns></returns>
+        /// <returns>The powers of the adjacency matrix A, up to a given maximum power.</returns>
         public static List<Matrix<double>> GetPowersMatrixA(Matrix<double> matrixA, int maximumPathLength)
         {
             // Initialize a matrix list with the identity matrix.
@@ -174,7 +224,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// </summary>
         /// <param name="matrixC">The matrix corresponding to the target nodes in the graph.</param>
         /// <param name="powersMatrixA">The list of powers of the adjacency matrix A.</param>
-        /// <returns></returns>
+        /// <returns>The powers of the combination between the target matrix C and the adjacency matrix A.</returns>
         public static List<Matrix<double>> GetPowersMatrixCA(Matrix<double> matrixC, List<Matrix<double>> powersMatrixA)
         {
             // Initialize a new empty list.
@@ -195,7 +245,7 @@ namespace GeneticAlgNetControl.Data.Models
         /// <param name="adjacencyPowers">The list of powers of the adjacency matrix A.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
         /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
-        /// <returns></returns>
+        /// <returns>The list of nodes from which every target node can be reached.</returns>
         public static Dictionary<string, List<string>> GetTargetAncestors(List<Matrix<double>> powersMatrixA, List<string> targetNodes, Dictionary<string, int> nodeIndex)
         {
             // Initialize the path dictionary with an empty list for each target node.
