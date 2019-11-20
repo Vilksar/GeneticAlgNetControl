@@ -52,7 +52,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public double PercentageElite { get; set; }
 
         /// <summary>
-        /// Represents the probability of mutation for each chromosome.
+        /// Represents the probability of mutation for each gene of a chromosome..
         /// </summary>
         public double ProbabilityMutation { get; set; }
 
@@ -67,7 +67,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public AlgorithmMutationType MutationType { get; set; }
 
         /// <summary>
-        /// Initializes a new, default, instance of the class.
+        /// Initializes a new default instance of the class.
         /// </summary>
         public Parameters()
         {
@@ -83,6 +83,36 @@ namespace GeneticAlgNetControl.Helpers.Models
             ProbabilityMutation = DefaultValues.ProbabilityMutation;
             CrossoverType = DefaultValues.CrossoverType;
             MutationType = DefaultValues.MutationType;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="randomSeed">The random seed.</param>
+        /// <param name="maximumIterations">The maximum number of iterations.</param>
+        /// <param name="maximumIterationsWithoutImprovement">The maximum number of iterations without improvement.</param>
+        /// <param name="maximumPathLength">The maximum path length.</param>
+        /// <param name="populationSize">The population size.</param>
+        /// <param name="randomGenesPerChromosome">The maximum number of genes whose value can be simultaneously randomly generated.</param>
+        /// <param name="percentageRandom">The percentage of a population which is composed of randomly generated chromosomes.</param>
+        /// <param name="percentageElite">The percentage of a population which is composed of the elite chromosomes of the previous population.</param>
+        /// <param name="probabilityMutation">The probability of mutation for each gene of a chromosome.</param>
+        /// <param name="crossoverType">The crossover algorithm to be used.</param>
+        /// <param name="mutationType">The mutation algorithm to be used.</param>
+        public Parameters(int randomSeed, int maximumIterations, int maximumIterationsWithoutImprovement, int maximumPathLength, int populationSize, int randomGenesPerChromosome, double percentageRandom, double percentageElite, double probabilityMutation, AlgorithmCrossoverType crossoverType, AlgorithmMutationType mutationType)
+        {
+            // Assign the value for each parameter.
+            RandomSeed = randomSeed;
+            MaximumIterations = maximumIterations;
+            MaximumIterationsWithoutImprovement = maximumIterationsWithoutImprovement;
+            MaximumPathLength = maximumPathLength;
+            PopulationSize = populationSize;
+            RandomGenesPerChromosome = randomGenesPerChromosome;
+            PercentageRandom = percentageRandom;
+            PercentageElite = percentageElite;
+            ProbabilityMutation = probabilityMutation;
+            CrossoverType = crossoverType;
+            MutationType = mutationType;
         }
 
         /// <summary>

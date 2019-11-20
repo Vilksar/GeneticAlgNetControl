@@ -39,33 +39,5 @@ namespace GeneticAlgNetControl.Helpers.Extensions
             // Check if it is full rank.
             return clonedMatrix.QR(QRMethod.Full).IsFullRank;
         }
-
-        /// <summary>
-        /// Computes the rank of the given matrix.
-        /// </summary>
-        /// <param name="matrix">The matrix to check.</param>
-        /// <returns>The rank of the matrix.</returns>
-        public static int GetFullRank(this Matrix<double> matrix)
-        {
-            // Clone the given matrix.
-            var clonedMatrix = matrix.Clone();
-            // Check if there are more rows than columns.
-            if (clonedMatrix.ColumnCount < clonedMatrix.RowCount)
-            {
-                // Create a new helper matrix.
-                var helperMatrix = Matrix<double>.Build.Dense(clonedMatrix.RowCount, clonedMatrix.RowCount - clonedMatrix.ColumnCount);
-                // Append the helper matrix to the cloned matrix.
-                clonedMatrix = clonedMatrix.Append(helperMatrix);
-            }
-            // Transpose the matrix.
-            clonedMatrix = clonedMatrix.Transpose();
-            // If needed, Insert a number of all-zero columns such that to make the matrix square (only if it has less columns than rows).
-            for (int index = 0; index < matrix.RowCount - matrix.ColumnCount; index++)
-            {
-                matrix = matrix.InsertColumn(matrix.ColumnCount, Vector<double>.Build.Dense(matrix.RowCount, 0.0));
-            }
-            // Check if it is full rank.
-            return clonedMatrix.QR(QRMethod.Full).R.Diagonal().Count(item => item != 0);
-        }
     }
 }

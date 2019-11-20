@@ -41,6 +41,20 @@ namespace GeneticAlgNetControl.Helpers.Models
         public string ParametersFilepath { get; set; }
 
         /// <summary>
+        /// Initializes a new default instance of the class.
+        /// </summary>
+        public ProgramArguments()
+        {
+            // Assign the default value for each property.
+            Arguments = new string[0];
+            DisplayHelp = false;
+            EdgesFilepath = null;
+            TargetNodesFilepath = null;
+            PreferredNodesFilepath = null;
+            ParametersFilepath = null;
+        }
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="args">The command-line arguments.</param>
@@ -51,7 +65,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             var targetNodesFilepathIndex = Array.IndexOf(args, "--targets");
             var preferredNodesFilepathIndex = Array.IndexOf(args, "--preferred");
             var parametersFilepathIndex = Array.IndexOf(args, "--parameters");
-            // Assign the values to the properties.
+            // Assign the value for each property.
             Arguments = args;
             DisplayHelp = args.Contains("--help");
             EdgesFilepath = edgesFilepathIndex != -1 && edgesFilepathIndex + 1 < args.Length ? args[edgesFilepathIndex + 1] : null;

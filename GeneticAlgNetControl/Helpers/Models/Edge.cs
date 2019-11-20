@@ -21,12 +21,25 @@ namespace GeneticAlgNetControl.Helpers.Models
         public string TargetNode { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the class.
+        /// Initializes a new default instance of the class.
         /// </summary>
         public Edge()
         {
+            // Assign the default value for each property.
             SourceNode = null;
             TargetNode = null;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the class.
+        /// </summary>
+        /// <param name="sourceNode"></param>
+        /// <param name="targetNode"></param>
+        public Edge(string sourceNode, string targetNode)
+        {
+            // Assign the value for each property.
+            SourceNode = sourceNode;
+            TargetNode = targetNode;
         }
     }
 }

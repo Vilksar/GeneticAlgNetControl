@@ -44,7 +44,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// Launches the algorithm run execution.
         /// </summary>
         /// <param name="stopToken">The cancellation token corresponding to the task.</param>
-        /// <returns></returns>
+        /// <returns>A runnable task.</returns>
         protected override async Task ExecuteAsync(CancellationToken stopToken)
         {
             // Use the current scope.
@@ -75,7 +75,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Mark the algorithm for updating.
                 context.Update(algorithm);
                 // Update the algorithm status and stats.
-                algorithm.Status = AlgorithmStatus.Ongoing;
+                algorithm.Status = AlgorithmStatus.PreparingToStart;
                 algorithm.DateTimeStarted = DateTime.Now;
                 algorithm.DateTimePeriods = algorithm.DateTimePeriods.Append(new DateTimePeriod(algorithm.DateTimeStarted, null)).ToList();
                 // Save the changes in the database.
@@ -96,20 +96,27 @@ namespace GeneticAlgNetControl.Helpers.Services
                 var powersMatrixA = Algorithm.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
                 var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
                 var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
+                // Update the algorithm status.
+                algorithm.Status = AlgorithmStatus.Ongoing;
+                // Save the changes in the database.
+                await context.SaveChangesAsync();
                 // Set up the current iteration.
                 var random = new Random(parameters.RandomSeed);
                 var currentIteration = algorithm.CurrentIteration;
                 var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
                 var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random) : algorithm.Population;
                 var bestFitness = population.HistoricBestFitness.Max();
-                // Save the changes in the database.
-                await context.SaveChangesAsync();
                 // Move through the generations.
                 while (!stopToken.IsCancellationRequested && algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
                 {
                     // Move on to the next iterations.
                     currentIteration += 1;
                     currentIterationWithoutImprovement += 1;
+                    // Update the iteration count.
+                    algorithm.CurrentIteration = currentIteration;
+                    algorithm.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
+                    // Save the changes in the database.
+                    await context.SaveChangesAsync();
                     // Move on to the next population.
                     population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
                     // Get the best fitness of the current population.
@@ -121,12 +128,6 @@ namespace GeneticAlgNetControl.Helpers.Services
                         bestFitness = fitness;
                         currentIterationWithoutImprovement = 0;
                     }
-                    // Update the iteration count and last population.
-                    algorithm.CurrentIteration = currentIteration;
-                    algorithm.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
-                    algorithm.Population = population;
-                    // Save the changes in the database.
-                    await context.SaveChangesAsync();
                     // Reload it for a fresh start.
                     await context.Entry(algorithm).ReloadAsync();
                 }
@@ -137,6 +138,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                     continue;
                 }
                 // Update the solutions, end time and the status.
+                algorithm.Population = population;
                 algorithm.Status = algorithm.Status == AlgorithmStatus.ScheduledToStop ? AlgorithmStatus.Stopped : AlgorithmStatus.Completed;
                 algorithm.DateTimeEnded = DateTime.Now;
                 algorithm.DateTimePeriods = algorithm.DateTimePeriods.SkipLast(1).Append(new DateTimePeriod(algorithm.DateTimeStarted, algorithm.DateTimeEnded)).ToList();

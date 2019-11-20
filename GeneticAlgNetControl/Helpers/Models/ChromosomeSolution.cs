@@ -52,11 +52,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Dictionary<string, string> Genes { get; set; }
 
         /// <summary>
-        /// Constructor for an empty solution.
+        /// Initializes a new default instance of the class.
         /// </summary>
         public ChromosomeSolution()
         {
-            // Assign the default values.
+            // Assign the default value for each property.
             Fitness = 0.0;
             MaximumControlPathLength = -1;
             NumberOfUniqueControlNodes = 0;
@@ -76,7 +76,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         public ChromosomeSolution(Chromosome chromosome, Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
         {
-            // Assign the values.
+            // Assign the value for each property.
             Genes = chromosome.Genes;
             Fitness = chromosome.GetFitness();
             MaximumControlPathLength = chromosome.GetMaximumPathLength(nodeIndex, powersMatrixCA);

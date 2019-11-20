@@ -41,6 +41,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public Population()
         {
             Chromosomes = new List<Chromosome>();
+            Solutions = new List<ChromosomeSolution>();
             HistoricBestFitness = new List<double>();
             HistoricAverageFitness = new List<double>();
         }
@@ -213,7 +214,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// </summary>
         /// <param name="combinedFitnessList">The combined fitness list for the population.</param>
         /// <param name="random">The random seed.</param>
-        /// <returns></returns>
+        /// <returns>A random chromosome, selected based on its fitness.</returns>
         public Chromosome Select(List<double> combinedFitnessList, Random random)
         {
             // Generate a random value.
@@ -227,7 +228,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
-        /// <returns>The chromosome solutions of the population.</returns>
+        /// <returns>The chromosomes that have the best fitness in the current population.</returns>
         public IEnumerable<Chromosome> GetBestChromosomes()
         {
             // Get the best fitness of the population.
@@ -251,7 +252,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Returns all of the unique chromosomes with the highest fitness in the population (providing an unique combination of genes).
         /// </summary>
-        /// <returns>The chromosome solutions of the population.</returns>
+        /// <returns>The chromosome solutions of the current population.</returns>
         public IEnumerable<Chromosome> GetSolutions()
         {
             // Get the best fitness of the population.

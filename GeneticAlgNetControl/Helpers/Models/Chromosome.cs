@@ -174,7 +174,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
-        /// <returns></returns>
+        /// <returns>The number of target nodes that can be controlled only by the preferred nodes in the solution.</returns>
         public int GetNumberOfTargetsControlledByPreferred(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
         {
             // Get the unique preferred nodes.
@@ -214,6 +214,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="lowerLimit">The lower limit of the interval in which to randomly generate the values.</param>
         /// <param name="upperLimit">The upper limit of the interval in which to randomly generate the values.</param>
         /// <param name="random">The random seed.</param>
+        /// <returns>The same chromosome, with randomly generated gene values between the lower and the upper limit.</returns>
         public Chromosome Initialize(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, int lowerLimit, int upperLimit, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.
@@ -274,7 +275,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
         /// <param name="crossoverType">The crossover type for the algorithm.</param>
         /// <param name="random">The random seed.</param>
-        /// <returns></returns>
+        /// <returns>A new offspring chromosome from this and a second chromosome parents.</returns>
         public Chromosome Crossover(Chromosome secondChromosome, Dictionary<string, int> nodeIndex, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, AlgorithmCrossoverType crossoverType, Random random)
         {
             // Define a new chromosome.
@@ -385,6 +386,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="mutationType">The mutation type for the algorithm.</param>
         /// <param name="mutationProbability">The probability of mutation for any gene of the chromosome.</param>
         /// <param name="random">The random seed.</param>
+        /// <returns>The same chromosome, with the mutation operator applied on a random number of its genes.</returns>
         public Chromosome Mutate(Dictionary<string, int> nodeIndex, Dictionary<string, List<string>> targetAncestors, List<Matrix<double>> powersMatrixCA, Dictionary<string, bool> nodeIsPreferred, AlgorithmMutationType mutationType, double mutationProbability, Random random)
         {
             // Define the number of tries in which to try and find a valid chromosome.

@@ -20,10 +20,7 @@ namespace GeneticAlgNetControl.Data
         /// Initializes a new instance of the database context.
         /// </summary>
         /// <param name="options">Represents the options for the database context.</param>
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
-        {
-
-        }
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options) { }
 
         /// <summary>
         /// Configures code-first the database entities and relationships between them.
