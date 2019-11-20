@@ -8,16 +8,11 @@ html {
 
 body {
     min-height: 100%;
-    min-width: 800px;
-    overflow-x: auto;
 }
 
-/* Style for the navigation. */
-.nav-link.active {
-    background-color: #1d2124 !important;
-}
-
-/* Style for the dropdown menus. */
-.dropdown-menu {
-    min-width: 15rem;
+main {
+    background-color: #f8f9fa;
+    background-image: url("/img/background.svg");
+    background-attachment: fixed;
+    background-size: cover;
 }

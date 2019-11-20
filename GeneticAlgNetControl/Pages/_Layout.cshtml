@@ -3,83 +3,52 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>GeneticAlgNetControl</title>
+    <title>Genetic Algorithms for Network Controllability</title>
     <link rel="stylesheet" href="~/lib/twitter-bootstrap/css/bootstrap.min.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="false" />
 </head>
 <body class="d-flex flex-column">
-    <div class="flex-grow-1 row mx-0">
-        <div class="col-4 col-lg-3 bg-dark d-flex flex-column justify-content-between align-items-center px-2 py-4">
-            <div class="navbar navbar-dark flex-grow-0">
-                <div class="navbar-brand">
-                    <img src="~/img/geneticalgnetcontrol-icon.png" width="30" height="30" class="align-top" />
-                    <span>GeneticAlgNetControl</span>
+    <div class="d-flex flex-column flex-md-row flex-grow-1 bg-light">
+        <div class="col-md-4 col-lg-3 col-xl-2 flex-grow-0 flex-md-grow-1 bg-white shadow-sm">
+            <div class="navbar navbar-expand-md navbar-light flex-row flex-md-column sticky-top">
+                <div class="navbar-brand d-flex flex-row flex-md-column align-items-center mx-0 my-md-4">
+                    <img src="~/img/geneticalgnetcontrol-icon.png" width="30" height="30" class="align-top mx-1" />
+                    <span>GeneticAlg</span>
+                    <span>NetControl</span>
                 </div>
-            </div>
-            <div class="flex-grow-1 w-100">
-                <div class="nav flex-column">
-                    @{
-                        var activePage = (string)ViewData["ActivePage"];
-                    }
-                    <a asp-page="/Index" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "Home" ? "active" : string.Empty)">
-                        <div class="row">
-                            <span class="col-10 font-weight-bold text-left text-wrap">Home</span>
-                            <span class="col-2 text-center"><i class="fas fa-home"></i></span>
-                        </div>
-                    </a>
-                    <a asp-page="/Dashboard" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "Dashboard" ? "active" : string.Empty)">
-                        <div class="row">
-                            <span class="col-10 font-weight-bold text-left text-wrap">Dashboard</span>
-                            <span class="col-2 text-center"><i class="fas fa-chart-bar"></i></span>
-                        </div>
-                    </a>
-                    <a asp-page="/Create" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "Create" ? "active" : string.Empty)">
-                        <div class="row">
-                            <span class="col-10 font-weight-bold text-left text-wrap">Create</span>
-                            <span class="col-2 text-center"><i class="fas fa-plus-circle"></i></span>
-                        </div>
-                    </a>
-                    <a asp-page="/About" class="d-flex flex-column justify-content-center nav-link bg-dark text-white py-1 @(activePage == "About" ? "active" : string.Empty)">
-                        <div class="row">
-                            <span class="col-10 font-weight-bold text-left text-wrap">About</span>
-                            <span class="col-2 text-center"><i class="fas fa-question-circle"></i></span>
-                        </div>
-                    </a>
-                </div>
-            </div>
-            <div class="flex-grow-0">
-                <div class="navbar navbar-dark">
-                    <ul class="navbar-nav d-flex flex-column justify-content-around align-items-center">
-                        <li class="nav-item">
-                            <div class="text-light">
-                                <span>&copy; @DateTime.Now.Year - Victor Popescu</span>
-                            </div>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="col-8 col-lg-9 px-4 pt-4 pb-3 bg-light">
-            @{
-                var statusMessage = (string)TempData["StatusMessage"];
-            }
-            @if (!string.IsNullOrEmpty(statusMessage))
-            {
-                var statusMessageType = statusMessage.StartsWith("Error") ? "danger" : statusMessage.StartsWith("Success") ? "success" : "info";
-                var statusMessageIcon = statusMessage.StartsWith("Error") ? "exclamation" : statusMessage.StartsWith("Success") ? "check" : "info";
-                var statusMessageText = string.Join(" ", statusMessage.Split(" ").Skip(1));
-                <div class="alert alert-@statusMessageType alert-dismissible text-wrap mb-3">
-                    <div>
-                        <span><i class="fas fa-@statusMessageIcon-circle"></i></span>
-                        <span>@statusMessageText</span>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".collapse.navbar-collapse" title="Toggle navigation">
+                    <span><i class="fas fa-bars"></i></span>
+                </button>
+                <div class="collapse navbar-collapse w-100 my-md-4">
+                    <div class="navbar-nav flex-column w-100">
+                        @{
+                            var activePage = (string)ViewData["ActivePage"];
+                        }
+                        <span class="font-weight-bold navbar-text text-muted">Overview</span>
+                        <a asp-page="/Index" class="nav-item nav-link d-flex flex-row @(activePage == "Home" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-primary"><i class="fas fa-home"></i></span>
+                            <span class="col-10">Home</span>
+                        </a>
+                        <a asp-page="/Dashboard" class="nav-item nav-link d-flex flex-row @(activePage == "Dashboard" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-danger"><i class="fas fa-chart-bar"></i></span>
+                            <span class="col-10">Dashboard</span>
+                        </a>
+                        <a asp-page="/Create" class="nav-item nav-link d-flex flex-row @(activePage == "Create" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-success"><i class="fas fa-plus"></i></span>
+                            <span class="col-10">Create</span>
+                        </a>
+                        <span class="font-weight-bold navbar-text text-muted">Documentation</span>
+                        <a asp-page="/About" class="nav-item nav-link d-flex flex-row @(activePage == "About" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-info"><i class="fas fa-question-circle"></i></span>
+                            <span class="col-10">About</span>
+                        </a>
                     </div>
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span><i class="fas fa-times"></i></span>
-                    </button>
                 </div>
-            }
-            @RenderBody()
+            </div>
         </div>
+        <main class="col-md-8 col-lg-9 col-xl-10 flex-grow-1 flex-md-grow-1 d-flex flex-column">
+            @RenderBody()
+        </main>
     </div>
     <script src="~/lib/jquery/jquery.min.js" asp-append-version="true"></script>
     <script src="~/lib/twitter-bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
