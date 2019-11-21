@@ -16,3 +16,8 @@ main {
     background-attachment: fixed;
     background-size: cover;
 }
+
+/* Style for the validation errors. */
+.validation-summary-errors ul {
+    margin-bottom: 0;
+}
