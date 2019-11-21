@@ -50,10 +50,10 @@
                         <div class="col-6 col-xl-6 text-center text-truncate">
                             <span>Name</span>
                         </div>
-                        <div class="col-2 col-xl-2 text-center text-truncate">
+                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                             <span>Status</span>
                         </div>
-                        <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                        <div class="col-6 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
                             <form method="post">
                                 <div class="form-group" hidden>
                                     <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
@@ -82,12 +82,12 @@
                                             <span title="@item.Id" class="small">@item.Id</span>
                                         </div>
                                     </div>
-                                    <div class="col-2 col-xl-2 text-center text-truncate">
+                                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                                         <div>
                                             <span title="@item.Status.ToString()" class="">@item.Status.ToString()</span>
                                         </div>
                                     </div>
-                                    <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                                    <div class="col-6 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
                                         <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
                                             <span><i class="fas fa-info-circle"></i></span>
                                         </a>

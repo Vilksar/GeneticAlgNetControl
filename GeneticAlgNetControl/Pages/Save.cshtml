@@ -49,10 +49,10 @@
                         <div class="col-6 col-xl-6 text-center text-truncate">
                             <span>Name</span>
                         </div>
-                        <div class="col-2 col-xl-2 text-center text-truncate">
+                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                             <span>Status</span>
                         </div>
-                        <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                        <div class="col-6 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
                             <form method="post">
                                 <div class="form-group" hidden>
                                     <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
@@ -61,17 +61,17 @@
                                     <span asp-validation-for="Input.Ids" class="text-danger small"></span>
                                 </div>
                                 <div class="row align-items-center">
-                                    <div class="col-xl-6 mb-3 mb-xl-0 px-1">
+                                    <div class="col-xl-6 pr-xl-1 mb-2 mb-xl-0">
                                         <label asp-for="Input.Type" class="font-weight-bold" hidden>File type</label>
                                         <select asp-for="Input.Type" class="custom-select">
                                             <option value="Json">JSON (".json")</option>
                                         </select>
-                                        <span asp-description-for="Input.Type" class="text-muted small" hidden>The type of the file to download.</span>
+                                        <span asp-description-for="Input.Type" class="text-muted small" hidden>The type of the file to save.</span>
                                         <span asp-validation-for="Input.Type" class="text-danger small" hidden></span>
                                     </div>
-                                    <div class="col-xl-6 px-1">
+                                    <div class="col-xl-6 pl-xl-1">
                                         <button type="submit" class="btn btn-block btn-primary text-wrap" title="Download all">
-                                            <span>Download all</span>
+                                            <span>Save all</span>
                                         </button>
                                     </div>
                                 </div>
@@ -93,12 +93,12 @@
                                             <span title="@item.Id" class="small">@item.Id</span>
                                         </div>
                                     </div>
-                                    <div class="col-2 col-xl-2 text-center text-truncate">
+                                    <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                                         <div>
                                             <span title="@item.Status.ToString()" class="">@item.Status.ToString()</span>
                                         </div>
                                     </div>
-                                    <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                                    <div class="col-6 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
                                         <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
                                             <span><i class="fas fa-info-circle"></i></span>
                                         </a>
