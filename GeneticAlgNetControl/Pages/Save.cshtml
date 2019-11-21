@@ -2,101 +2,119 @@
 @model SaveModel
 @{
     ViewData["Title"] = "Save";
-    ViewData["ActivePage"] = "Overview";
+    ViewData["ActivePage"] = "Dashboard";
 }
 
-<div class="alert alert-info mb-3">
-    <span><i class="fas fa-info-circle"></i></span>
-    <span>The following item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be downloaded in a ZIP archive containing the specified file format.</span>
-</div>
-<ul class="list-group list-group-flush item-group">
-    <li class="list-group-item bg-transparent border-0">
-        <div class="row align-items-center">
-            <div class="col-sm-6 text-center text-md-left">
-                <span class="text-muted small">Showing items 1 to @Model.View.Items.Count().</span>
+<div class="flex-grow-1 p-4 d-flex flex-column">
+    <div class="container my-2 sticky-top">
+        <div class="card px-5 pt-3 pt-md-0 shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-md-6 text-center text-md-left">
+                    <span class="font-weight-bold">Save</span>
+                </div>
+                <div class="col-md-6 navbar navbar-light">
+                    <div class="navbar-nav flex-row flex-wrap align-items-center justify-content-center justify-content-md-end w-100">
+                        <a asp-page="/Dashboard" class="nav-item nav-link mx-2" title="Dashboard">
+                            <span><i class="fas fa-chart-bar"></i></span>
+                        </a>
+                        <a asp-page="/Index" class="nav-item nav-link mx-2" title="Home">
+                            <span><i class="fas fa-home"></i></span>
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
-    </li>
-    <li class="list-group-item list-group-item-action list-group-item-dark active">
-        <div class="row align-items-center font-weight-bold">
-            <div class="col-6 col-xl-6 text-center text-truncate">
-                <span>Name</span>
-            </div>
-            <div class="col-2 col-xl-2 text-center text-truncate">
-                <span>Status</span>
-            </div>
-            <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
-                <form method="post">
-                    <div class="form-group" hidden>
-                        <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
-                        <input asp-for="Input.Ids" type="hidden" class="form-control" />
-                        <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithms to be downloaded, formatted as a JSON string array.</span>
-                        <span asp-validation-for="Input.Ids" class="text-danger small"></span>
-                    </div>
-                    <div class="row align-items-center">
-                        <div class="col-xl-6 mb-3 mb-xl-0 px-1">
-                            <label asp-for="Input.Type" class="font-weight-bold" hidden>File type</label>
-                            <select asp-for="Input.Type" class="custom-select">
-                                <option value="Json">JSON (".json")</option>
-                            </select>
-                            <span asp-description-for="Input.Type" class="text-muted small" hidden>The type of the file to download.</span>
-                            <span asp-validation-for="Input.Type" class="text-danger small" hidden></span>
-                        </div>
-                        <div class="col-xl-6 px-1">
-                            <button type="submit" class="btn btn-block btn-primary text-wrap" title="Download all">
-                                <span>Download all</span>
-                            </button>
-                        </div>
-                    </div>
-                </form>
-            </div>
+    </div>
+    <div class="container my-2">
+        <div class="alert alert-info mb-0">
+            <span><i class="fas fa-info-circle"></i></span>
+            <span>The following @Model.View.Items.Count() item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be downloaded in a ZIP archive containing the specified file format.</span>
         </div>
-    </li>
-    @if (Model.View.Items == null || !Model.View.Items.Any())
+    </div>
+    @if (!Model.View.Items.Any())
     {
-        <li class="list-group-item">
-            <div class="row align-items-center py-2">
-                <div class="col-2 col-xl-1 text-center text-truncate">
-                    <span><i class="fas fa-info-circle"></i></span>
-                </div>
-                <div class="col-10 col-xl-11 text-left text-wrap">
-                    <span class="font-weight-bold">No items have been found.</span>
-                </div>
+        <div class="container my-2">
+            <div class="alert alert-danger mb-0">
+                <span><i class="fas fa-exclamation-circle"></i></span>
+                <span class="font-weight-bold">No items have been found.</span>
             </div>
-        </li>
+        </div>
     }
     else
     {
-        foreach (var item in Model.View.Items)
-        {
-            <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
-                <div class="row align-items-center">
-                    <div class="col-6 col-xl-6 text-center text-truncate">
-                        <div>
-                            <span title="@item.Name" class="font-weight-bold">@item.Name</span>
+        <div class="container my-2">
+            <div class="card">
+                <div class="card-header text-white bg-dark">
+                    <div class="row align-items-center font-weight-bold">
+                        <div class="col-6 col-xl-6 text-center text-truncate">
+                            <span>Name</span>
                         </div>
-                        <div>
-                            <span title="@item.Id" class="small">@item.Id</span>
+                        <div class="col-2 col-xl-2 text-center text-truncate">
+                            <span>Status</span>
                         </div>
-                    </div>
-                    <div class="col-2 col-xl-2 text-center text-truncate">
-                        <div>
-                            <span title="@item.Status.ToString()" class="">@item.Status.ToString()</span>
+                        <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                            <form method="post">
+                                <div class="form-group" hidden>
+                                    <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
+                                    <input asp-for="Input.Ids" type="hidden" class="form-control" />
+                                    <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithms to be downloaded, formatted as a JSON string array.</span>
+                                    <span asp-validation-for="Input.Ids" class="text-danger small"></span>
+                                </div>
+                                <div class="row align-items-center">
+                                    <div class="col-xl-6 mb-3 mb-xl-0 px-1">
+                                        <label asp-for="Input.Type" class="font-weight-bold" hidden>File type</label>
+                                        <select asp-for="Input.Type" class="custom-select">
+                                            <option value="Json">JSON (".json")</option>
+                                        </select>
+                                        <span asp-description-for="Input.Type" class="text-muted small" hidden>The type of the file to download.</span>
+                                        <span asp-validation-for="Input.Type" class="text-danger small" hidden></span>
+                                    </div>
+                                    <div class="col-xl-6 px-1">
+                                        <button type="submit" class="btn btn-block btn-primary text-wrap" title="Download all">
+                                            <span>Download all</span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
-                    </div>
-                    <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
-                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
-                            <span><i class="fas fa-info-circle"></i></span>
-                        </a>
-                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
-                            <span><i class="fas fa-copy"></i></span>
-                        </a>
-                        <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-outline-primary m-1" title="Save">
-                            <span><i class="fas fa-save"></i></span>
-                        </a>
                     </div>
                 </div>
-            </li>
-        }
+                <div class="card-body p-0">
+                    <ul class="list-group list-group-flush item-group">
+                        @foreach (var item in Model.View.Items)
+                        {
+                            <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
+                                <div class="row align-items-center">
+                                    <div class="col-6 col-xl-6 text-center text-truncate">
+                                        <div>
+                                            <span title="@item.Name" class="font-weight-bold">@item.Name</span>
+                                        </div>
+                                        <div>
+                                            <span title="@item.Id" class="small">@item.Id</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-xl-2 text-center text-truncate">
+                                        <div>
+                                            <span title="@item.Status.ToString()" class="">@item.Status.ToString()</span>
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-xl-4 d-flex flex-row flex-wrap justify-content-center">
+                                        <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1" title="Details">
+                                            <span><i class="fas fa-info-circle"></i></span>
+                                        </a>
+                                        <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1" title="Copy">
+                                            <span><i class="fas fa-copy"></i></span>
+                                        </a>
+                                        <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-outline-primary m-1" title="Save">
+                                            <span><i class="fas fa-save"></i></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </div>
     }
-</ul>
+</div>
