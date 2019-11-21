@@ -5,6 +5,55 @@
     ViewData["ActivePage"] = "About";
 }
 
-<div>
-    <span>This page will provide details about the website.</span>
+<div class="flex-grow-1 p-4 d-flex flex-column">
+    <div class="container my-2 sticky-top">
+        <div class="card px-5 shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-md-6 font-weight-bold">
+                    <span>About</span>
+                </div>
+                <div class="col-md-6 navbar navbar-light">
+                    <div class="navbar-nav flex-row flex-wrap align-items-center justify-content-end w-100">
+                        <a asp-page="/Index" class="nav-item nav-link mx-2" title="Home">
+                            <span><i class="fas fa-home"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container my-2 flex-grow-1">
+        <div class="card px-5 py-4">
+            <p>
+                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque molestie vel tellus sit amet imperdiet. Sed laoreet, nisi sit amet ullamcorper sodales, nisi purus pellentesque eros, eu maximus mauris nisi eu lacus. Curabitur blandit egestas ornare. Pellentesque lacus diam, ullamcorper a lacinia a, consectetur vel magna. Proin imperdiet leo sed ante tempus, vitae molestie quam euismod. Donec at massa eu mi euismod maximus at vitae sapien. Vestibulum nec erat nulla. In sit amet malesuada ex, eget congue justo. Morbi convallis, massa nec feugiat vulputate, nisl elit semper dui, ac egestas ligula urna quis lacus. Nulla posuere purus quis pellentesque iaculis. Sed in diam sed quam interdum tincidunt hendrerit ac diam. Fusce tempus risus non dapibus gravida. Integer commodo ante sit amet aliquet ultrices.</span>
+            </p>
+            <p>
+                <span>Mauris nunc diam, suscipit id viverra ac, sodales eget risus. Curabitur eu egestas libero, sed feugiat erat. Aenean leo metus, aliquet quis risus non, dictum aliquam sem. Maecenas sed lacus eget elit placerat ullamcorper at ut felis. Suspendisse vitae erat odio. Suspendisse potenti. Maecenas vel magna faucibus, suscipit est eget, gravida ante. Donec et dapibus tellus. Sed congue euismod hendrerit. Pellentesque erat eros, tincidunt eu erat quis, iaculis sodales turpis. Suspendisse potenti.</span>
+            </p>
+            <p>
+                <span>Mauris laoreet enim quis lobortis mattis. Etiam aliquam facilisis placerat. Quisque a magna vitae ligula accumsan suscipit sodales ut nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque tincidunt neque eget iaculis vestibulum. Nam dignissim, dolor a tempor ullamcorper, tellus nibh aliquet ipsum, eu imperdiet velit sapien in ante. Curabitur tempor urna odio, at consectetur nisl faucibus non. Sed a imperdiet lorem. Donec in accumsan tellus. Nunc luctus rhoncus felis, sed facilisis ante feugiat sed. Aliquam congue purus ut lectus suscipit, vel feugiat sapien varius. Quisque at libero ex. Integer rhoncus, lectus id congue vulputate, lorem sapien aliquet erat, quis pretium nisl elit faucibus nibh. Donec dignissim aliquam vehicula. Nullam ultricies enim ac mi aliquam feugiat. Pellentesque sed neque metus.</span>
+            </p>
+            <p>
+                <span>Duis euismod erat sed tellus scelerisque, ac vehicula lacus tincidunt. Aliquam eleifend metus in magna vehicula euismod. Quisque laoreet nisi est, eu molestie dui ultrices at. Nam consequat ultricies tincidunt. Maecenas ligula justo, mollis ut facilisis eget, maximus ut urna. Sed semper a leo ac tristique. Nullam in aliquet neque. Suspendisse efficitur fringilla nisl eu tristique. Morbi sed diam volutpat, lacinia metus quis, placerat turpis.</span>
+            </p>
+            <p>
+                <span>Cras placerat scelerisque malesuada. Curabitur convallis erat vel diam tempor, et fermentum ligula fermentum. Nullam arcu arcu, eleifend vitae neque ac, facilisis egestas odio. Phasellus consequat risus varius mauris placerat, vel mollis felis eleifend. Proin eu massa sed mauris convallis facilisis. Integer sollicitudin ac risus eget eleifend. Morbi eget pulvinar velit. Vivamus congue feugiat libero, sed malesuada lorem congue a. Phasellus eu bibendum erat. Cras consequat ante a sapien vestibulum, ac condimentum elit condimentum. Maecenas tempor risus vel lorem convallis, at convallis augue facilisis. Vivamus a lorem sem. Pellentesque at cursus arcu. Vestibulum dapibus nunc sit amet felis facilisis ornare. Cras blandit convallis interdum. Donec volutpat magna id rhoncus scelerisque.</span>
+            </p>
+            <p>
+                <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque molestie vel tellus sit amet imperdiet. Sed laoreet, nisi sit amet ullamcorper sodales, nisi purus pellentesque eros, eu maximus mauris nisi eu lacus. Curabitur blandit egestas ornare. Pellentesque lacus diam, ullamcorper a lacinia a, consectetur vel magna. Proin imperdiet leo sed ante tempus, vitae molestie quam euismod. Donec at massa eu mi euismod maximus at vitae sapien. Vestibulum nec erat nulla. In sit amet malesuada ex, eget congue justo. Morbi convallis, massa nec feugiat vulputate, nisl elit semper dui, ac egestas ligula urna quis lacus. Nulla posuere purus quis pellentesque iaculis. Sed in diam sed quam interdum tincidunt hendrerit ac diam. Fusce tempus risus non dapibus gravida. Integer commodo ante sit amet aliquet ultrices.</span>
+            </p>
+            <p>
+                <span>Mauris nunc diam, suscipit id viverra ac, sodales eget risus. Curabitur eu egestas libero, sed feugiat erat. Aenean leo metus, aliquet quis risus non, dictum aliquam sem. Maecenas sed lacus eget elit placerat ullamcorper at ut felis. Suspendisse vitae erat odio. Suspendisse potenti. Maecenas vel magna faucibus, suscipit est eget, gravida ante. Donec et dapibus tellus. Sed congue euismod hendrerit. Pellentesque erat eros, tincidunt eu erat quis, iaculis sodales turpis. Suspendisse potenti.</span>
+            </p>
+            <p>
+                <span>Mauris laoreet enim quis lobortis mattis. Etiam aliquam facilisis placerat. Quisque a magna vitae ligula accumsan suscipit sodales ut nisi. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque tincidunt neque eget iaculis vestibulum. Nam dignissim, dolor a tempor ullamcorper, tellus nibh aliquet ipsum, eu imperdiet velit sapien in ante. Curabitur tempor urna odio, at consectetur nisl faucibus non. Sed a imperdiet lorem. Donec in accumsan tellus. Nunc luctus rhoncus felis, sed facilisis ante feugiat sed. Aliquam congue purus ut lectus suscipit, vel feugiat sapien varius. Quisque at libero ex. Integer rhoncus, lectus id congue vulputate, lorem sapien aliquet erat, quis pretium nisl elit faucibus nibh. Donec dignissim aliquam vehicula. Nullam ultricies enim ac mi aliquam feugiat. Pellentesque sed neque metus.</span>
+            </p>
+            <p>
+                <span>Duis euismod erat sed tellus scelerisque, ac vehicula lacus tincidunt. Aliquam eleifend metus in magna vehicula euismod. Quisque laoreet nisi est, eu molestie dui ultrices at. Nam consequat ultricies tincidunt. Maecenas ligula justo, mollis ut facilisis eget, maximus ut urna. Sed semper a leo ac tristique. Nullam in aliquet neque. Suspendisse efficitur fringilla nisl eu tristique. Morbi sed diam volutpat, lacinia metus quis, placerat turpis.</span>
+            </p>
+            <p>
+                <span>Cras placerat scelerisque malesuada. Curabitur convallis erat vel diam tempor, et fermentum ligula fermentum. Nullam arcu arcu, eleifend vitae neque ac, facilisis egestas odio. Phasellus consequat risus varius mauris placerat, vel mollis felis eleifend. Proin eu massa sed mauris convallis facilisis. Integer sollicitudin ac risus eget eleifend. Morbi eget pulvinar velit. Vivamus congue feugiat libero, sed malesuada lorem congue a. Phasellus eu bibendum erat. Cras consequat ante a sapien vestibulum, ac condimentum elit condimentum. Maecenas tempor risus vel lorem convallis, at convallis augue facilisis. Vivamus a lorem sem. Pellentesque at cursus arcu. Vestibulum dapibus nunc sit amet felis facilisis ornare. Cras blandit convallis interdum. Donec volutpat magna id rhoncus scelerisque.</span>
+            </p>
+        </div>
+    </div>
 </div>
