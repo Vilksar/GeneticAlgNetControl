@@ -25,7 +25,7 @@ $(window).on('load', () => {
             const selectedItems = $(groupElement).find('input[type="checkbox"]:checked').closest('.item-group-item');
             // Go over each of the selected items and mark them as active.
             $(selectedItems).addClass('active');
-            // Check how many elements are selected.
+            // Check if there are no elements selected.
             if (selectedItems.length === 0) {
                 // Disable the group buttons.
                 $('.item-group-button').prop('disabled', true);
@@ -34,8 +34,28 @@ $(window).on('load', () => {
                 // Uncheck the checkbox.
                 $(groupElement).find('.item-group-select').prop('checked', false);
             } else {
-                // Enable the group buttons.
-                $('.item-group-button').prop('disabled', false);
+                // Get an array containing the statuses of the selected elements.
+                const statuses = $(selectedItems).find('.item-group-item-status').map((index, element) => $(element).text()).toArray();
+                // Check if the 'Start' button should be enabled (if all / any of the selected elements has the status 'Stopped').
+                if (statuses.length !== 0 && statuses.every((item) => item === 'Stopped')) {
+                    // Enable the 'Start' button.
+                    $('.item-group-button-start').prop('disabled', false);
+                }
+                // Check if the 'Stop' button should be enabled (if all / any of the selected elements has the status 'Ongoing').
+                if (statuses.length !== 0 && statuses.every((item) => item === 'Ongoing')) {
+                    // Enable the 'Stop' button.
+                    $('.item-group-button-stop').prop('disabled', false);
+                }
+                // Check if the 'Save' button should be enabled (if all / any of the selected elements has the status 'Stopped' or 'Completed').
+                if (statuses.length !== 0 && statuses.every((item) => item === 'Stopped' || item === 'Completed')) {
+                    // Enable the 'Save' button.
+                    $('.item-group-button-save').prop('disabled', false);
+                }
+                // Check if the 'Delete' button should be enabled (if all / any of the selected elements has the status 'Scheduled', 'Stopped' or 'Completed').
+                if (statuses.length !== 0 && statuses.every((item) => item === 'Scheduled' || item === 'Stopped' || item === 'Completed')) {
+                    // Enable the 'Delete' button.
+                    $('.item-group-button-delete').prop('disabled', false);
+                }
                 // Check if not all elements are selected.
                 if (selectedItems.length !== items.length) {
                     // Mark the checkbox as indeterminate.
@@ -133,7 +153,7 @@ $(window).on('load', () => {
                         return;
                     }
                     // Split the element into an array of items.
-                    return { "SourceNode": row[0], "TargetNode": row[1] };
+                    return { 'SourceNode': row[0], 'TargetNode': row[1] };
                 });
                 // Update the value of the count.
                 $(groupElement).find('.file-group-count').first().text(rows.length);
@@ -239,12 +259,12 @@ $(window).on('load', () => {
         })();
     }
 
-    // Check if there is any algorithm item on page.
-    if ($('.algorithm-item-status').length !== 0) {
+    // Check if there is any item group item on page.
+    if ($('.item-group-item-status').length !== 0) {
         // Define a function which updates all algorithms on page.
         const updateAlgorithms = () => {
             // Go over each algorithm item element on the page.
-            $('.algorithm-item-status').each((index, element) => {
+            $('.item-group-item-status').each((index, element) => {
                 // Get its current status.
                 let status = $(element).text();
                 // Check if the algorithm needs updating.
@@ -252,7 +272,7 @@ $(window).on('load', () => {
                     // Get the parent element.
                     const parent = $(element).closest('.item-group-item');
                     // Get the ID.
-                    const id = $(parent).find('.algorithm-item-id').first().text();
+                    const id = $(parent).find('.item-group-item-id').first().text();
                     // Retrieve the new data for the algorithm with the mentioned ID.
                     const json = $.ajax({
                         url: `/Dashboard?handler=Refresh&id=${id}`,
@@ -260,14 +280,14 @@ $(window).on('load', () => {
                         dataType: 'json'
                     }).responseJSON;
                     // Update the corresponding fields.
-                    $(parent).find('.algorithm-item-status').attr('title', json.statusTitle);
-                    $(parent).find('.algorithm-item-status').text(json.statusText);
-                    $(parent).find('.algorithm-item-time-span').attr('title', json.timeSpanTitle);
-                    $(parent).find('.algorithm-item-time-span').text(json.timeSpanText);
-                    $(parent).find('.algorithm-item-progress-iterations').attr('title', json.progressIterationsTitle);
-                    $(parent).find('.algorithm-item-progress-iterations').text(json.progressIterationsText);
-                    $(parent).find('.algorithm-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
-                    $(parent).find('.algorithm-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
+                    $(parent).find('.item-group-item-status').attr('title', json.statusTitle);
+                    $(parent).find('.item-group-item-status').text(json.statusText);
+                    $(parent).find('.item-group-item-time-span').attr('title', json.timeSpanTitle);
+                    $(parent).find('.item-group-item-time-span').text(json.timeSpanText);
+                    $(parent).find('.item-group-item-progress-iterations').attr('title', json.progressIterationsTitle);
+                    $(parent).find('.item-group-item-progress-iterations').text(json.progressIterationsText);
+                    $(parent).find('.item-group-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
+                    $(parent).find('.item-group-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
                     // Check if the status has been updated.
                     if (status !== json.statusText) {
                         // Update the status.
@@ -275,34 +295,34 @@ $(window).on('load', () => {
                         // Check the new status.
                         if (status === 'Scheduled') {
                             // Hide and show the corresponding buttons.
-                            $(parent).find('.algorithm-item-button-start').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-stop').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-save').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-delete').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-start').addClass('d-none');
+                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
+                            $(parent).find('.item-group-item-button-save').addClass('d-none');
+                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
                         } else if (status === 'Ongoing') {
                             // Hide and show the corresponding buttons.
-                            $(parent).find('.algorithm-item-button-start').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-stop').removeClass('d-none');
-                            $(parent).find('.algorithm-item-button-save').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-delete').addClass('d-none');
+                            $(parent).find('.item-group-item-button-start').addClass('d-none');
+                            $(parent).find('.item-group-item-button-stop').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-save').addClass('d-none');
+                            $(parent).find('.item-group-item-button-delete').addClass('d-none');
                         } else if (status === 'ScheduledToStop') {
                             // Hide and show the corresponding buttons.
-                            $(parent).find('.algorithm-item-button-start').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-stop').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-save').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-delete').addClass('d-none');
+                            $(parent).find('.item-group-item-button-start').addClass('d-none');
+                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
+                            $(parent).find('.item-group-item-button-save').addClass('d-none');
+                            $(parent).find('.item-group-item-button-delete').addClass('d-none');
                         } else if (status === 'Stopped') {
                             // Hide and show the corresponding buttons.
-                            $(parent).find('.algorithm-item-button-start').removeClass('d-none');
-                            $(parent).find('.algorithm-item-button-stop').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-save').removeClass('d-none');
-                            $(parent).find('.algorithm-item-button-delete').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-start').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
+                            $(parent).find('.item-group-item-button-save').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
                         } else if (status === 'Completed') {
                             // Hide and show the corresponding buttons.
-                            $(parent).find('.algorithm-item-button-start').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-stop').addClass('d-none');
-                            $(parent).find('.algorithm-item-button-save').removeClass('d-none');
-                            $(parent).find('.algorithm-item-button-delete').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-start').addClass('d-none');
+                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
+                            $(parent).find('.item-group-item-button-save').removeClass('d-none');
+                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
                         }
                     }
                 }

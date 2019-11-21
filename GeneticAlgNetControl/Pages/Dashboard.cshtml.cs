@@ -31,33 +31,25 @@ namespace GeneticAlgNetControl.Pages
             _linkGenerator = linkGenerator;
         }
 
-        [BindProperty(SupportsGet = true)]
-        public InputModel Input { get; set; }
-
-        public class InputModel
-        {
-            public string SearchString { get; set; } = string.Empty;
-
-            public IEnumerable<string> SearchIn { get; set; } = Enumerable.Empty<string>();
-
-            public IEnumerable<string> Filter { get; set; } = Enumerable.Empty<string>();
-
-            public string SortBy { get; set; } = "DateTimeStarted";
-
-            public string SortDirection { get; set; } = "Descending";
-
-            public int ItemsPerPage { get; set; } = 5;
-
-            public int CurrentPage { get; set; } = 1;
-        }
-
         public ViewModel View { get; set; }
 
         public class ViewModel
         {
-            public int TotalItems { get; set; }
+            public string SearchString { get; set; }
+
+            public IEnumerable<string> SearchIn { get; set; }
+
+            public IEnumerable<string> Filter { get; set; }
+
+            public string SortBy { get; set; }
+
+            public string SortDirection { get; set; }
+
+            public int ItemsPerPage { get; set; }
 
             public int CurrentPage { get; set; }
+
+            public int TotalItems { get; set; }
 
             public int TotalPages { get; set; }
 
@@ -72,29 +64,58 @@ namespace GeneticAlgNetControl.Pages
             public Dictionary<string, string> AppliedFilters { get; set; }
 
             public IEnumerable<Algorithm> Items { get; set; }
-
-            public string ChartData { get; set; }
         }
 
-        public IActionResult OnGet(InputModel input = null)
+        public IActionResult OnGet(string searchString, IEnumerable<string> searchIn, IEnumerable<string> filter, string sortBy, string sortDirection, int itemsPerPage, int currentPage)
         {
-            // Define the input
-            Input = input ?? new InputModel();
+            // Check if any of the parameters is missing or invalid.
+            if (searchIn == null || filter == null || string.IsNullOrEmpty(sortBy) || string.IsNullOrEmpty(sortDirection) || itemsPerPage <= 0 || currentPage <= 0)
+            {
+                // Assign the default values to the missing or invalid parameters.
+                searchIn = searchIn != null ? searchIn : Enumerable.Empty<string>();
+                filter = filter != null ? filter : Enumerable.Empty<string>();
+                sortBy = !string.IsNullOrEmpty(sortBy) ? sortBy : "DateTimeStarted";
+                sortDirection = !string.IsNullOrEmpty(sortDirection) ? sortBy : "Descending";
+                itemsPerPage = 0 < itemsPerPage ? itemsPerPage : 5;
+                currentPage = 0 < currentPage ? currentPage : 1;
+                // Redirect to the current page, using the default values.
+                return RedirectToPage(new { searchString = searchString, searchIn = searchIn, filter = filter, sortBy = sortBy, sortDirection = sortDirection, itemsPerPage = itemsPerPage, currentPage = currentPage });
+            }
+            // Save all parameters to the view.
+            View = new ViewModel
+            {
+                SearchString = !string.IsNullOrEmpty(searchString) ? searchString : string.Empty,
+                SearchIn = searchIn,
+                Filter = filter,
+                SortBy = sortBy,
+                SortDirection = sortDirection,
+                ItemsPerPage = itemsPerPage,
+                CurrentPage = currentPage
+            };
+            View.SearchString = searchString;
+            View.SearchIn = searchIn;
+            View.Filter = filter;
+            View.SortBy = sortBy;
+            View.SortDirection = sortDirection;
+            View.ItemsPerPage = itemsPerPage;
+            View.CurrentPage = currentPage;
             // Start with all of the items in the database that match the search string.
             var query = _context.Algorithms
-                .Where(item => !Input.SearchIn.Any() ||
-                Input.SearchIn.Contains("Id") && item.Id.Contains(Input.SearchString) ||
-                Input.SearchIn.Contains("Name") && item.Name.Contains(Input.SearchString) ||
-                Input.SearchIn.Contains("Nodes") && item.Edges.Any(item1 => item1.SourceNode.Contains(Input.SearchString) || item1.TargetNode.Contains(Input.SearchString)) ||
-                Input.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(Input.SearchString)) ||
-                Input.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(Input.SearchString)));
+                .Where(item => !View.SearchIn.Any() ||
+                View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
+                View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
+                View.SearchIn.Contains("Nodes") && item.Edges.Any(item1 => item1.SourceNode.Contains(View.SearchString) || item1.TargetNode.Contains(View.SearchString)) ||
+                View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(View.SearchString)) ||
+                View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(View.SearchString)));
             // Select the results matching the filter parameter.
             query = query
-                .Where(item => Input.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
-                .Where(item => Input.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
-                .Where(item => Input.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true);
+                .Where(item => View.Filter.Contains("IsScheduled") ? item.Status == AlgorithmStatus.Scheduled : true)
+                .Where(item => View.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
+                .Where(item => View.Filter.Contains("IsScheduledToStop") ? item.Status == AlgorithmStatus.ScheduledToStop : true)
+                .Where(item => View.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
+                .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true);
             // Sort it according to the parameters.
-            switch ((Input.SortBy, Input.SortDirection))
+            switch ((View.SortBy, View.SortDirection))
             {
                 case var sort when sort == ("Id", "Ascending"):
                     query = query.OrderBy(item => item.Id);
@@ -155,46 +176,22 @@ namespace GeneticAlgNetControl.Pages
             }
             // Get the pagination variables.
             var totalItems = query.Count();
-            var totalPages = (int)Math.Ceiling((double)totalItems / Input.ItemsPerPage);
-            var itemsPerPageFirst = 0 < totalItems ? (Input.CurrentPage - 1) * Input.ItemsPerPage + 1 : 0;
-            var itemsPerPageLast = 0 < totalItems ? Input.CurrentPage * Math.Min(Input.ItemsPerPage, totalItems) < totalItems ? Input.CurrentPage * Math.Min(Input.ItemsPerPage, totalItems) : totalItems : 0;
-            // Define the view.
-            View = new ViewModel
-            {
-                TotalItems = totalItems,
-                CurrentPage = Input.CurrentPage,
-                TotalPages = totalPages,
-                ItemsPerPageFirst = itemsPerPageFirst,
-                ItemsPerPageLast = itemsPerPageLast,
-                PreviousPageUrl = Input.CurrentPage == 1 || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = Input.SearchString, searchIn = Input.SearchIn, filter = Input.Filter, sortBy = Input.SortBy, sortDirection = Input.SortDirection, itemsPerPage = Input.ItemsPerPage, currentPage = Input.CurrentPage - 1 }),
-                NextPageUrl = Input.CurrentPage == totalPages || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = Input.SearchString, searchIn = Input.SearchIn, filter = Input.Filter, sortBy = Input.SortBy, sortDirection = Input.SortDirection, itemsPerPage = Input.ItemsPerPage, currentPage = Input.CurrentPage + 1 }),
-                AppliedFilters = new Dictionary<string, string>()
-            };
+            var totalPages = (int)Math.Ceiling((double)totalItems / View.ItemsPerPage);
+            var itemsPerPageFirst = 0 < totalItems ? (View.CurrentPage - 1) * View.ItemsPerPage + 1 : 0;
+            var itemsPerPageLast = 0 < totalItems ? View.CurrentPage * Math.Min(View.ItemsPerPage, totalItems) < totalItems ? View.CurrentPage * Math.Min(View.ItemsPerPage, totalItems) : totalItems : 0;
+            // Define the rest of the parameters of the view.
+            View.TotalItems = totalItems;
+            View.TotalPages = totalPages;
+            View.ItemsPerPageFirst = itemsPerPageFirst;
+            View.ItemsPerPageLast = itemsPerPageLast;
+            View.PreviousPageUrl = View.CurrentPage == 1 || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = View.SearchString, searchIn = View.SearchIn, filter = View.Filter, sortBy = View.SortBy, sortDirection = View.SortDirection, itemsPerPage = View.ItemsPerPage, currentPage = View.CurrentPage - 1 });
+            View.NextPageUrl = View.CurrentPage == totalPages || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = View.SearchString, searchIn = View.SearchIn, filter = View.Filter, sortBy = View.SortBy, sortDirection = View.SortDirection, itemsPerPage = View.ItemsPerPage, currentPage = View.CurrentPage + 1 });
+            View.AppliedFilters = new Dictionary<string, string>();
             // Get the items to return to the view.
             View.Items = query
-                .Skip((Input.CurrentPage - 1) * Input.ItemsPerPage)
-                .Take(Input.ItemsPerPage)
+                .Skip((View.CurrentPage - 1) * View.ItemsPerPage)
+                .Take(View.ItemsPerPage)
                 .AsEnumerable();
-            // Assign the data to the charts.
-            View.ChartData = JsonSerializer.Serialize(new
-            {
-                Scheduled = new List<int>
-                {
-                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Scheduled)
-                },
-                Ongoing = new List<int>
-                {
-                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Ongoing)
-                },
-                Stopped = new List<int>
-                {
-                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Stopped)
-                },
-                Completed = new List<int>
-                {
-                    _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Completed)
-                }
-            });
             // Return the page.
             return Page();
         }

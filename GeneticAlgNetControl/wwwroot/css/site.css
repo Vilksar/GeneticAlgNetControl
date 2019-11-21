@@ -21,3 +21,8 @@ main {
 .validation-summary-errors ul {
     margin-bottom: 0;
 }
+
+/* Style for the dropdown menus. */
+.dropdown-menu {
+    z-index: 1021;
+}

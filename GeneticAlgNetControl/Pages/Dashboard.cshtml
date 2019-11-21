@@ -3,279 +3,387 @@
 @{
     ViewData["Title"] = "Dashboard";
     ViewData["ActivePage"] = "Dashboard";
+    var statusMessage = (string)TempData["StatusMessage"];
 }
 
-<form method="get">
-    <div class="input-group">
-        <input asp-for="Input.SearchString" class="form-control" name="searchString" placeholder="Search..." autocomplete="off" />
-        <div class="input-group-append">
-            <button class="btn btn-dark" type="button" title="Filter" data-toggle="dropdown">
-                <span><i class="fas fa-filter"></i></span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-form px-3 py-2">
-                <label asp-for="Input.SearchIn" class="dropdown-item-text font-weight-bold">Search in</label>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="search-in-id" name="searchIn" value="Id" checked="@(Model.Input.SearchIn.Contains("Id") ? "checked" : null)" class="custom-control-input" />
-                    <label for="search-in-id" class="custom-control-label">ID</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="search-in-name" name="searchIn" value="Name" checked="@(Model.Input.SearchIn.Contains("Name") ? "checked" : null)" class="custom-control-input" />
-                    <label for="search-in-name" class="custom-control-label">Name</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="search-in-nodes" name="searchIn" value="Nodes" checked="@(Model.Input.SearchIn.Contains("Nodes") ? "checked" : null)" class="custom-control-input" />
-                    <label for="search-in-nodes" class="custom-control-label">Nodes</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="search-in-target-nodes" name="searchIn" value="TargetNodes" checked="@(Model.Input.SearchIn.Contains("TargetNodes") ? "checked" : null)" class="custom-control-input" />
-                    <label for="search-in-target-nodes" class="custom-control-label">Target nodes</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="search-in-preferred-nodes" name="searchIn" value="PreferredNodes" checked="@(Model.Input.SearchIn.Contains("PreferredNodes") ? "checked" : null)" class="custom-control-input" />
-                    <label for="search-in-preferred-nodes" class="custom-control-label">Preferred nodes</label>
-                </div>
-                <div class="dropdown-divider"></div>
-                <label asp-for="Input.Filter" class="dropdown-item-text font-weight-bold">Filter</label>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="filter-is-ongoing" name="filter" value="IsOngoing" checked="@(Model.Input.SearchIn.Contains("IsOngoing") ? "checked" : null)" class="custom-control-input" />
-                    <label for="filter-is-ongoing" class="custom-control-label">Is ongoing</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="filter-is-stopped" name="filter" value="IsStopped" checked="@(Model.Input.SearchIn.Contains("IsStopped") ? "checked" : null)" class="custom-control-input" />
-                    <label for="filter-is-stopped" class="custom-control-label">Is stopped</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" id="filter-is-completed" name="filter" value="IsCompleted" checked="@(Model.Input.SearchIn.Contains("IsCompleted") ? "checked" : null)" class="custom-control-input" />
-                    <label for="filter-is-completed" class="custom-control-label">Is completed</label>
-                </div>
-            </div>
-        </div>
-        <div class="input-group-append">
-            <button class="btn btn-dark" type="button" title="Sort" data-toggle="dropdown">
-                <span><i class="fas fa-sort-alpha-down"></i></span>
-            </button>
-            <div class="dropdown-menu dropdown-menu-form px-3 py-2">
-                <label asp-for="Input.SortBy" class="dropdown-item-text font-weight-bold">Sort by</label>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-id" name="sortBy" value="Id" class="custom-control-input" />
-                    <label for="sort-by-id" class="custom-control-label">ID</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-name" name="sortBy" value="Name" class="custom-control-input" />
-                    <label for="sort-by-name" class="custom-control-label">Name</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-status" name="sortBy" value="Status" class="custom-control-input" />
-                    <label for="sort-by-status" class="custom-control-label">Status</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-date-started" name="sortBy" value="DateTimeStarted" class="custom-control-input" />
-                    <label for="sort-by-date-started" class="custom-control-label">Date started</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-date-ended" name="sortBy" value="DateTimeEnded" class="custom-control-input" />
-                    <label for="sort-by-date-ended" class="custom-control-label">Date ended</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-node-count" name="sortBy" value="NodeCount" class="custom-control-input" />
-                    <label for="sort-by-node-count" class="custom-control-label">Number of nodes</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-target-node-count" name="sortBy" value="TargetNodeCount" class="custom-control-input" />
-                    <label for="sort-by-target-node-count" class="custom-control-label">Number of target nodes</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-preferred-node-count" name="sortBy" value="PreferredNodeCount" class="custom-control-input" />
-                    <label for="sort-by-preferred-node-count" class="custom-control-label">Number of preferred nodes</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortBy" type="radio" id="sort-by-edge-count" name="sortBy" value="EdgeCount" class="custom-control-input" />
-                    <label for="sort-by-edge-count" class="custom-control-label">Number of edges</label>
-                </div>
-                <div class="dropdown-divider"></div>
-                <label asp-for="Input.SortDirection" class="dropdown-item-text font-weight-bold">Sort direction</label>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortDirection" type="radio" id="sort-direction-ascending" name="sortDirection" value="Ascending" class="custom-control-input" />
-                    <label for="sort-direction-ascending" class="custom-control-label">Ascending</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.SortDirection" type="radio" id="sort-direction-descending" name="sortDirection" value="Descending" class="custom-control-input" />
-                    <label for="sort-direction-descending" class="custom-control-label">Descending</label>
-                </div>
-                <div class="dropdown-divider"></div>
-                <label asp-for="Input.ItemsPerPage" class="dropdown-item-text font-weight-bold">Items per page</label>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.ItemsPerPage" type="radio" id="items-per-page-3" name="itemsPerPage" value="3" class="custom-control-input" />
-                    <label for="items-per-page-3" class="custom-control-label">3</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.ItemsPerPage" type="radio" id="items-per-page-5" name="itemsPerPage" value="5" class="custom-control-input" />
-                    <label for="items-per-page-5" class="custom-control-label">5</label>
-                </div>
-                <div class="custom-control custom-radio">
-                    <input asp-for="Input.ItemsPerPage" type="radio" id="items-per-page-10" name="itemsPerPage" value="10" class="custom-control-input" />
-                    <label for="items-per-page-10" class="custom-control-label">10</label>
-                </div>
-            </div>
-        </div>
-        <div class="input-group-append">
-            <button class="btn btn-primary" type="submit" title="Search">
-                <span><i class="fas fa-search"></i></span>
-            </button>
-        </div>
-    </div>
-</form>
-<hr />
-<div class="row">
-    <div class="offset-lg-3 col-lg-6">
-        <div class="chart-js-chart" data-type="dashboard">
-            <span class="chart-js-data" hidden>@Model.View.ChartData</span>
-            <canvas class="chart-js-canvas"></canvas>
-        </div>
-    </div>
-</div>
-<hr />
-<form method="get">
-    <ul class="list-group list-group-flush item-group">
-        <li class="list-group-item bg-transparent border-0">
+<div class="flex-grow-1 p-4 d-flex flex-column">
+    <div class="container my-2 sticky-top">
+        <div class="card px-5 pt-3 pt-md-0 shadow-sm">
             <div class="row align-items-center">
-                <div class="col-sm-6 text-center text-md-left">
-                    <span class="text-muted small">Showing items @Model.View.ItemsPerPageFirst to @Model.View.ItemsPerPageLast out of @Model.View.TotalItems.</span>
+                <div class="col-md-6 text-center text-md-left">
+                    <span class="font-weight-bold">Dashboard</span>
                 </div>
-                <div class="col-sm-6 text-center text-md-right">
-                    <div class="btn-group">
-                        <a href="@Model.View.PreviousPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.PreviousPageUrl) ? "disabled" : string.Empty)" title="Previous page">
-                            <span><i class="fas fa-angle-left"></i></span>
+                <div class="col-md-6 navbar navbar-light">
+                    <div class="navbar-nav flex-row flex-wrap align-items-center justify-content-center justify-content-md-end w-100">
+                        <a asp-page="/Create" class="nav-item nav-link mx-2" title="Create">
+                            <span class="text-success"><i class="fas fa-plus"></i></span>
                         </a>
-                        <button type="button" class="btn" title="Current page" disabled>
-                            <span>@Model.View.CurrentPage / @Model.View.TotalPages</span>
-                        </button>
-                        <a href="@Model.View.NextPageUrl" class="btn @(string.IsNullOrEmpty(Model.View.NextPageUrl) ? "disabled" : string.Empty)" title="Next page">
-                            <span><i class="fas fa-angle-right"></i></span>
+                        <a asp-page="/About" class="nav-item nav-link mx-2" title="About">
+                            <span><i class="fas fa-question-circle"></i></span>
+                        </a>
+                        <a asp-page="/Index" class="nav-item nav-link mx-2" title="Home">
+                            <span><i class="fas fa-home"></i></span>
                         </a>
                     </div>
                 </div>
             </div>
-        </li>
-        <li class="list-group-item list-group-item-action list-group-item-dark active">
-            <div class="row align-items-center font-weight-bold">
-                <div class="col-2 col-xl-1 text-center">
-                    <div class="custom-control custom-checkbox">
-                        <input type="checkbox" id="select" class="custom-control-input item-group-select" title="Select" />
-                        <label for="select" class="custom-control-label"></label>
+        </div>
+    </div>
+    <div class="container my-2">
+        <div class="row align-items-center">
+            <div class="col-md-6 col-xl-3 my-1 my-xl-0">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-6 d-flex flex-column justify-content-around align-items-start">
+                                <span class="font-weight-bold text-muted text-uppercase small">Scheduled</span>
+                                <span>0</span>
+                            </div>
+                            <div class="col-6 d-flex flex-row justify-content-end align-items-center">
+                                <span class="text-warning"><i class="fas fa-clock fa-2x"></i></span>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-4 col-xl-2 text-center text-truncate">
-                    <span>Name</span>
-                </div>
-                <div class="col-2 col-xl-2 text-center text-truncate">
-                    <span>Status</span>
-                </div>
-                <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                    <span>Time elapsed</span>
-                </div>
-                <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                    <span>Progress</span>
-                </div>
-                <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                    <a asp-page="/Create" class="btn btn-success m-1" title="Create">
-                        <span><i class="fas fa-plus"></i></span>
-                    </a>
-                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Ongoing))
-                    {
-                        <button type="submit" asp-page="/Stop" class="btn btn-danger m-1 item-group-button" title="Stop" disabled>
-                            <span><i class="fas fa-stop"></i></span>
-                        </button>
-                    }
-                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Stopped))
-                    {
-                        <button type="submit" asp-page="/Start" class="btn btn-success m-1 item-group-button" title="Start" disabled>
-                            <span><i class="fas fa-play"></i></span>
-                        </button>
-                    }
-                    @if (Model.View.Items != null && Model.View.Items.Any(item => item.Status == Data.Enumerations.AlgorithmStatus.Scheduled || item.Status == Data.Enumerations.AlgorithmStatus.Stopped || item.Status == Data.Enumerations.AlgorithmStatus.Completed))
-                    {
-                        <button type="submit" asp-page="/Delete" class="btn btn-danger m-1 item-group-button" title="Delete" disabled>
-                            <span><i class="fas fa-trash"></i></span>
-                        </button>
-                    }
                 </div>
             </div>
-        </li>
-        @if (Model.View.Items == null || !Model.View.Items.Any())
-        {
-            <li class="list-group-item">
-                <div class="row align-items-center py-2">
-                    <div class="col-2 col-xl-1 text-center text-truncate">
-                        <span><i class="fas fa-info-circle"></i></span>
-                    </div>
-                    <div class="col-10 col-xl-11 text-left text-wrap">
-                        <span class="font-weight-bold">No items have been found@(Model.View.AppliedFilters.Any() ? " matching the applied filters" : string.Empty).</span>
+            <div class="col-md-6 col-xl-3 my-1 my-xl-0">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-6 d-flex flex-column justify-content-around align-items-start">
+                                <span class="font-weight-bold text-muted text-uppercase small">Ongoing</span>
+                                <span>0</span>
+                            </div>
+                            <div class="col-6 d-flex flex-row justify-content-end align-items-center">
+                                <span class="text-primary"><i class="fas fa-play-circle fa-2x"></i></span>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </li>
-        }
-        else
-        {
-            foreach (var item in Model.View.Items)
-            {
-                <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
-                    <div class="row align-items-center">
-                        <div class="col-2 col-xl-1 text-center">
-                            <div class="custom-control custom-checkbox">
-                                <input type="checkbox" id="@item.Id" name="id" value="@item.Id" class="custom-control-input" title="Select" />
-                                <label for="@item.Id" class="custom-control-label"></label>
+            </div>
+            <div class="col-md-6 col-xl-3 my-1 my-xl-0">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-6 d-flex flex-column justify-content-around align-items-start">
+                                <span class="font-weight-bold text-muted text-uppercase small">Stopped</span>
+                                <span>0</span>
                             </div>
-                        </div>
-                        <div class="col-4 col-xl-2 text-center text-truncate">
-                            <div>
-                                <span title="@item.Name" class="font-weight-bold algorithm-item-name">@item.Name</span>
+                            <div class="col-6 d-flex flex-row justify-content-end align-items-center">
+                                <span class="text-danger"><i class="fas fa-stop-circle fa-2x"></i></span>
                             </div>
-                            <div>
-                                <span title="@item.Id" class="small algorithm-item-id">@item.Id</span>
-                            </div>
-                        </div>
-                        <div class="col-2 col-xl-2 text-center text-truncate">
-                            <div>
-                                <span title="" class="algorithm-item-status"></span>
-                            </div>
-                        </div>
-                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                            <div>
-                                <span title="" class="algorithm-item-time-span"></span>
-                            </div>
-                        </div>
-                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
-                            <div>
-                                <span title="" class="algorithm-item-progress-iterations"></span>
-                            </div>
-                            <div>
-                                <span title="" class="algorithm-item-progress-iterations-without-improvement"></span>
-                            </div>
-                        </div>
-                        <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
-                            <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-outline-info m-1 algorithm-item-button-details" title="Details">
-                                <span><i class="fas fa-info-circle"></i></span>
-                            </a>
-                            <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-outline-dark m-1 algorithm-item-button-copy" title="Copy">
-                                <span><i class="fas fa-copy"></i></span>
-                            </a>
-                            <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-outline-danger m-1 algorithm-item-button-stop" title="Stop">
-                                <span><i class="fas fa-stop"></i></span>
-                            </a>
-                            <a asp-page="/Start" asp-route-id="@item.Id" class="btn btn-outline-success m-1 algorithm-item-button-start" title="Start">
-                                <span><i class="fas fa-play"></i></span>
-                            </a>
-                            <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-outline-primary m-1 algorithm-item-button-save" title="Save">
-                                <span><i class="fas fa-save"></i></span>
-                            </a>
-                            <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-outline-danger m-1 algorithm-item-button-delete" title="Delete">
-                                <span><i class="fas fa-trash"></i></span>
-                            </a>
                         </div>
                     </div>
-                </li>
-            }
-        }
-    </ul>
-</form>
+                </div>
+            </div>
+            <div class="col-md-6 col-xl-3 my-1 my-xl-0">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-6 d-flex flex-column justify-content-around align-items-start">
+                                <span class="font-weight-bold text-muted text-uppercase small">Completed</span>
+                                <span>0</span>
+                            </div>
+                            <div class="col-6 d-flex flex-row justify-content-end align-items-center">
+                                <span class="text-success"><i class="fas fa-check-circle fa-2x"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    @if (!string.IsNullOrEmpty(statusMessage))
+    {
+        var statusMessageType = statusMessage.StartsWith("Error") ? "danger" : statusMessage.StartsWith("Success") ? "success" : "info";
+        var statusMessageIcon = statusMessage.StartsWith("Error") ? "exclamation" : statusMessage.StartsWith("Success") ? "check" : "info";
+        var statusMessageText = string.Join(" ", statusMessage.Split(" ").Skip(1));
+        <div class="container my-2">
+            <div class="alert alert-@statusMessageType alert-dismissible mb-0">
+                <span><i class="fas fa-@statusMessageIcon-circle"></i></span>
+                <span>@statusMessageText</span>
+                <button type="button" class="close" data-dismiss="alert">
+                    <span><i class="fas fa-times"></i></span>
+                </button>
+            </div>
+        </div>
+    }
+    <div class="container my-2">
+        <form method="get">
+            <div class="input-group">
+                <input class="form-control" name="searchString" placeholder="Search..." autocomplete="off" />
+                <div class="input-group-append">
+                    <button class="btn btn-dark" type="button" title="Filter" data-toggle="dropdown">
+                        <span><i class="fas fa-filter"></i></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-form px-3 py-2">
+                        <label asp-for="View.SearchIn" class="dropdown-item-text font-weight-bold">Search in</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-id" name="searchIn" value="Id" checked="@(Model.View.SearchIn.Contains("Id") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-id" class="custom-control-label">ID</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-name" name="searchIn" value="Name" checked="@(Model.View.SearchIn.Contains("Name") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-name" class="custom-control-label">Name</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-nodes" name="searchIn" value="Nodes" checked="@(Model.View.SearchIn.Contains("Nodes") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-nodes" class="custom-control-label">Nodes</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-target-nodes" name="searchIn" value="TargetNodes" checked="@(Model.View.SearchIn.Contains("TargetNodes") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-target-nodes" class="custom-control-label">Target nodes</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-preferred-nodes" name="searchIn" value="PreferredNodes" checked="@(Model.View.SearchIn.Contains("PreferredNodes") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-preferred-nodes" class="custom-control-label">Preferred nodes</label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <label asp-for="View.Filter" class="dropdown-item-text font-weight-bold">Filter</label>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-scheduled" name="filter" value="IsScheduled" checked="@(Model.View.Filter.Contains("IsScheduled") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-scheduled" class="custom-control-label">Is scheduled</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-ongoing" name="filter" value="IsOngoing" checked="@(Model.View.Filter.Contains("IsOngoing") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-ongoing" class="custom-control-label">Is ongoing</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-scheduled-to-stop" name="filter" value="IsScheduledToStop" checked="@(Model.View.Filter.Contains("IsScheduledToStop") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-scheduled-to-stop" class="custom-control-label">Is scheduled to stop</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-stopped" name="filter" value="IsStopped" checked="@(Model.View.Filter.Contains("IsStopped") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-stopped" class="custom-control-label">Is stopped</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-completed" name="filter" value="IsCompleted" checked="@(Model.View.Filter.Contains("IsCompleted") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-completed" class="custom-control-label">Is completed</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-dark" type="button" title="Sort" data-toggle="dropdown">
+                        <span><i class="fas fa-sort-alpha-down"></i></span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-form px-3 py-2">
+                        <label asp-for="View.SortBy" class="dropdown-item-text font-weight-bold">Sort by</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-id" name="sortBy" value="Id" class="custom-control-input" checked="@(Model.View.SortBy == "Id" ? "checked" : null)" />
+                            <label for="sort-by-id" class="custom-control-label">ID</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-name" name="sortBy" value="Name" class="custom-control-input" checked="@(Model.View.SortBy == "Name" ? "checked" : null)" />
+                            <label for="sort-by-name" class="custom-control-label">Name</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-status" name="sortBy" value="Status" class="custom-control-input" checked="@(Model.View.SortBy == "Status" ? "checked" : null)" />
+                            <label for="sort-by-status" class="custom-control-label">Status</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-date-started" name="sortBy" value="DateTimeStarted" class="custom-control-input" checked="@(Model.View.SortBy == "DateTimeStarted" ? "checked" : null)" />
+                            <label for="sort-by-date-started" class="custom-control-label">Date started</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-date-ended" name="sortBy" value="DateTimeEnded" class="custom-control-input" checked="@(Model.View.SortBy == "DateTimeEnded" ? "checked" : null)" />
+                            <label for="sort-by-date-ended" class="custom-control-label">Date ended</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-node-count" name="sortBy" value="NodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "NodeCount" ? "checked" : null)" />
+                            <label for="sort-by-node-count" class="custom-control-label">Number of nodes</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-target-node-count" name="sortBy" value="TargetNodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "TargetNodeCount" ? "checked" : null)" />
+                            <label for="sort-by-target-node-count" class="custom-control-label">Number of target nodes</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-preferred-node-count" name="sortBy" value="PreferredNodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "PreferredNodeCount" ? "checked" : null)" />
+                            <label for="sort-by-preferred-node-count" class="custom-control-label">Number of preferred nodes</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-edge-count" name="sortBy" value="EdgeCount" class="custom-control-input" checked="@(Model.View.SortBy == "EdgeCount" ? "checked" : null)" />
+                            <label for="sort-by-edge-count" class="custom-control-label">Number of edges</label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <label asp-for="View.SortDirection" class="dropdown-item-text font-weight-bold">Sort direction</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-direction-ascending" name="sortDirection" value="Ascending" class="custom-control-input" checked="@(Model.View.SortDirection == "Ascending" ? "checked" : null)" />
+                            <label for="sort-direction-ascending" class="custom-control-label">Ascending</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-direction-descending" name="sortDirection" value="Descending" class="custom-control-input" checked="@(Model.View.SortDirection == "Descending" ? "checked" : null)" />
+                            <label for="sort-direction-descending" class="custom-control-label">Descending</label>
+                        </div>
+                        <div class="dropdown-divider"></div>
+                        <label asp-for="View.ItemsPerPage" class="dropdown-item-text font-weight-bold">Items per page</label>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="items-per-page-3" name="itemsPerPage" value="3" class="custom-control-input" checked="@(Model.View.ItemsPerPage == 3 ? "checked" : null)" />
+                            <label for="items-per-page-3" class="custom-control-label">3</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="items-per-page-5" name="itemsPerPage" value="5" class="custom-control-input" checked="@(Model.View.ItemsPerPage == 5 ? "checked" : null)" />
+                            <label for="items-per-page-5" class="custom-control-label">5</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="items-per-page-10" name="itemsPerPage" value="10" class="custom-control-input" checked="@(Model.View.ItemsPerPage == 10 ? "checked" : null)" />
+                            <label for="items-per-page-10" class="custom-control-label">10</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group-append">
+                    <button class="btn btn-primary" type="submit" title="Search">
+                        <span><i class="fas fa-search"></i></span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+    @if (!Model.View.Items.Any())
+    {
+        <div class="container my-2">
+            <div class="alert alert-info mb-0">
+                <span><i class="fas fa-info-circle"></i></span>
+                @if (!Model.View.AppliedFilters.Any())
+                {
+                    <span>No algorithms have been found with the applied filters.</span>
+                }
+                else
+                {
+                    <span>No algorithms have been found in the database. <a asp-page="/Create" class="alert-link">Create a new one?</a></span>
+                }
+            </div>
+        </div>
+    }
+    else
+    {
+        <form method="get">
+            <div class="container my-2">
+                <div class="card item-group">
+                    <div class="card-header text-white bg-dark">
+                        <div class="row align-items-center font-weight-bold">
+                            <div class="col-2 col-xl-1 text-center">
+                                <div class="custom-control custom-checkbox">
+                                    <input type="checkbox" id="select" class="custom-control-input item-group-select" title="Select" />
+                                    <label for="select" class="custom-control-label"></label>
+                                </div>
+                            </div>
+                            <div class="col-4 col-xl-2 text-center text-truncate">
+                                <span>Name</span>
+                            </div>
+                            <div class="col-2 col-xl-2 text-center text-truncate">
+                                <span>Status</span>
+                            </div>
+                            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                                <span>Time elapsed</span>
+                            </div>
+                            <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                                <span>Progress</span>
+                            </div>
+                            <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                                <button type="submit" asp-page="/Start" class="btn btn-success m-1 item-group-button item-group-button-start" title="Start" disabled>
+                                    <span><i class="fas fa-play"></i></span>
+                                </button>
+                                <button type="submit" asp-page="/Stop" class="btn btn-danger m-1 item-group-button item-group-button-stop" title="Stop" disabled>
+                                    <span><i class="fas fa-stop"></i></span>
+                                </button>
+                                <button type="submit" asp-page="/Save" class="btn btn-primary m-1 item-group-button item-group-button-save" title="Save" disabled>
+                                    <span><i class="fas fa-save"></i></span>
+                                </button>
+                                <button type="submit" asp-page="/Delete" class="btn btn-danger m-1 item-group-button item-group-button-delete" title="Delete" disabled>
+                                    <span><i class="fas fa-trash"></i></span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <ul class="list-group list-group-flush">
+                            @foreach (var item in Model.View.Items)
+                            {
+                                <li class="list-group-item list-group-item-action list-group-item-light item-group-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-2 col-xl-1 text-center">
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" id="@item.Id" name="id" value="@item.Id" class="custom-control-input" title="Select" />
+                                                <label for="@item.Id" class="custom-control-label"></label>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 col-xl-2 text-center text-truncate">
+                                            <div>
+                                                <span title="@item.Name" class="font-weight-bold item-group-item-name">@item.Name</span>
+                                            </div>
+                                            <div>
+                                                <span title="@item.Id" class="small item-group-item-id">@item.Id</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-2 col-xl-2 text-center text-truncate">
+                                            <div>
+                                                <span title="" class="item-group-item-status"></span>
+                                            </div>
+                                        </div>
+                                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                                            <div>
+                                                <span title="" class="item-group-item-time-span"></span>
+                                            </div>
+                                        </div>
+                                        <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
+                                            <div>
+                                                <span title="" class="item-group-item-progress-iterations"></span>
+                                            </div>
+                                            <div>
+                                                <span title="" class="item-group-item-progress-iterations-without-improvement"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                                            <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-info m-1 item-group-item-button-details" title="Details">
+                                                <span><i class="fas fa-info-circle"></i></span>
+                                            </a>
+                                            <a asp-page="/Create" asp-route-id="@item.Id" class="btn btn-dark m-1 item-group-item-button-copy" title="Copy">
+                                                <span><i class="fas fa-copy"></i></span>
+                                            </a>
+                                            <a asp-page="/Start" asp-route-id="@item.Id" class="btn btn-success m-1 item-group-item-button-start" title="Start">
+                                                <span><i class="fas fa-play"></i></span>
+                                            </a>
+                                            <a asp-page="/Stop" asp-route-id="@item.Id" class="btn btn-danger m-1 item-group-item-button-stop" title="Stop">
+                                                <span><i class="fas fa-stop"></i></span>
+                                            </a>
+                                            <a asp-page="/Save" asp-route-id="@item.Id" class="btn btn-primary m-1 item-group-item-button-save" title="Save">
+                                                <span><i class="fas fa-save"></i></span>
+                                            </a>
+                                            <a asp-page="/Delete" asp-route-id="@item.Id" class="btn btn-danger m-1 item-group-item-button-delete" title="Delete">
+                                                <span><i class="fas fa-trash"></i></span>
+                                            </a>
+                                        </div>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    </div>
+                    <div class="card-footer py-0">
+                        <div class="row align-items-center">
+                            <div class="col-md-6 mt-3 mb-1 my-md-0">
+                                <div class="d-flex flex-row justify-content-center justify-content-md-start">
+                                    <span class="text-muted small">Showing items @Model.View.ItemsPerPageFirst to @Model.View.ItemsPerPageLast out of @Model.View.TotalItems.</span>
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-2 mt-1 my-md-0">
+                                <div class="navbar navbar-light d-flex flex-row justify-content-center justify-content-md-end py-0">
+                                    <div class="navbar-nav d-flex flex-row">
+                                        <a href="@(!string.IsNullOrEmpty(Model.View.PreviousPageUrl) ? Model.View.PreviousPageUrl : "#")" class="nav-item nav-link mx-2 @(!string.IsNullOrEmpty(Model.View.PreviousPageUrl) ? string.Empty : "disabled")" title="Previous page">
+                                            <span><i class="fas fa-angle-left"></i></span>
+                                        </a>
+                                        <a href="#" class="nav-item nav-link mx-2 disabled" title="Current page">
+                                            <span>@Model.View.CurrentPage / @Model.View.TotalPages</span>
+                                        </a>
+                                        <a href="@(!string.IsNullOrEmpty(Model.View.NextPageUrl) ? Model.View.NextPageUrl : "#")" class="nav-item nav-link mx-2 @(!string.IsNullOrEmpty(Model.View.NextPageUrl) ? string.Empty : "disabled")" title="Next page">
+                                            <span><i class="fas fa-angle-right"></i></span>
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    }
+</div>
