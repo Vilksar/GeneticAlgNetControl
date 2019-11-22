@@ -26,7 +26,7 @@
         </div>
     </div>
     <div class="container my-2">
-        <div class="alert alert-danger mb-0">
+        <div class="alert alert-danger mb-0 shadow-sm">
             <span><i class="fas fa-exclamation-circle"></i></span>
             <span>The following @Model.View.Items.Count() item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be deleted.</span>
             <span class="font-weight-bold">This action can't be reversed!</span>
@@ -35,7 +35,7 @@
     @if (!Model.View.Items.Any())
     {
         <div class="container my-2">
-            <div class="alert alert-danger mb-0">
+            <div class="alert alert-danger mb-0 shadow-sm">
                 <span><i class="fas fa-exclamation-circle"></i></span>
                 <span class="font-weight-bold">No items have been found.</span>
             </div>
@@ -44,7 +44,7 @@
     else
     {
         <div class="container my-2">
-            <div class="card">
+            <div class="card shadow-sm">
                 <div class="card-header text-white bg-dark">
                     <div class="row align-items-center font-weight-bold">
                         <div class="col-6 col-xl-6 text-center text-truncate">
