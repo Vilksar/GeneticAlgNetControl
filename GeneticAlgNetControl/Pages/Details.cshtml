@@ -5,34 +5,166 @@
     ViewData["ActivePage"] = "Overview";
 }
 
-<div class="sticky-top d-flex flex-row flex-wrap justify-content-end">
-    <a asp-page="/Create" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-dark mx-1 my-2 algorithm-item-button-copy" title="Copy">
-        <span><i class="fas fa-copy"></i></span>
-    </a>
-    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped)
-    {
-        <a asp-page="/Start" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-success mx-1 my-2 algorithm-item-button-start" title="Start">
-            <span><i class="fas fa-play"></i></span>
-        </a>
-    }
-    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Ongoing)
-    {
-        <a asp-page="/Stop" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-danger mx-1 my-2 algorithm-item-button-stop" title="Stop">
-            <span><i class="fas fa-stop"></i></span>
-        </a>
-    }
-    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
-    {
-        <a asp-page="/Save" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-primary mx-1 my-2 algorithm-item-button-save" title="Save">
-            <span><i class="fas fa-save"></i></span>
-        </a>
-    }
-    @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Scheduled || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
-    {
-        <a asp-page="/Delete" asp-route-id="@Model.View.Algorithm.Id" class="btn btn-danger mx-1 my-2 algorithm-item-button-delete" title="Delete">
-            <span><i class="fas fa-trash"></i></span>
-        </a>
-    }
+<div class="flex-grow-1 p-4 d-flex flex-column">
+    <div class="container my-2 sticky-top">
+        <div class="card px-5 pt-3 pt-lg-0 shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-lg-6 text-center text-lg-left">
+                    <span class="font-weight-bold">Details</span>
+                </div>
+                <div class="col-lg-6 navbar navbar-light">
+                    <div class="navbar-nav flex-row flex-wrap align-items-center justify-content-center justify-content-lg-end w-100">
+                        <a asp-page="/Create" asp-route-id="@Model.View.Algorithm.Id" class="nav-item nav-link mx-2" title="Copy">
+                            <span><i class="fas fa-copy"></i></span>
+                        </a>
+                        @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped)
+                        {
+                            <a asp-page="/Start" asp-route-id="@Model.View.Algorithm.Id" class="nav-item nav-link mx-2" title="Start">
+                                <span><i class="fas fa-play"></i></span>
+                            </a>
+                        }
+                        @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Ongoing)
+                        {
+                            <a asp-page="/Stop" asp-route-id="@Model.View.Algorithm.Id" class="nav-item nav-link mx-2" title="Stop">
+                                <span><i class="fas fa-stop"></i></span>
+                            </a>
+                        }
+                        @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
+                        {
+                            <a asp-page="/Save" asp-route-id="@Model.View.Algorithm.Id" class="nav-item nav-link mx-2" title="Save">
+                                <span><i class="fas fa-save"></i></span>
+                            </a>
+                        }
+                        @if (Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Scheduled || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Stopped || Model.View.Algorithm.Status == Data.Enumerations.AlgorithmStatus.Completed)
+                        {
+                            <a asp-page="/Delete" asp-route-id="@Model.View.Algorithm.Id" class="nav-item nav-link mx-2" title="Delete">
+                                <span><i class="fas fa-trash"></i></span>
+                            </a>
+                        }
+                        <a asp-page="/Dashboard" class="nav-item nav-link mx-2" title="Dashboard">
+                            <span><i class="fas fa-chart-bar"></i></span>
+                        </a>
+                        <a asp-page="/About" class="nav-item nav-link mx-2" title="About">
+                            <span><i class="fas fa-question-circle"></i></span>
+                        </a>
+                        <a asp-page="/Index" class="nav-item nav-link mx-2" title="Home">
+                            <span><i class="fas fa-home"></i></span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container my-2">
+        <div class="card px-5 py-3 shadow-sm">
+            <div class="row align-items-center">
+                <div class="col-lg-2 col-xl-1 text-center">
+                    <span title="Details"><i class="fas fa-font fa-2x"></i></span>
+                    <hr class="d-block d-lg-none" />
+                </div>
+                <div class="col-lg-6 col-xl-6 text-center text-lg-left">
+                    <div class="font-weight-bold text-uppercase">
+                        <span title="Name">@Model.View.Algorithm.Name</span>
+                    </div>
+                    <div class="small text-muted">
+                        <span title="Id">@Model.View.Algorithm.Id</span>
+                    </div>
+                </div>
+                <div class="col-lg-4 col-xl-5 text-center text-lg-right">
+                    <hr class="d-block d-lg-none" />
+                    @switch (Model.View.Algorithm.Status)
+                    {
+                        case Data.Enumerations.AlgorithmStatus.Scheduled:
+                            <span class="text-warning" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
+                            break;
+                        case Data.Enumerations.AlgorithmStatus.PreparingToStart:
+                            <span class="text-dark" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
+                            break;
+                        case Data.Enumerations.AlgorithmStatus.Ongoing:
+                            <span class="text-primary" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
+                            break;
+                        case Data.Enumerations.AlgorithmStatus.ScheduledToStop:
+                            <span class="text-secondary" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
+                            break;
+                        case Data.Enumerations.AlgorithmStatus.Stopped:
+                            <span class="text-danger" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
+                            break;
+                        case Data.Enumerations.AlgorithmStatus.Completed:
+                            <span class="text-success" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
+                            break;
+                        default:
+                            break;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container my-2">
+        <div class="row align-items-center">
+            <div class="col-lg-4 mb-1 mb-lg-0">
+                <div class="card px-5 py-3 shadow-sm" title="Date started">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 text-center">
+                            <span><i class="fas fa-hourglass-start fa-2x"></i></span>
+                            <hr class="d-xl-none" />
+                        </div>
+                        <div class="col-xl-9 text-center">
+                            @{
+                                var timeStarted = Model.View.Algorithm.DateTimeStarted;
+                            }
+                            @if (timeStarted == null)
+                            {
+                                <span title="-" class="font-weight-bold">-</span>
+                            }
+                            else
+                            {
+                                <span title="@timeStarted.Value.ToString()" class="font-weight-bold">@timeStarted.Value.ToLongTimeString()</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 my-1 my-lg-0">
+                <div class="card px-5 py-3 shadow-sm" title="Time elapsed">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 text-center">
+                            <span><i class="fas fa-hourglass-half fa-2x"></i></span>
+                            <hr class="d-xl-none" />
+                        </div>
+                        <div class="col-xl-9 text-center">
+                            @{ 
+                                var timeSpan = Model.View.Algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+                            }
+                            <span title="@timeSpan.ToString()" class="font-weight-bold">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 mt-1 mt-lg-0">
+                <div class="card px-5 py-3 shadow-sm" title="Date ended">
+                    <div class="row align-items-center">
+                        <div class="col-xl-3 text-center">
+                            <span><i class="fas fa-hourglass-end fa-2x"></i></span>
+                            <hr class="d-xl-none" />
+                        </div>
+                        <div class="col-xl-9 text-center">
+                            @{
+                                var timeEnded = Model.View.Algorithm.DateTimeEnded;
+                            }
+                            @if (timeEnded == null)
+                            {
+                                <span title="-" class="font-weight-bold">-</span>
+                            }
+                            else
+                            {
+                                <span title="@timeEnded.Value.ToString()" class="font-weight-bold">@timeEnded.Value.ToLongTimeString()</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 <div class="row h4">
     <div class="col-1 text-center">
@@ -132,58 +264,58 @@
     <div class="row">
         <div class="offset-1 col-11">
             @*@foreach (var solution in Model.View.Algorithm.Population.GetSolutions())
-            {
-                var fitness = solution.GetFitness();
-                var controlNodes = solution.GetUniqueControlNodes();
-                <div class="row">
-                    <div class="col-lg-3 order-1 order-lg-1">
-                        <label class="font-weight-bold">Fitness</label>
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                        <input class="form-control form-control-plaintext" disabled value="@fitness" />
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-1">
-                        <label class="font-weight-bold">Control nodes</label>
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                        <input class="form-control form-control-plaintext" disabled value="@controlNodes.Count()" />
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-1">
-                        <label class="font-weight-bold">Control nodes</label>
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                        <input class="form-control form-control-plaintext" disabled value="@string.Join(", ", controlNodes)" />
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-1">
-                        <label class="font-weight-bold">View</label>
-                    </div>
-                    <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                        <div class="modal-group">
-                            <button type="button" class="btn btn-dark btn-block" data-toggle="modal" data-target=".details-modal">
-                                <span>View</span>
-                            </button>
-                            <div class="modal-group-data" hidden>
-                                <div class="modal-group-title">
-                                    <span class="font-weight-bold">Solution</span>
-                                </div>
-                                <div class="modal-group-body">
-                                    <ul class="list-group list-group-flush">
-                                        <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                            <span class="font-weight-bold">Node</span>
-                                        </li>
-                                        @foreach (var item in controlNodes)
-                                        {
-                                            <li class="list-group-item list-group-item-action">
-                                                <span>@item</span>
+                {
+                    var fitness = solution.GetFitness();
+                    var controlNodes = solution.GetUniqueControlNodes();
+                    <div class="row">
+                        <div class="col-lg-3 order-1 order-lg-1">
+                            <label class="font-weight-bold">Fitness</label>
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                            <input class="form-control form-control-plaintext" disabled value="@fitness" />
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-1">
+                            <label class="font-weight-bold">Control nodes</label>
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                            <input class="form-control form-control-plaintext" disabled value="@controlNodes.Count()" />
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-1">
+                            <label class="font-weight-bold">Control nodes</label>
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                            <input class="form-control form-control-plaintext" disabled value="@string.Join(", ", controlNodes)" />
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-1">
+                            <label class="font-weight-bold">View</label>
+                        </div>
+                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
+                            <div class="modal-group">
+                                <button type="button" class="btn btn-dark btn-block" data-toggle="modal" data-target=".details-modal">
+                                    <span>View</span>
+                                </button>
+                                <div class="modal-group-data" hidden>
+                                    <div class="modal-group-title">
+                                        <span class="font-weight-bold">Solution</span>
+                                    </div>
+                                    <div class="modal-group-body">
+                                        <ul class="list-group list-group-flush">
+                                            <li class="list-group-item list-group-item-dark list-group-item-action active">
+                                                <span class="font-weight-bold">Node</span>
                                             </li>
-                                        }
-                                    </ul>
+                                            @foreach (var item in controlNodes)
+                                            {
+                                                <li class="list-group-item list-group-item-action">
+                                                    <span>@item</span>
+                                                </li>
+                                            }
+                                        </ul>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            }*@
+                }*@
         </div>
     </div>
 }
