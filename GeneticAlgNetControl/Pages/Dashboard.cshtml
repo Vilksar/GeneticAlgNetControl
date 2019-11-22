@@ -15,8 +15,11 @@
                 </div>
                 <div class="col-md-6 navbar navbar-light">
                     <div class="navbar-nav flex-row flex-wrap align-items-center justify-content-center justify-content-md-end w-100">
+                        <a asp-page="/Dashboard" class="nav-item nav-link mx-2 item-group-refresh" title="Refresh">
+                            <span><i class="fas fa-sync"></i></span>
+                        </a>
                         <a asp-page="/Create" class="nav-item nav-link mx-2" title="Create">
-                            <span class="text-success"><i class="fas fa-plus"></i></span>
+                            <span><i class="fas fa-plus"></i></span>
                         </a>
                         <a asp-page="/About" class="nav-item nav-link mx-2" title="About">
                             <span><i class="fas fa-question-circle"></i></span>
@@ -32,12 +35,12 @@
     <div class="container my-2">
         <div class="row align-items-center">
             <div class="col-md-6 col-xl-3 my-1 my-xl-0">
-                <div class="card">
+                <div class="card shadow-sm item-group-statistic">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-6 d-flex flex-column justify-content-around align-items-start">
-                                <span class="font-weight-bold text-muted text-uppercase small">Scheduled</span>
-                                <span>0</span>
+                                <span class="font-weight-bold text-muted text-uppercase small item-group-statistic-name">Scheduled</span>
+                                <span class="item-group-statistic-count">0</span>
                             </div>
                             <div class="col-6 d-flex flex-row justify-content-end align-items-center">
                                 <span class="text-warning"><i class="fas fa-clock fa-2x"></i></span>
@@ -47,12 +50,12 @@
                 </div>
             </div>
             <div class="col-md-6 col-xl-3 my-1 my-xl-0">
-                <div class="card">
+                <div class="card shadow-sm item-group-statistic">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-6 d-flex flex-column justify-content-around align-items-start">
-                                <span class="font-weight-bold text-muted text-uppercase small">Ongoing</span>
-                                <span>0</span>
+                                <span class="font-weight-bold text-muted text-uppercase small item-group-statistic-name">Ongoing</span>
+                                <span class="item-group-statistic-count">0</span>
                             </div>
                             <div class="col-6 d-flex flex-row justify-content-end align-items-center">
                                 <span class="text-primary"><i class="fas fa-play-circle fa-2x"></i></span>
@@ -62,12 +65,12 @@
                 </div>
             </div>
             <div class="col-md-6 col-xl-3 my-1 my-xl-0">
-                <div class="card">
+                <div class="card shadow-sm item-group-statistic">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-6 d-flex flex-column justify-content-around align-items-start">
-                                <span class="font-weight-bold text-muted text-uppercase small">Stopped</span>
-                                <span>0</span>
+                                <span class="font-weight-bold text-muted text-uppercase small item-group-statistic-name">Stopped</span>
+                                <span class="item-group-statistic-count">0</span>
                             </div>
                             <div class="col-6 d-flex flex-row justify-content-end align-items-center">
                                 <span class="text-danger"><i class="fas fa-stop-circle fa-2x"></i></span>
@@ -77,12 +80,12 @@
                 </div>
             </div>
             <div class="col-md-6 col-xl-3 my-1 my-xl-0">
-                <div class="card">
+                <div class="card shadow-sm item-group-statistic">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-6 d-flex flex-column justify-content-around align-items-start">
-                                <span class="font-weight-bold text-muted text-uppercase small">Completed</span>
-                                <span>0</span>
+                                <span class="font-weight-bold text-muted text-uppercase small item-group-statistic-name">Completed</span>
+                                <span class="item-group-statistic-count">0</span>
                             </div>
                             <div class="col-6 d-flex flex-row justify-content-end align-items-center">
                                 <span class="text-success"><i class="fas fa-check-circle fa-2x"></i></span>
@@ -99,7 +102,7 @@
         var statusMessageIcon = statusMessage.StartsWith("Error") ? "exclamation" : statusMessage.StartsWith("Success") ? "check" : "info";
         var statusMessageText = string.Join(" ", statusMessage.Split(" ").Skip(1));
         <div class="container my-2">
-            <div class="alert alert-@statusMessageType alert-dismissible mb-0">
+            <div class="alert alert-@statusMessageType alert-dismissible mb-0 shadow-sm">
                 <span><i class="fas fa-@statusMessageIcon-circle"></i></span>
                 <span>@statusMessageText</span>
                 <button type="button" class="close" data-dismiss="alert">
@@ -110,8 +113,8 @@
     }
     <div class="container my-2">
         <form method="get">
-            <div class="input-group">
-                <input class="form-control" name="searchString" placeholder="Search..." autocomplete="off" />
+            <div class="input-group shadow-sm">
+                <input class="form-control" name="searchString" placeholder="Search..." autocomplete="off" value="@(Model.View.SearchString)" />
                 <div class="input-group-append">
                     <button class="btn btn-dark" type="button" title="Filter" data-toggle="dropdown">
                         <span><i class="fas fa-filter"></i></span>
@@ -162,6 +165,14 @@
                         </div>
                     </div>
                 </div>
+                @if (!string.IsNullOrEmpty(Model.View.ClearFiltersUrl))
+                {
+                    <div class="input-group-append">
+                        <a href="@Model.View.ClearFiltersUrl" class="btn btn-danger" title="Clear filters">
+                            <span><i class="fas fa-times"></i></span>
+                        </a>
+                    </div>
+                }
                 <div class="input-group-append">
                     <button class="btn btn-dark" type="button" title="Sort" data-toggle="dropdown">
                         <span><i class="fas fa-sort-alpha-down"></i></span>
@@ -173,20 +184,20 @@
                             <label for="sort-by-id" class="custom-control-label">ID</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-name" name="sortBy" value="Name" class="custom-control-input" checked="@(Model.View.SortBy == "Name" ? "checked" : null)" />
-                            <label for="sort-by-name" class="custom-control-label">Name</label>
-                        </div>
-                        <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-status" name="sortBy" value="Status" class="custom-control-input" checked="@(Model.View.SortBy == "Status" ? "checked" : null)" />
-                            <label for="sort-by-status" class="custom-control-label">Status</label>
-                        </div>
-                        <div class="custom-control custom-radio">
                             <input type="radio" id="sort-by-date-started" name="sortBy" value="DateTimeStarted" class="custom-control-input" checked="@(Model.View.SortBy == "DateTimeStarted" ? "checked" : null)" />
                             <label for="sort-by-date-started" class="custom-control-label">Date started</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input type="radio" id="sort-by-date-ended" name="sortBy" value="DateTimeEnded" class="custom-control-input" checked="@(Model.View.SortBy == "DateTimeEnded" ? "checked" : null)" />
                             <label for="sort-by-date-ended" class="custom-control-label">Date ended</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-name" name="sortBy" value="Name" class="custom-control-input" checked="@(Model.View.SortBy == "Name" ? "checked" : null)" />
+                            <label for="sort-by-name" class="custom-control-label">Name</label>
+                        </div>
+                        <div class="custom-control custom-radio">
+                            <input type="radio" id="sort-by-status" name="sortBy" value="Status" class="custom-control-input" checked="@(Model.View.SortBy == "Status" ? "checked" : null)" />
+                            <label for="sort-by-status" class="custom-control-label">Status</label>
                         </div>
                         <div class="custom-control custom-radio">
                             <input type="radio" id="sort-by-node-count" name="sortBy" value="NodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "NodeCount" ? "checked" : null)" />
@@ -241,9 +252,9 @@
     @if (!Model.View.Items.Any())
     {
         <div class="container my-2">
-            <div class="alert alert-info mb-0">
+            <div class="alert alert-info mb-0 shadow-sm">
                 <span><i class="fas fa-info-circle"></i></span>
-                @if (!Model.View.AppliedFilters.Any())
+                @if (!string.IsNullOrEmpty(Model.View.ClearFiltersUrl))
                 {
                     <span>No algorithms have been found with the applied filters.</span>
                 }
@@ -258,7 +269,7 @@
     {
         <form method="get">
             <div class="container my-2">
-                <div class="card item-group">
+                <div class="card item-group shadow-sm">
                     <div class="card-header text-white bg-dark">
                         <div class="row align-items-center font-weight-bold">
                             <div class="col-2 col-xl-1 text-center">
@@ -270,7 +281,7 @@
                             <div class="col-4 col-xl-2 text-center text-truncate">
                                 <span>Name</span>
                             </div>
-                            <div class="col-2 col-xl-2 text-center text-truncate">
+                            <div class="d-none d-md-block col-md-2 col-xl-2 text-center text-truncate">
                                 <span>Status</span>
                             </div>
                             <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
@@ -279,7 +290,7 @@
                             <div class="d-none d-xl-block col-xl-2 text-center text-truncate">
                                 <span>Progress</span>
                             </div>
-                            <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                            <div class="col-6 col-md-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
                                 <button type="submit" asp-page="/Start" class="btn btn-success m-1 item-group-button item-group-button-start" title="Start" disabled>
                                     <span><i class="fas fa-play"></i></span>
                                 </button>
@@ -315,7 +326,7 @@
                                                 <span title="@item.Id" class="small item-group-item-id">@item.Id</span>
                                             </div>
                                         </div>
-                                        <div class="col-2 col-xl-2 text-center text-truncate">
+                                        <div class="d-none d-md-block col-md-2 col-xl-2 text-center text-truncate">
                                             <div>
                                                 <span title="" class="item-group-item-status"></span>
                                             </div>
@@ -333,7 +344,7 @@
                                                 <span title="" class="item-group-item-progress-iterations-without-improvement"></span>
                                             </div>
                                         </div>
-                                        <div class="col-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
+                                        <div class="col-6 col-md-4 col-xl-3 d-flex flex-row flex-wrap justify-content-center">
                                             <a asp-page="/Details" asp-route-id="@item.Id" class="btn btn-info m-1 item-group-item-button-details" title="Details">
                                                 <span><i class="fas fa-info-circle"></i></span>
                                             </a>

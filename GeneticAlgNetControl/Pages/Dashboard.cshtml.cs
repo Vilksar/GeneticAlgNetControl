@@ -61,7 +61,7 @@ namespace GeneticAlgNetControl.Pages
 
             public string NextPageUrl { get; set; }
 
-            public Dictionary<string, string> AppliedFilters { get; set; }
+            public string ClearFiltersUrl { get; set; }
 
             public IEnumerable<Algorithm> Items { get; set; }
         }
@@ -75,7 +75,7 @@ namespace GeneticAlgNetControl.Pages
                 searchIn = searchIn != null ? searchIn : Enumerable.Empty<string>();
                 filter = filter != null ? filter : Enumerable.Empty<string>();
                 sortBy = !string.IsNullOrEmpty(sortBy) ? sortBy : "DateTimeStarted";
-                sortDirection = !string.IsNullOrEmpty(sortDirection) ? sortBy : "Descending";
+                sortDirection = !string.IsNullOrEmpty(sortDirection) ? sortDirection : "Descending";
                 itemsPerPage = 0 < itemsPerPage ? itemsPerPage : 5;
                 currentPage = 0 < currentPage ? currentPage : 1;
                 // Redirect to the current page, using the default values.
@@ -92,28 +92,28 @@ namespace GeneticAlgNetControl.Pages
                 ItemsPerPage = itemsPerPage,
                 CurrentPage = currentPage
             };
-            View.SearchString = searchString;
-            View.SearchIn = searchIn;
-            View.Filter = filter;
-            View.SortBy = sortBy;
-            View.SortDirection = sortDirection;
-            View.ItemsPerPage = itemsPerPage;
-            View.CurrentPage = currentPage;
-            // Start with all of the items in the database that match the search string.
-            var query = _context.Algorithms
+            // Start with all of the items in the database that match the search string. The ".AsEnumerable()" is included as the search for nodes needs client-side evaluation, and the application is not expected to manage a large amount of data, so the performance impact should not be noticeable. This can be removed if anything changes, and a more efficient solution can be implemented.
+            var query = _context.Algorithms.AsEnumerable()
                 .Where(item => !View.SearchIn.Any() ||
-                View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
-                View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
-                View.SearchIn.Contains("Nodes") && item.Edges.Any(item1 => item1.SourceNode.Contains(View.SearchString) || item1.TargetNode.Contains(View.SearchString)) ||
-                View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(View.SearchString)) ||
-                View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(View.SearchString)));
+                    View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
+                    View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
+                    View.SearchIn.Contains("Nodes") && item.Nodes.Any(item1 => item1.Contains(View.SearchString)) ||
+                    View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(View.SearchString)) ||
+                    View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(View.SearchString)));
             // Select the results matching the filter parameter.
             query = query
                 .Where(item => View.Filter.Contains("IsScheduled") ? item.Status == AlgorithmStatus.Scheduled : true)
+                .Where(item => View.Filter.Contains("IsNotScheduled") ? item.Status != AlgorithmStatus.Scheduled : true)
+                .Where(item => View.Filter.Contains("IsPreparingToStart") ? item.Status == AlgorithmStatus.PreparingToStart : true)
+                .Where(item => View.Filter.Contains("IsNotPreparingToStart") ? item.Status != AlgorithmStatus.PreparingToStart : true)
                 .Where(item => View.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
+                .Where(item => View.Filter.Contains("IsNotOngoing") ? item.Status != AlgorithmStatus.Ongoing : true)
                 .Where(item => View.Filter.Contains("IsScheduledToStop") ? item.Status == AlgorithmStatus.ScheduledToStop : true)
+                .Where(item => View.Filter.Contains("IsNotScheduledToStop") ? item.Status != AlgorithmStatus.ScheduledToStop : true)
                 .Where(item => View.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
-                .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true);
+                .Where(item => View.Filter.Contains("IsNotStopped") ? item.Status != AlgorithmStatus.Stopped : true)
+                .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true)
+                .Where(item => View.Filter.Contains("IsNotCompleted") ? item.Status != AlgorithmStatus.Completed : true);
             // Sort it according to the parameters.
             switch ((View.SortBy, View.SortDirection))
             {
@@ -186,7 +186,7 @@ namespace GeneticAlgNetControl.Pages
             View.ItemsPerPageLast = itemsPerPageLast;
             View.PreviousPageUrl = View.CurrentPage == 1 || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = View.SearchString, searchIn = View.SearchIn, filter = View.Filter, sortBy = View.SortBy, sortDirection = View.SortDirection, itemsPerPage = View.ItemsPerPage, currentPage = View.CurrentPage - 1 });
             View.NextPageUrl = View.CurrentPage == totalPages || totalPages == 0 ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = View.SearchString, searchIn = View.SearchIn, filter = View.Filter, sortBy = View.SortBy, sortDirection = View.SortDirection, itemsPerPage = View.ItemsPerPage, currentPage = View.CurrentPage + 1 });
-            View.AppliedFilters = new Dictionary<string, string>();
+            View.ClearFiltersUrl = string.IsNullOrEmpty(View.SearchString) && !View.Filter.Any() ? null : _linkGenerator.GetPathByRouteValues(httpContext: HttpContext, routeName: null, values: new { searchString = string.Empty, searchIn = Enumerable.Empty<string>(), filter = Enumerable.Empty<string>(), sortBy = View.SortBy, sortDirection = View.SortDirection, itemsPerPage = View.ItemsPerPage, currentPage = 1 });
             // Get the items to return to the view.
             View.Items = query
                 .Skip((View.CurrentPage - 1) * View.ItemsPerPage)
@@ -196,7 +196,37 @@ namespace GeneticAlgNetControl.Pages
             return Page();
         }
 
-        public IActionResult OnGetRefresh(string id = null)
+        public IActionResult OnGetRefreshStatistic(string statisticName)
+        {
+            // Define the count to return.
+            var statisticCount = 0;
+            // Get the required data, based on the statistic name.
+            switch (statisticName)
+            {
+                case "Scheduled":
+                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Scheduled);
+                    break;
+                case "Ongoing":
+                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.PreparingToStart || item.Status == AlgorithmStatus.Ongoing || item.Status == AlgorithmStatus.ScheduledToStop);
+                    break;
+                case "Stopped":
+                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Stopped);
+                    break;
+                case "Completed":
+                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Completed);
+                    break;
+                default:
+                    break;
+            }
+            // Return a new JSON object.
+            return new JsonResult(new
+            {
+                StatisticName = statisticName,
+                StatisticCount = statisticCount
+            });
+        }
+
+        public IActionResult OnGetRefreshAlgorithm(string id = null)
         {
             // Get the algorithm with the provided ID.
             var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);

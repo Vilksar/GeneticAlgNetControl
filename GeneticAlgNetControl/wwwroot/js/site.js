@@ -4,6 +4,9 @@
 // Write your Javascript code.
 $(window).on('load', () => {
 
+    // Define the time interval in which refreshing takes place, in miliseconds.
+    const _refreshInterval = 5000;
+
     // Check if there is a dropdown menu form on the page.
     if ($('.dropdown-menu-form').length !== 0) {
         // Add a listener for licking inside the dropdown menu.
@@ -260,81 +263,115 @@ $(window).on('load', () => {
     }
 
     // Check if there is any item group item on page.
-    if ($('.item-group-item-status').length !== 0) {
-        // Define a function which updates all algorithms on page.
-        const updateAlgorithms = () => {
-            // Go over each algorithm item element on the page.
-            $('.item-group-item-status').each((index, element) => {
-                // Get its current status.
-                let status = $(element).text();
-                // Check if the algorithm needs updating.
-                if (status === '' || status === 'Scheduled' || status === 'Ongoing' || status === 'ScheduledToStop') {
-                    // Get the parent element.
-                    const parent = $(element).closest('.item-group-item');
-                    // Get the ID.
-                    const id = $(parent).find('.item-group-item-id').first().text();
-                    // Retrieve the new data for the algorithm with the mentioned ID.
-                    const json = $.ajax({
-                        url: `/Dashboard?handler=Refresh&id=${id}`,
-                        async: false,
-                        dataType: 'json'
-                    }).responseJSON;
-                    // Update the corresponding fields.
-                    $(parent).find('.item-group-item-status').attr('title', json.statusTitle);
-                    $(parent).find('.item-group-item-status').text(json.statusText);
-                    $(parent).find('.item-group-item-time-span').attr('title', json.timeSpanTitle);
-                    $(parent).find('.item-group-item-time-span').text(json.timeSpanText);
-                    $(parent).find('.item-group-item-progress-iterations').attr('title', json.progressIterationsTitle);
-                    $(parent).find('.item-group-item-progress-iterations').text(json.progressIterationsText);
-                    $(parent).find('.item-group-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
-                    $(parent).find('.item-group-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
-                    // Check if the status has been updated.
-                    if (status !== json.statusText) {
-                        // Update the status.
-                        status = json.statusText;
-                        // Check the new status.
-                        if (status === 'Scheduled') {
-                            // Hide and show the corresponding buttons.
-                            $(parent).find('.item-group-item-button-start').addClass('d-none');
-                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
-                            $(parent).find('.item-group-item-button-save').addClass('d-none');
-                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
-                        } else if (status === 'Ongoing') {
-                            // Hide and show the corresponding buttons.
-                            $(parent).find('.item-group-item-button-start').addClass('d-none');
-                            $(parent).find('.item-group-item-button-stop').removeClass('d-none');
-                            $(parent).find('.item-group-item-button-save').addClass('d-none');
-                            $(parent).find('.item-group-item-button-delete').addClass('d-none');
-                        } else if (status === 'ScheduledToStop') {
-                            // Hide and show the corresponding buttons.
-                            $(parent).find('.item-group-item-button-start').addClass('d-none');
-                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
-                            $(parent).find('.item-group-item-button-save').addClass('d-none');
-                            $(parent).find('.item-group-item-button-delete').addClass('d-none');
-                        } else if (status === 'Stopped') {
-                            // Hide and show the corresponding buttons.
-                            $(parent).find('.item-group-item-button-start').removeClass('d-none');
-                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
-                            $(parent).find('.item-group-item-button-save').removeClass('d-none');
-                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
-                        } else if (status === 'Completed') {
-                            // Hide and show the corresponding buttons.
-                            $(parent).find('.item-group-item-button-start').addClass('d-none');
-                            $(parent).find('.item-group-item-button-stop').addClass('d-none');
-                            $(parent).find('.item-group-item-button-save').removeClass('d-none');
-                            $(parent).find('.item-group-item-button-delete').removeClass('d-none');
-                        }
-                    }
+    if ($('.item-group-item').length !== 0) {
+        // Define a function which updates an item.
+        const updateItem = (element) => {
+            // Get the current status.
+            const status = $(element).find('.item-group-item-status').first().text();
+            // Get the ID.
+            const id = $(element).find('.item-group-item-id').first().text();
+            // Retrieve the new data for the algorithm with the mentioned ID.
+            const json = $.ajax({
+                url: `${window.location.pathname}?handler=RefreshAlgorithm&id=${id}`,
+                async: false,
+                dataType: 'json'
+            }).responseJSON;
+            // Update the corresponding fields.
+            $(element).find('.item-group-item-status').attr('title', json.statusTitle);
+            $(element).find('.item-group-item-status').text(json.statusText);
+            $(element).find('.item-group-item-time-span').attr('title', json.timeSpanTitle);
+            $(element).find('.item-group-item-time-span').text(json.timeSpanText);
+            $(element).find('.item-group-item-progress-iterations').attr('title', json.progressIterationsTitle);
+            $(element).find('.item-group-item-progress-iterations').text(json.progressIterationsText);
+            $(element).find('.item-group-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
+            $(element).find('.item-group-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
+            // Check if the status has been updated.
+            if (status !== json.statusText) {
+                // Check the new status.
+                if (json.statusText === 'Scheduled') {
+                    // Hide and show the corresponding buttons.
+                    $(element).find('.item-group-item-button-start').addClass('d-none');
+                    $(element).find('.item-group-item-button-stop').addClass('d-none');
+                    $(element).find('.item-group-item-button-save').addClass('d-none');
+                    $(element).find('.item-group-item-button-delete').removeClass('d-none');
+                } else if (json.statusText === 'Ongoing') {
+                    // Hide and show the corresponding buttons.
+                    $(element).find('.item-group-item-button-start').addClass('d-none');
+                    $(element).find('.item-group-item-button-stop').removeClass('d-none');
+                    $(element).find('.item-group-item-button-save').addClass('d-none');
+                    $(element).find('.item-group-item-button-delete').addClass('d-none');
+                } else if (json.statusText === 'ScheduledToStop') {
+                    // Hide and show the corresponding buttons.
+                    $(element).find('.item-group-item-button-start').addClass('d-none');
+                    $(element).find('.item-group-item-button-stop').addClass('d-none');
+                    $(element).find('.item-group-item-button-save').addClass('d-none');
+                    $(element).find('.item-group-item-button-delete').addClass('d-none');
+                } else if (json.statusText === 'Stopped') {
+                    // Hide and show the corresponding buttons.
+                    $(element).find('.item-group-item-button-start').removeClass('d-none');
+                    $(element).find('.item-group-item-button-stop').addClass('d-none');
+                    $(element).find('.item-group-item-button-save').removeClass('d-none');
+                    $(element).find('.item-group-item-button-delete').removeClass('d-none');
+                } else if (json.statusText === 'Completed') {
+                    // Hide and show the corresponding buttons.
+                    $(element).find('.item-group-item-button-start').addClass('d-none');
+                    $(element).find('.item-group-item-button-stop').addClass('d-none');
+                    $(element).find('.item-group-item-button-save').removeClass('d-none');
+                    $(element).find('.item-group-item-button-delete').removeClass('d-none');
                 }
+            }
+        };
+        // Define a function which updates all statistics on page.
+        const updateAllStatistics = () => {
+            // Go over each statistic element on the page.
+            $('.item-group-statistic').each((index, element) => {
+                // Get the current statistic name.
+                const statisticName = $(element).find('.item-group-statistic-name').first().text();
+                // Retrieve the new data for the statistic with the mentioned name.
+                const json = $.ajax({
+                    url: `${window.location.pathname}?handler=RefreshStatistic&statisticName=${statisticName}`,
+                    async: false,
+                    dataType: 'json'
+                }).responseJSON;
+                // Update the corresponding field.
+                $(element).find('.item-group-statistic-count').text(json.statisticCount);
             });
         };
-        // Update the algorithms on page load.
-        updateAlgorithms();
-        // Repeat the function every 5 seconds.
+        // Define a function which updates all items and statistics on page, as needed.
+        const updateAll = () => {
+            // Add a refresh animation to the refresh button.
+            $('.item-group-refresh').find('svg').first().addClass('fa-spin');
+            // Get all of the items to update on page.
+            const itemsToUpdate = $('.item-group-item').filter((index, element) => {
+                // Get the current status.
+                const status = $(element).find('.item-group-item-status').first().text();
+                // Select the element if it needs updating.
+                return status === '' || status === 'PreparingToStart' || status === 'Scheduled' || status === 'Ongoing' || status === 'ScheduledToStop';
+            });
+            // Check if any item needs updating.
+            if (itemsToUpdate.length !== 0) {
+                // Go over all of the items that do.
+                $(itemsToUpdate).each((index, element) => updateItem(element));
+                // Update all statistics on page.
+                updateAllStatistics();
+            }
+            // Remove the refresh animation from the refresh button.
+            $('.item-group-refresh').find('svg').removeClass('fa-spin');
+        };
+        // Add a listener for clicking the "refresh" button.
+        $('.item-group-refresh').on('click', (event) => {
+            // Update everything on page.
+            updateAll();
+            // Don't follow any link.
+            event.preventDefault();
+        });
+        // Update everything on page load.
+        updateAll();
+        // Repeat the function every few seconds.
         setInterval(function () {
-            // Update the algorithms.
-            updateAlgorithms();
-        }, 5000);
+            // Update everything.
+            updateAll();
+        }, _refreshInterval);
     }
 
     // Check if there is any algorithm whose details to refresh on page.
@@ -343,7 +380,7 @@ $(window).on('load', () => {
         const currentStatus = $('.algorithm-details-status').val();
         // Check if the page needs updating.
         if (currentStatus === 'Scheduled' || currentStatus === 'Ongoing' || currentStatus === 'ScheduledToStop') {
-            // Repeat the function every 5 seconds.
+            // Repeat the function every few seconds.
             setInterval(function () {
                 // Get the ID of the algorithm.
                 let id = $('.algorithm-details-id').val();
@@ -361,7 +398,7 @@ $(window).on('load', () => {
                 // Update the corresponding fields.
                 $('.algorithm-details-current-iteration').val(json.currentIteration);
                 $('.algorithm-details-current-iteration-without-improvement').val(json.currentIterationWithoutImprovement);
-            }, 5000);
+            }, _refreshInterval);
         }
     }
 
