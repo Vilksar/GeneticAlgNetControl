@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
+using GeneticAlgNetControl.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
@@ -226,7 +227,7 @@ namespace GeneticAlgNetControl.Pages
             });
         }
 
-        public IActionResult OnGetRefreshAlgorithm(string id = null)
+        public IActionResult OnGetRefreshItem(string id)
         {
             // Get the algorithm with the provided ID.
             var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
@@ -236,10 +237,14 @@ namespace GeneticAlgNetControl.Pages
                 // Return an empty JSON object.
                 return new JsonResult(new
                 {
-                    Status = string.Empty,
-                    TimeSpan = string.Empty,
-                    ProgressIterations = string.Empty,
-                    ProgressIterationsWithoutImprovement = string.Empty
+                    StatusTitle = string.Empty,
+                    StatusText = string.Empty,
+                    TimeSpanTitle = string.Empty,
+                    TimeSpanText = string.Empty,
+                    ProgressIterationsTitle = string.Empty,
+                    ProgressIterationsText = string.Empty,
+                    ProgressIterationsWithoutImprovementTitle = string.Empty,
+                    ProgressIterationsWithoutImprovementText = string.Empty
                 });
             }
             // Get the required data.
@@ -250,7 +255,7 @@ namespace GeneticAlgNetControl.Pages
             // Return a new JSON object.
             return new JsonResult(new
             {
-                StatusTitle = status.ToString(),
+                StatusTitle = status.ToActualString(),
                 StatusText = status.ToString(),
                 TimeSpanTitle = timeSpan.ToString(),
                 TimeSpanText = timeSpan.ToString("dd\\:hh\\:mm\\:ss"),

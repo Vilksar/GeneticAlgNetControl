@@ -6,7 +6,7 @@
     var statusMessage = (string)TempData["StatusMessage"];
 }
 
-<div class="flex-grow-1 p-4 d-flex flex-column">
+<div class="flex-grow-1 p-4 d-flex flex-column current-page-dashboard">
     <div class="container my-2 sticky-top">
         <div class="card px-5 pt-3 pt-md-0 shadow-sm">
             <div class="row align-items-center">
@@ -119,7 +119,7 @@
                     <button class="btn btn-dark" type="button" title="Filter" data-toggle="dropdown">
                         <span><i class="fas fa-filter"></i></span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-form px-3 py-2">
+                    <div class="dropdown-menu px-3 py-2">
                         <label asp-for="View.SearchIn" class="dropdown-item-text font-weight-bold">Search in</label>
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="search-in-id" name="searchIn" value="Id" checked="@(Model.View.SearchIn.Contains("Id") ? "checked" : null)" class="custom-control-input" />
@@ -177,7 +177,7 @@
                     <button class="btn btn-dark" type="button" title="Sort" data-toggle="dropdown">
                         <span><i class="fas fa-sort-alpha-down"></i></span>
                     </button>
-                    <div class="dropdown-menu dropdown-menu-form px-3 py-2">
+                    <div class="dropdown-menu px-3 py-2">
                         <label asp-for="View.SortBy" class="dropdown-item-text font-weight-bold">Sort by</label>
                         <div class="custom-control custom-radio">
                             <input type="radio" id="sort-by-id" name="sortBy" value="Id" class="custom-control-input" checked="@(Model.View.SortBy == "Id" ? "checked" : null)" />
