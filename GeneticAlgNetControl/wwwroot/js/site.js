@@ -214,10 +214,18 @@ $(window).on('load', () => {
             (() => {
                 // Refresh everything.
                 refresh();
-                // Go over each items group on the page and get the selected items.
-                $('.item-group').each((index, element) => getSelectedItems(element));
-                // Refresh everything every few seconds.
-                setInterval(() => refresh(), _refreshInterval);
+                // Go over each of the item groups on the page.
+                $('.item-group').each((index, element) => {
+                    // Get the selected items.
+                    getSelectedItems(element);
+                    // Get an array containing the statuses of all items.
+                    const statuses = $(element).find('.item-group-item-status').map((index, element) => $(element).attr('title')).toArray();
+                    // Check if the page will need refreshing.
+                    if (statuses.some((item) => item === '' || item === 'Scheduled' || item === 'PreparingToStart' || item === 'Ongoing' || item === 'ScheduledToStop')) {
+                        // Refresh everything every few seconds.
+                        setInterval(() => refresh(), _refreshInterval);
+                    }
+                });
             })();
 
         }
@@ -409,7 +417,6 @@ $(window).on('load', () => {
                 async: false,
                 dataType: 'json'
             }).responseJSON;
-            console.log(json);
             // Check if the item has ended.
             if (json.statusTitle === 'Stopped' || json.statusTitle === 'Completed') {
                 // Reload the page.
