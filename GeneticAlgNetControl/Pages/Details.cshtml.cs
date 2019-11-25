@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Models;
+using GeneticAlgNetControl.Helpers.Extensions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -67,17 +68,40 @@ namespace GeneticAlgNetControl.Pages
                 // Return an empty JSON object.
                 return new JsonResult(new
                 {
-                    Status = string.Empty,
-                    CurrentIteration = string.Empty,
-                    CurrentIterationWithoutImprovement = string.Empty
+                    StatusTitle = string.Empty,
+                    StatusText = string.Empty,
+                    CurrentIterationTitle = string.Empty,
+                    CurrentIterationText = string.Empty,
+                    CurrentIterationWithoutImprovementTitle = string.Empty,
+                    CurrentIterationWithoutImprovementText = string.Empty,
+                    TimeSpanTitle = string.Empty,
+                    TimeSpanText = string.Empty
                 });
             }
+            // Get the required values.
+            var status = algorithm.Status;
+            var currentIteration = algorithm.CurrentIteration;
+            var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
+            var maximumIterations = algorithm.Parameters.MaximumIterations;
+            var maximumIterationsWithoutImprovement = algorithm.Parameters.MaximumIterationsWithoutImprovement;
+            var dateTimeStarted = algorithm.DateTimeStarted;
+            var timeSpan = algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var dateTimeEnded = algorithm.DateTimeEnded;
             // Return a new JSON object.
             return new JsonResult(new
             {
-                Status = algorithm.Status.ToString(),
-                CurrentIteration = algorithm.CurrentIteration,
-                CurrentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement
+                StatusTitle = status.ToActualString(),
+                StatusText = status.ToString(),
+                CurrentIterationTitle = $"{currentIteration} / {maximumIterations}",
+                CurrentIterationText = $"{currentIteration} / {maximumIterations}",
+                CurrentIterationWithoutImprovementTitle = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
+                CurrentIterationWithoutImprovementText = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
+                DateTimeStartedTitle = dateTimeStarted != null ? dateTimeStarted.Value.ToString() : "Not started yet.",
+                DateTimeStartedText = dateTimeStarted != null ? dateTimeStarted.Value.ToLongTimeString() : "--:--:-- --",
+                TimeSpanTitle = timeSpan.ToString(),
+                TimeSpanText = timeSpan.ToString("dd\\:hh\\:mm\\:ss"),
+                DateTimeEndedTitle = dateTimeEnded != null ? dateTimeEnded.Value.ToString() : "Not ended yet.",
+                DateTimeEndedText = dateTimeEnded != null ? dateTimeEnded.Value.ToLongTimeString() : "--:--:-- --"
             });
         }
     }

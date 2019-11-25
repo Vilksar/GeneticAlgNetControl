@@ -26,3 +26,8 @@ main {
 .dropdown-menu {
     z-index: 1021;
 }
+
+/* Style for the navigation tabs. */
+.nav-link.active.text-dark {
+    color: #007bff !important;
+}

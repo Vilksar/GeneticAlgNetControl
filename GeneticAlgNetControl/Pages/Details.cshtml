@@ -2,10 +2,10 @@
 @model DetailsModel
 @{
     ViewData["Title"] = "Details";
-    ViewData["ActivePage"] = "Overview";
+    ViewData["ActivePage"] = "Dashboard";
 }
 
-<div class="flex-grow-1 p-4 d-flex flex-column">
+<div class="flex-grow-1 p-4 d-flex flex-column current-page-details item-details">
     <div class="container my-2 sticky-top">
         <div class="card px-5 pt-3 pt-lg-0 shadow-sm">
             <div class="row align-items-center">
@@ -56,45 +56,47 @@
         </div>
     </div>
     <div class="container my-2">
-        <div class="card px-5 py-3 shadow-sm">
-            <div class="row align-items-center">
-                <div class="col-lg-2 col-xl-1 text-center">
-                    <span title="Details"><i class="fas fa-font fa-2x"></i></span>
-                    <hr class="d-block d-lg-none" />
-                </div>
-                <div class="col-lg-6 col-xl-6 text-center text-lg-left">
-                    <div class="font-weight-bold text-uppercase">
-                        <span title="Name">@Model.View.Algorithm.Name</span>
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-lg-2 col-xl-1 text-center">
+                        <span title="Details"><i class="fas fa-font fa-2x"></i></span>
+                        <hr class="d-block d-lg-none" />
                     </div>
-                    <div class="small text-muted">
-                        <span title="Id">@Model.View.Algorithm.Id</span>
+                    <div class="col-lg-6 col-xl-6 text-center text-lg-left">
+                        <div class="font-weight-bold text-uppercase">
+                            <span title="@Model.View.Algorithm.Name" class="item-details-name">@Model.View.Algorithm.Name</span>
+                        </div>
+                        <div class="small text-muted">
+                            <span title="@Model.View.Algorithm.Id" class="item-details-id">@Model.View.Algorithm.Id</span>
+                        </div>
                     </div>
-                </div>
-                <div class="col-lg-4 col-xl-5 text-center text-lg-right">
-                    <hr class="d-block d-lg-none" />
-                    @switch (Model.View.Algorithm.Status)
-                    {
-                        case Data.Enumerations.AlgorithmStatus.Scheduled:
-                            <span class="text-warning" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
-                            break;
-                        case Data.Enumerations.AlgorithmStatus.PreparingToStart:
-                            <span class="text-dark" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
-                            break;
-                        case Data.Enumerations.AlgorithmStatus.Ongoing:
-                            <span class="text-primary" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
-                            break;
-                        case Data.Enumerations.AlgorithmStatus.ScheduledToStop:
-                            <span class="text-secondary" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
-                            break;
-                        case Data.Enumerations.AlgorithmStatus.Stopped:
-                            <span class="text-danger" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
-                            break;
-                        case Data.Enumerations.AlgorithmStatus.Completed:
-                            <span class="text-success" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
-                            break;
-                        default:
-                            break;
-                    }
+                    <div class="col-lg-4 col-xl-5 text-center text-lg-right">
+                        <hr class="d-block d-lg-none" />
+                        @switch (Model.View.Algorithm.Status)
+                        {
+                            case Data.Enumerations.AlgorithmStatus.Scheduled:
+                                <span class="text-warning item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
+                                break;
+                            case Data.Enumerations.AlgorithmStatus.PreparingToStart:
+                                <span class="text-dark item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
+                                break;
+                            case Data.Enumerations.AlgorithmStatus.Ongoing:
+                                <span class="text-primary item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
+                                break;
+                            case Data.Enumerations.AlgorithmStatus.ScheduledToStop:
+                                <span class="text-secondary item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
+                                break;
+                            case Data.Enumerations.AlgorithmStatus.Stopped:
+                                <span class="text-danger item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
+                                break;
+                            case Data.Enumerations.AlgorithmStatus.Completed:
+                                <span class="text-success item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
+                                break;
+                            default:
+                                break;
+                        }
+                    </div>
                 </div>
             </div>
         </div>
@@ -102,148 +104,151 @@
     <div class="container my-2">
         <div class="row align-items-center">
             <div class="col-lg-4 mb-1 mb-lg-0">
-                <div class="card px-5 py-3 shadow-sm" title="Date started">
-                    <div class="row align-items-center">
-                        <div class="col-xl-3 text-center">
-                            <span><i class="fas fa-hourglass-start fa-2x"></i></span>
-                            <hr class="d-xl-none" />
-                        </div>
-                        <div class="col-xl-9 text-center">
-                            @{
-                                var timeStarted = Model.View.Algorithm.DateTimeStarted;
-                            }
-                            @if (timeStarted == null)
-                            {
-                                <span title="-" class="font-weight-bold">-</span>
-                            }
-                            else
-                            {
-                                <span title="@timeStarted.Value.ToString()" class="font-weight-bold">@timeStarted.Value.ToLongTimeString()</span>
-                            }
+                <div class="card shadow-sm" title="Date started">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-hourglass-start fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                @{
+                                    var timeStarted = Model.View.Algorithm.DateTimeStarted;
+                                }
+                                @if (timeStarted == null)
+                                {
+                                    <span title="Not started yet." class="font-weight-bold item-details-date-time-started">--:--:-- --</span>
+                                }
+                                else
+                                {
+                                    <span title="@timeStarted.Value.ToString()" class="font-weight-bold item-details-date-time-started">@timeStarted.Value.ToLongTimeString()</span>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 my-1 my-lg-0">
-                <div class="card px-5 py-3 shadow-sm" title="Time elapsed">
-                    <div class="row align-items-center">
-                        <div class="col-xl-3 text-center">
-                            <span><i class="fas fa-hourglass-half fa-2x"></i></span>
-                            <hr class="d-xl-none" />
-                        </div>
-                        <div class="col-xl-9 text-center">
-                            @{ 
-                                var timeSpan = Model.View.Algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
-                            }
-                            <span title="@timeSpan.ToString()" class="font-weight-bold">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
+                <div class="card shadow-sm" title="Time elapsed">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-hourglass-half fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                @{
+                                    var timeSpan = Model.View.Algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+                                }
+                                <span title="@timeSpan.ToString()" class="font-weight-bold item-details-time-span">@timeSpan.ToString("dd\\:hh\\:mm\\:ss")</span>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="col-lg-4 mt-1 mt-lg-0">
-                <div class="card px-5 py-3 shadow-sm" title="Date ended">
-                    <div class="row align-items-center">
-                        <div class="col-xl-3 text-center">
-                            <span><i class="fas fa-hourglass-end fa-2x"></i></span>
-                            <hr class="d-xl-none" />
-                        </div>
-                        <div class="col-xl-9 text-center">
-                            @{
-                                var timeEnded = Model.View.Algorithm.DateTimeEnded;
-                            }
-                            @if (timeEnded == null)
-                            {
-                                <span title="-" class="font-weight-bold">-</span>
-                            }
-                            else
-                            {
-                                <span title="@timeEnded.Value.ToString()" class="font-weight-bold">@timeEnded.Value.ToLongTimeString()</span>
-                            }
+                <div class="card shadow-sm" title="Date ended">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-hourglass-end fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                @{
+                                    var timeEnded = Model.View.Algorithm.DateTimeEnded;
+                                }
+                                @if (timeEnded == null)
+                                {
+                                    <span title="Not ended yet." class="font-weight-bold item-details-date-time-ended">--:--:-- --</span>
+                                }
+                                else
+                                {
+                                    <span title="@timeEnded.Value.ToString()" class="font-weight-bold item-details-date-time-ended">@timeEnded.Value.ToLongTimeString()</span>
+                                }
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
-<div class="row h4">
-    <div class="col-1 text-center">
-        <span><i class="fas fa-font"></i></span>
-    </div>
-    <div class="col-11 text-left">
-        <span>General details</span>
-    </div>
-</div>
-<hr />
-<div class="row">
-    <div class="offset-1 col-11">
-        <div class="row">
-            <div class="col-lg-12 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.Id" class="font-weight-bold">ID</label>
+    <div class="container my-2">
+        <div class="row align-items-center">
+            <div class="col-lg-4 mb-1 mb-lg-0">
+                <div class="card shadow-sm" title="Iterations">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-fast-forward fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                <span title="@Model.View.Algorithm.CurrentIteration / @Model.View.Algorithm.Parameters.MaximumIterations" class="item-details-current-iteration">@Model.View.Algorithm.CurrentIteration / @Model.View.Algorithm.Parameters.MaximumIterations</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-12 order-2 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Id" class="form-control form-control-plaintext algorithm-details-id" disabled />
+            <div class="col-lg-4 my-1 my-lg-0">
+                <div class="card shadow-sm" title="Iterations without improvement">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-forward fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                <span title="@Model.View.Algorithm.CurrentIterationWithoutImprovement / @Model.View.Algorithm.Parameters.MaximumIterationsWithoutImprovement" class="item-details-current-iteration-without-improvement">@Model.View.Algorithm.CurrentIterationWithoutImprovement / @Model.View.Algorithm.Parameters.MaximumIterationsWithoutImprovement</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.Name" class="font-weight-bold">Name</label>
+            <div class="col-lg-4 mt-1 mt-lg-0">
+                <div class="card shadow-sm" title="Status">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                @switch (Model.View.Algorithm.Status)
+                                {
+                                    case Data.Enumerations.AlgorithmStatus.Scheduled:
+                                        <span class="text-warning item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AlgorithmStatus.PreparingToStart:
+                                        <span class="text-dark item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AlgorithmStatus.Ongoing:
+                                        <span class="text-primary item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AlgorithmStatus.ScheduledToStop:
+                                        <span class="text-secondary item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AlgorithmStatus.Stopped:
+                                        <span class="text-danger item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AlgorithmStatus.Completed:
+                                        <span class="text-success item-details-status-icon" title="@Model.View.Algorithm.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                <span title="@Model.View.Algorithm.Status.ToString()" class="item-details-status">@Model.View.Algorithm.Status.ToString()</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Name" class="form-control form-control-plaintext algorithm-details-name" disabled />
-            </div>
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.Status" class="font-weight-bold">Status</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Status" class="form-control form-control-plaintext algorithm-details-status" disabled />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.DateTimeStarted" class="font-weight-bold">Date started</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.DateTimeStarted" class="form-control form-control-plaintext algorithm-details-date-time-started" disabled />
-            </div>
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.DateTimeEnded" class="font-weight-bold">Date ended</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.DateTimeEnded" class="form-control form-control-plaintext algorithm-details-date-time-ended" disabled />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.CurrentIteration" class="font-weight-bold">Current iteration</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.CurrentIteration" class="form-control form-control-plaintext algorithm-details-current-iteration" disabled />
-            </div>
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.CurrentIterationWithoutImprovement" class="font-weight-bold">Current iteration without improvement</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.CurrentIterationWithoutImprovement" class="form-control form-control-plaintext algorithm-details-current-iteration-without-improvement" disabled />
-            </div>
-        </div>
-    </div>
-</div>
-@if (Model.View.Algorithm.Population != null && Model.View.Algorithm.Population.Chromosomes != null)
-{
-    <div class="row h4 mt-3">
-        <div class="col-1 text-center">
-            <span><i class="fas fa-chart-line"></i></span>
-        </div>
-        <div class="col-11 text-left">
-            <span>Progress</span>
         </div>
     </div>
-    <hr />
-    <div class="row">
-        <div class="offset-1 col-11">
-            <div class="row">
-                <div class="col-lg-12">
+    @if (Model.View.Algorithm.Population.Chromosomes.Any())
+    {
+        <div class="container my-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
                     <div class="chart-js-chart" data-type="details">
                         <span class="chart-js-data" hidden>@JsonSerializer.Serialize(new { AverageFitness = Model.View.Algorithm.Population.HistoricAverageFitness, BestFitness = Model.View.Algorithm.Population.HistoricBestFitness })</span>
                         <canvas class="chart-js-canvas"></canvas>
@@ -251,330 +256,247 @@
                 </div>
             </div>
         </div>
-    </div>
-    <div class="row h4 mt-3">
-        <div class="col-1 text-center">
-            <span><i class="fas fa-list"></i></span>
+        <div class="container my-2">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <span>Solution</span>
+                </div>
+            </div>
         </div>
-        <div class="col-11 text-left">
-            <span>Solutions</span>
-        </div>
-    </div>
-    <hr />
-    <div class="row">
-        <div class="offset-1 col-11">
-            @*@foreach (var solution in Model.View.Algorithm.Population.GetSolutions())
-                {
-                    var fitness = solution.GetFitness();
-                    var controlNodes = solution.GetUniqueControlNodes();
-                    <div class="row">
-                        <div class="col-lg-3 order-1 order-lg-1">
-                            <label class="font-weight-bold">Fitness</label>
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                            <input class="form-control form-control-plaintext" disabled value="@fitness" />
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-1">
-                            <label class="font-weight-bold">Control nodes</label>
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                            <input class="form-control form-control-plaintext" disabled value="@controlNodes.Count()" />
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-1">
-                            <label class="font-weight-bold">Control nodes</label>
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                            <input class="form-control form-control-plaintext" disabled value="@string.Join(", ", controlNodes)" />
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-1">
-                            <label class="font-weight-bold">View</label>
-                        </div>
-                        <div class="col-lg-3 order-1 order-lg-2 mb-3">
-                            <div class="modal-group">
-                                <button type="button" class="btn btn-dark btn-block" data-toggle="modal" data-target=".details-modal">
-                                    <span>View</span>
-                                </button>
-                                <div class="modal-group-data" hidden>
-                                    <div class="modal-group-title">
-                                        <span class="font-weight-bold">Solution</span>
-                                    </div>
-                                    <div class="modal-group-body">
-                                        <ul class="list-group list-group-flush">
-                                            <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                                <span class="font-weight-bold">Node</span>
-                                            </li>
-                                            @foreach (var item in controlNodes)
-                                            {
-                                                <li class="list-group-item list-group-item-action">
-                                                    <span>@item</span>
-                                                </li>
-                                            }
-                                        </ul>
-                                    </div>
-                                </div>
+    }
+    <div class="container my-2">
+        <div class="nav row align-items-center">
+            <a href="#item-details-tab-pane-nodes" class="col-lg-3 mb-1 mb-xl-0 nav-link text-dark active" data-toggle="tab" title="Nodes">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-6 text-center">
+                                <span><i class="fas fa-circle fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-6 text-center">
+                                <span>@Model.View.Algorithm.Nodes.Count()</span>
                             </div>
                         </div>
                     </div>
-                }*@
-        </div>
-    </div>
-}
-<div class="row h4 mt-3">
-    <div class="col-1 text-center">
-        <span><i class="fas fa-share-alt"></i></span>
-    </div>
-    <div class="col-11 text-left">
-        <span>Network</span>
-    </div>
-</div>
-<hr />
-<div class="row">
-    <div class="offset-1 col-11">
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.Nodes" class="font-weight-bold">Nodes</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group modal-group">
-                    <input asp-for="View.Algorithm.Nodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.Nodes.Count()" disabled />
-                    <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
-                            <span>View</span>
-                        </button>
-                    </div>
-                    <div class="modal-group-data" hidden>
-                        <div class="modal-group-title">
-                            <span class="font-weight-bold">Nodes</span>
-                        </div>
-                        <div class="modal-group-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                    <span class="font-weight-bold">Node</span>
-                                </li>
-                                @foreach (var item in Model.View.Algorithm.Nodes)
-                                {
-                                    <li class="list-group-item list-group-item-action">
-                                        <span>@item</span>
-                                    </li>
-                                }
-                            </ul>
+                </div>
+            </a>
+            <a href="#item-details-tab-pane-edges" class="col-lg-3 mb-1 mb-xl-0 nav-link text-dark" data-toggle="tab" title="Edges">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-6 text-center">
+                                <span><i class="fas fa-arrows-alt-h fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-6 text-center">
+                                <span>@Model.View.Algorithm.Edges.Count()</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.Edges" class="font-weight-bold">Edges</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group modal-group">
-                    <input asp-for="View.Algorithm.Edges" class="form-control form-control-plaintext" value="@Model.View.Algorithm.Edges.Count()" disabled />
-                    <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
-                            <span>View</span>
-                        </button>
-                    </div>
-                    <div class="modal-group-data" hidden>
-                        <div class="modal-group-title">
-                            <span class="font-weight-bold">Edges</span>
-                        </div>
-                        <div class="modal-group-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                    <div class="row">
-                                        <div class="col-6">
-                                            <span class="font-weight-bold">Source node</span>
-                                        </div>
-                                        <div class="col-6">
-                                            <span class="font-weight-bold">Target node</span>
-                                        </div>
-                                    </div>
-                                </li>
-                                @foreach (var item in Model.View.Algorithm.Edges)
-                                {
-                                    <li class="list-group-item list-group-item-action">
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <span>@item.SourceNode</span>
-                                            </div>
-                                            <div class="col-6">
-                                                <span>@item.TargetNode</span>
-                                            </div>
-                                        </div>
-                                    </li>
-                                }
-                            </ul>
+            </a>
+            <a href="#item-details-tab-pane-target-nodes" class="col-lg-3 mb-1 mb-xl-0 nav-link text-dark" data-toggle="tab" title="Target nodes">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-6 text-center">
+                                <span><i class="fas fa-bullseye fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-6 text-center">
+                                <span>@Model.View.Algorithm.TargetNodes.Count()</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.TargetNodes" class="font-weight-bold">Target nodes</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group modal-group">
-                    <input asp-for="View.Algorithm.TargetNodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.TargetNodes.Count()" disabled />
-                    <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
-                            <span>View</span>
-                        </button>
-                    </div>
-                    <div class="modal-group-data" hidden>
-                        <div class="modal-group-title">
-                            <span class="font-weight-bold">Target nodes</span>
-                        </div>
-                        <div class="modal-group-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                    <span class="font-weight-bold">Node</span>
-                                </li>
-                                @foreach (var item in Model.View.Algorithm.TargetNodes)
-                                {
-                                    <li class="list-group-item list-group-item-action">
-                                        <span>@item</span>
-                                    </li>
-                                }
-                            </ul>
+            </a>
+            <a href="#item-details-tab-pane-preferred-nodes" class="col-lg-3 mb-1 mb-xl-0 nav-link text-dark" data-toggle="tab" title="Preferred nodes">
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-6 text-center">
+                                <span><i class="fas fa-heart fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-6 text-center">
+                                <span>@Model.View.Algorithm.PreferredNodes.Count()</span>
+                            </div>
                         </div>
                     </div>
                 </div>
+            </a>
+        </div>
+        <div class="tab-content mt-2">
+            <div id="item-details-tab-pane-nodes" class="tab-pane fade bg-white show active shadow-sm">
+                <table class="table table-striped table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <span>Node name</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.View.Algorithm.Nodes)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@item</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <div class="col-lg-6 order-1 order-lg-1">
-                <label asp-for="View.Algorithm.PreferredNodes" class="font-weight-bold">Preferred nodes</label>
+            <div id="item-details-tab-pane-edges" class="tab-pane fade bg-white">
+                <table class="table table-striped table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <span>Source node name</span>
+                            </th>
+                            <th>
+                                <span>Target node name</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.View.Algorithm.Edges)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@item.SourceNode</span>
+                                </td>
+                                <td>
+                                    <span>@item.TargetNode</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
             </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <div class="input-group modal-group">
-                    <input asp-for="View.Algorithm.PreferredNodes" class="form-control form-control-plaintext" value="@Model.View.Algorithm.PreferredNodes.Count()" disabled />
-                    <div class="input-group-append">
-                        <button class="btn btn-dark" type="button" data-toggle="modal" data-target=".details-modal">
-                            <span>View</span>
-                        </button>
+            <div id="item-details-tab-pane-target-nodes" class="tab-pane fade bg-white">
+                <table class="table table-striped table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <span>Node name</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.View.Algorithm.TargetNodes)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@item</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <div id="item-details-tab-pane-preferred-nodes" class="tab-pane fade bg-white">
+                <table class="table table-striped table-hover table-bordered text-center">
+                    <thead class="thead-dark">
+                        <tr>
+                            <th>
+                                <span>Node name</span>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.View.Algorithm.PreferredNodes)
+                        {
+                            <tr>
+                                <td>
+                                    <span>@item</span>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <div class="container my-2">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-4 order-1 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.RandomSeed" class="font-weight-bold">Random seed</label>
                     </div>
-                    <div class="modal-group-data" hidden>
-                        <div class="modal-group-title">
-                            <span class="font-weight-bold">Preferred nodes</span>
-                        </div>
-                        <div class="modal-group-body">
-                            <ul class="list-group list-group-flush">
-                                <li class="list-group-item list-group-item-dark list-group-item-action active">
-                                    <span class="font-weight-bold">Node</span>
-                                </li>
-                                @foreach (var item in Model.View.Algorithm.PreferredNodes)
-                                {
-                                    <li class="list-group-item list-group-item-action">
-                                        <span>@item</span>
-                                    </li>
-                                }
-                            </ul>
-                        </div>
+                    <div class="col-lg-4 order-1 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.RandomSeed" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.MaximumIterations" class="font-weight-bold">Maximum iterations</label>
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.MaximumIterations" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.MaximumIterationsWithoutImprovement" class="font-weight-bold">Maximum iterations without improvement</label>
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.MaximumIterationsWithoutImprovement" class="form-control form-control-plaintext" disabled />
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-<div class="row h4 mt-3">
-    <div class="col-1 text-center">
-        <span><i class="fas fa-code"></i></span>
-    </div>
-    <div class="col-11 text-left">
-        <span>Parameters</span>
-    </div>
-</div>
-<hr />
-<div class="row">
-    <div class="offset-1 col-11">
-        <div class="row">
-            <div class="col-lg-4 order-1 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.RandomSeed" class="font-weight-bold">Random seed</label>
-            </div>
-            <div class="col-lg-4 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.RandomSeed" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-2 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.MaximumIterations" class="font-weight-bold">Maximum iterations</label>
-            </div>
-            <div class="col-lg-4 order-2 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.MaximumIterations" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-3 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.MaximumIterationsWithoutImprovement" class="font-weight-bold">Maximum iterations without improvement</label>
-            </div>
-            <div class="col-lg-4 order-3 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.MaximumIterationsWithoutImprovement" class="form-control form-control-plaintext" disabled />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-4 order-1 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.MaximumPathLength" class="font-weight-bold">Maximum path length</label>
-            </div>
-            <div class="col-lg-4 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.MaximumPathLength" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-2 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.PopulationSize" class="font-weight-bold">Population size</label>
-            </div>
-            <div class="col-lg-4 order-2 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.PopulationSize" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-3 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.RandomGenesPerChromosome" class="font-weight-bold">Random genes per chromosome</label>
-            </div>
-            <div class="col-lg-4 order-3 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.RandomGenesPerChromosome" class="form-control form-control-plaintext" disabled />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-4 order-1 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.PercentageRandom" class="font-weight-bold">Percentage of random chromosomes</label>
-            </div>
-            <div class="col-lg-4 order-1 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.PercentageRandom" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-2 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.PercentageElite" class="font-weight-bold">Percentage of elite chromosomes</label>
-            </div>
-            <div class="col-lg-4 order-2 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.PercentageElite" class="form-control form-control-plaintext" disabled />
-            </div>
-            <div class="col-lg-4 order-3 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.ProbabilityMutation" class="font-weight-bold">Probability of mutation</label>
-            </div>
-            <div class="col-lg-4 order-3 order-lg-2 mb-3">
-                <input asp-for="View.Algorithm.Parameters.ProbabilityMutation" class="form-control form-control-plaintext" disabled />
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-lg-6 order-1 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.CrossoverType" class="font-weight-bold">Crossover type</label>
-            </div>
-            <div class="col-lg-6 order-1 order-lg-2 mb-3">
-                <select asp-for="View.Algorithm.Parameters.CrossoverType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmCrossoverType>()" class="form-control form-control-plaintext" disabled></select>
-            </div>
-            <div class="col-lg-6 order-2 order-lg-1 align-self-center">
-                <label asp-for="View.Algorithm.Parameters.MutationType" class="font-weight-bold">Mutation type</label>
-            </div>
-            <div class="col-lg-6 order-2 order-lg-2 mb-3">
-                <select asp-for="View.Algorithm.Parameters.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmMutationType>()" class="form-control form-control-plaintext" disabled></select>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="modal fade details-modal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <div class="modal-title">
-
+                <div class="row">
+                    <div class="col-lg-4 order-1 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.MaximumPathLength" class="font-weight-bold">Maximum path length</label>
+                    </div>
+                    <div class="col-lg-4 order-1 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.MaximumPathLength" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.PopulationSize" class="font-weight-bold">Population size</label>
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.PopulationSize" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.RandomGenesPerChromosome" class="font-weight-bold">Random genes per chromosome</label>
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.RandomGenesPerChromosome" class="form-control form-control-plaintext" disabled />
+                    </div>
                 </div>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span><i class="fas fa-times"></i></span>
-                </button>
-            </div>
-            <div class="modal-body text-center">
-
+                <div class="row">
+                    <div class="col-lg-4 order-1 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.PercentageRandom" class="font-weight-bold">Percentage of random chromosomes</label>
+                    </div>
+                    <div class="col-lg-4 order-1 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.PercentageRandom" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.PercentageElite" class="font-weight-bold">Percentage of elite chromosomes</label>
+                    </div>
+                    <div class="col-lg-4 order-2 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.PercentageElite" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.ProbabilityMutation" class="font-weight-bold">Probability of mutation</label>
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-2 mb-3">
+                        <input asp-for="View.Algorithm.Parameters.ProbabilityMutation" class="form-control form-control-plaintext" disabled />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-lg-6 order-1 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.CrossoverType" class="font-weight-bold">Crossover type</label>
+                    </div>
+                    <div class="col-lg-6 order-1 order-lg-2 mb-3">
+                        <select asp-for="View.Algorithm.Parameters.CrossoverType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmCrossoverType>()" class="form-control form-control-plaintext" disabled></select>
+                    </div>
+                    <div class="col-lg-6 order-2 order-lg-1 align-self-center">
+                        <label asp-for="View.Algorithm.Parameters.MutationType" class="font-weight-bold">Mutation type</label>
+                    </div>
+                    <div class="col-lg-6 order-2 order-lg-2 mb-3">
+                        <select asp-for="View.Algorithm.Parameters.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmMutationType>()" class="form-control form-control-plaintext" disabled></select>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
