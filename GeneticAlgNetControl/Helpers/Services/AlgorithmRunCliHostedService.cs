@@ -186,12 +186,6 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Read the parameters file content as a JSON object.
                 parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(_arguments.ParametersFilepath));
-                // Check if we should generate a new random seed.
-                if (parameters.RandomSeed == -1)
-                {
-                    // Generate a random random seed.
-                    parameters.RandomSeed = (new Random()).Next();
-                }
             }
             catch (Exception ex)
             {
@@ -227,6 +221,18 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Get the actual preferred nodes in the network.
             preferredNodes = preferredNodes.Intersect(nodes)
                 .ToList();
+            // Check if we should generate a new random seed.
+            if (parameters.RandomSeed == -1)
+            {
+                // Generate a random random seed.
+                parameters.RandomSeed = (new Random()).Next();
+            }
+            // Check if all genes should have random values.
+            if (parameters.RandomGenesPerChromosome == 0 || targetNodes.Count() < parameters.RandomGenesPerChromosome)
+            {
+                // Update the number of random genes per chromosome.
+                parameters.RandomGenesPerChromosome = targetNodes.Count();
+            }
             // Check if the provided parameters are not valid.
             if (!parameters.IsValid())
             {
@@ -294,11 +300,23 @@ namespace GeneticAlgNetControl.Helpers.Services
             var outputText = JsonSerializer.Serialize(new
             {
                 Name = Path.GetFileNameWithoutExtension(_arguments.EdgesFilepath),
-                TimeElapsed = stopwatch.Elapsed,
-                NumberOfGenerations = population.HistoricBestFitness.Count(),
-                Parameters = parameters,
-                NumberOfSolutions = population.Solutions.Count(),
-                Solutions = population.Solutions,
+                CurrentIteration = currentIteration,
+                CurrentIterationWithoutImprovement = currentIterationWithoutImprovement,
+                DateTime = new
+                {
+                    TimeElapsed = stopwatch.Elapsed
+                },
+                Parameters = new
+                {
+                    Parameters = parameters,
+                    CrossoverAlgorithm = parameters.CrossoverType.ToString(),
+                    MutationAlgorithm = parameters.MutationType.ToString()
+                },
+                Solutions = new
+                {
+                    NumberOfSolutions = population.Solutions.Count(),
+                    Solutions = population.Solutions
+                },
                 HistoricAverageFitness = population.HistoricAverageFitness,
                 HistoricBestFitness = population.HistoricBestFitness
             }, new JsonSerializerOptions { WriteIndented = true });

@@ -130,8 +130,44 @@ namespace GeneticAlgNetControl.Pages
                     // Check the file type to return.
                     if (Input.Type == "Json")
                     {
+                        // Define the text to be written to the file.
+                        var outputText = JsonSerializer.Serialize(new
+                        {
+                            Id = item.Id,
+                            Name = item.Name,
+                            Status = item.Status.ToString(),
+                            CurrentIteration = item.CurrentIteration,
+                            CurrentIterationWithoutImprovement = item.CurrentIterationWithoutImprovement,
+                            DateTime = new
+                            {
+                                DateTimeStarted = item.DateTimeStarted,
+                                DateTimeEnded = item.DateTimeEnded,
+                                DateTimePeriods = item.DateTimePeriods,
+                                TimeElapsed = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value)
+                            },
+                            Parameters = new
+                            {
+                                Parameters = item.Parameters,
+                                CrossoverAlgorithm = item.Parameters.CrossoverType.ToString(),
+                                MutationAlgorithm = item.Parameters.MutationType.ToString()
+                            },
+                            Solutions = new
+                            {
+                                NumberOfSolutions = item.Population.Solutions.Count(),
+                                Solutions = item.Population.Solutions
+                            },
+                            HistoricAverageFitness = item.Population.HistoricAverageFitness,
+                            HistoricBestFitness = item.Population.HistoricBestFitness,
+                            Network = new
+                            {
+                                Nodes = item.Nodes,
+                                Edges = item.Edges,
+                                TargetNodes = item.TargetNodes,
+                                PreferredNodes = item.PreferredNodes
+                            }
+                        }, new JsonSerializerOptions { WriteIndented = true });
                         // Define the stream of the file to be downloaded.
-                        memoryStream.Write(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(item, new JsonSerializerOptions { WriteIndented = true })));
+                        memoryStream.Write(Encoding.UTF8.GetBytes(outputText));
                     }
                     else
                     {

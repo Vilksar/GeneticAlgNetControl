@@ -201,7 +201,7 @@ namespace GeneticAlgNetControl.Pages
                 MaximumIterationsWithoutImprovement = Input.MaximumIterationsWithoutImprovement,
                 MaximumPathLength = Input.MaximumPathLength,
                 PopulationSize = Input.PopulationSize,
-                RandomGenesPerChromosome = Input.RandomGenesPerChromosome,
+                RandomGenesPerChromosome = Input.RandomGenesPerChromosome <= targetNodes.Count() ? Input.RandomGenesPerChromosome : targetNodes.Count(),
                 PercentageElite = Input.PercentageElite,
                 PercentageRandom = Input.PercentageRandom,
                 ProbabilityMutation = Input.ProbabilityMutation,

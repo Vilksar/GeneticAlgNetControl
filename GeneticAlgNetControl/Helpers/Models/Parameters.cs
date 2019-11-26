@@ -188,12 +188,12 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// <summary>
             /// Represents the default value for the crossover algorithm to be used.
             /// </summary>
-            public static AlgorithmCrossoverType CrossoverType { get; } = AlgorithmCrossoverType.Standard;
+            public static AlgorithmCrossoverType CrossoverType { get; } = AlgorithmCrossoverType.Default;
 
             /// <summary>
             /// Represents the default value for the mutation algorithm to be used.
             /// </summary>
-            public static AlgorithmMutationType MutationType { get; } = AlgorithmMutationType.Standard;
+            public static AlgorithmMutationType MutationType { get; } = AlgorithmMutationType.Default;
         }
     }
 }
