@@ -536,7 +536,7 @@ $(window).on('load', () => {
             // Go over each of the charts and paint them.
             $('.chart-js-chart').each((index, element) => paintChart(element));
             // Go over each of the tables and format them.
-            $('table.table').each((index, element) => paintDataTable(element));
+            $('table.table-datatable').each((index, element) => paintDataTable(element));
             // Check if the page needs to be refreshed.
             if (currentStatus === '' || currentStatus === 'Scheduled' || currentStatus === 'PreparingToStart' || currentStatus === 'Ongoing' || currentStatus === 'ScheduledToStop') {
                 // Repeat the function every few seconds.

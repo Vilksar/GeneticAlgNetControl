@@ -259,7 +259,46 @@
         <div class="container my-2">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <span>Solution</span>
+                    <table class="table table-light table-striped table-hover table-bordered">
+                        <thead class="thead-light">
+                            <tr>
+                                <th>
+                                    <span>Control node</span>
+                                </th>
+                                <th>
+                                    <span>Reachable target nodes</span>
+                                </th>
+                                <th>
+                                    <span></span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @{ 
+                                var solution = Model.View.Algorithm.Population.Solutions.First();
+                            }
+                            @foreach (var controlNode in solution.UniqueControlNodes)
+                            {
+                                var currentTargetNodes = solution.Genes.Where(item => item.Value == controlNode).Select(item => item.Key);
+                                var currentPercentage = currentTargetNodes.Count() * 100 / solution.Genes.Count();
+                                <tr>
+                                    <td>
+                                        <span>@controlNode</span>
+                                    </td>
+                                    <td>
+                                        <span>@string.Join(", ", currentTargetNodes)</span>
+                                    </td>
+                                    <td>
+                                        <div class="progress">
+                                            <div class="progress-bar" style="width: @currentPercentage%">
+                                                <span>@currentTargetNodes.Count() / @solution.Genes.Count()</span>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -331,7 +370,7 @@
             <div id="item-details-tab-pane-nodes" class="tab-pane fade show active">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <table class="table table-striped table-hover table-bordered text-center">
+                        <table class="table table-light table-striped table-hover table-bordered table-datatable text-center">
                             <thead class="thead-light">
                                 <tr>
                                     <th>
@@ -356,7 +395,7 @@
             <div id="item-details-tab-pane-edges" class="tab-pane fade">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <table class="table table-striped table-hover table-bordered text-center">
+                        <table class="table table-light table-striped table-hover table-bordered table-datatable text-center">
                             <thead class="thead-light">
                                 <tr>
                                     <th>
@@ -387,7 +426,7 @@
             <div id="item-details-tab-pane-target-nodes" class="tab-pane fade">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <table class="table table-striped table-hover table-bordered text-center">
+                        <table class="table table-light table-striped table-hover table-bordered table-datatable text-center">
                             <thead class="thead-light">
                                 <tr>
                                     <th>
@@ -412,7 +451,7 @@
             <div id="item-details-tab-pane-preferred-nodes" class="tab-pane fade">
                 <div class="card shadow-sm">
                     <div class="card-body">
-                        <table class="table table-striped table-hover table-bordered text-center">
+                        <table class="table table-light table-striped table-hover table-bordered table-datatable text-center">
                             <thead class="thead-light">
                                 <tr>
                                     <th>
