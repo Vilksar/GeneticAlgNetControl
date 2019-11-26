@@ -12,15 +12,27 @@ namespace GeneticAlgNetControl.Data.Enumerations
     public enum AlgorithmCrossoverType
     {
         /// <summary>
+        /// Represents the previously used crossover algorithm.
+        /// </summary>
+        [Display(Name = "Default")]
+        Default,
+
+        /// <summary>
         /// Represents the default, standard, crossover algorithm.
         /// </summary>
         [Display(Name = "Standard")]
         Standard,
 
         /// <summary>
-        /// Represents the crossover algorithm which tries to choose prefer nodes first.
+        /// Represents the previously used crossover algorithm that chooses preferred nodes whenever possible.
         /// </summary>
-        [Display(Name = "With preference")]
-        WithPreference
+        [Display(Name = "Default with preference")]
+        DefaultWithPreference,
+
+        /// <summary>
+        /// Represents the default, standard, crossover algorithm that is twice more likely to choose preferred nodes.
+        /// </summary>
+        [Display(Name = "Standard with preference")]
+        StandardWithPreference
     }
 }

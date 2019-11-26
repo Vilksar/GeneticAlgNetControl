@@ -290,6 +290,31 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Use the specified crossover type.
             switch (crossoverType)
             {
+                // If we have a default crossover.
+                case AlgorithmCrossoverType.Default:
+                    // Repeat while the chromosome is not valid.
+                    while (tries > 0)
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over each of the target nodes.
+                        foreach (var item in chromosome.Genes.Keys.ToList())
+                        {
+                            // Get the number of occurances in each chromosome.
+                            var inFirst = occurrences[Genes[item]];
+                            var inSecond = occurrences[secondChromosome.Genes[item]];
+                            // Assign to the gene in the chromosome its corresponding random parent value with the a probability depending on the occurances.
+                            chromosome.Genes[item] = inSecond < inFirst ? Genes[item] : inFirst < inSecond ? secondChromosome.Genes[item] : random.NextDouble() < 0.5 ? Genes[item] : secondChromosome.Genes[item];
+                        }
+                        // Check if the chromosome is valid.
+                        if (chromosome.IsValid(nodeIndex, powersMatrixCA))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                    }
+                    // End the switch statement.
+                    break;
                 // If we have a standard crossover.
                 case AlgorithmCrossoverType.Standard:
                     // Repeat while the chromosome is not valid.
@@ -316,7 +341,51 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a crossover with preference.
-                case AlgorithmCrossoverType.WithPreference:
+                case AlgorithmCrossoverType.DefaultWithPreference:
+                    // Repeat while the chromosome is not valid.
+                    while (tries > 0)
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over each of the target nodes.
+                        foreach (var item in chromosome.Genes.Keys.ToList())
+                        {
+                            // Get the number of occurances in each chromosome.
+                            var inFirst = occurrences[Genes[item]];
+                            var inSecond = occurrences[secondChromosome.Genes[item]];
+                            // Check if the gene in any of the chromosomes is a preferred node.
+                            var isPreferredFirst = nodeIsPreferred[Genes[item]];
+                            var isPreferredSecond = nodeIsPreferred[secondChromosome.Genes[item]];
+                            // Check if the first corresponding gene is preferred, and the second one isn't.
+                            if (isPreferredFirst && !isPreferredSecond)
+                            {
+                                // Choose the preferred node.
+                                chromosome.Genes[item] = Genes[item];
+                            }
+                            // Check if the second corresponding gene is preferred, and the first one isn't.
+                            else if (!isPreferredFirst && isPreferredSecond)
+                            {
+                                // Choose the preferred node.
+                                chromosome.Genes[item] = secondChromosome.Genes[item];
+                            }
+                            // Otherwise they both have the same state.
+                            else
+                            {
+                                // Choose one of the parent genes with a probability depending on their occurances.
+                                chromosome.Genes[item] = inSecond < inFirst ? Genes[item] : inFirst < inSecond ? secondChromosome.Genes[item] : random.NextDouble() < 0.5 ? Genes[item] : secondChromosome.Genes[item];
+                            }
+                        }
+                        // Check if the chromosome is valid.
+                        if (chromosome.IsValid(nodeIndex, powersMatrixCA))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                    }
+                    // End the switch statement.
+                    break;
+                // If we have a crossover with preference.
+                case AlgorithmCrossoverType.StandardWithPreference:
                     // Repeat while the chromosome is not valid.
                     while (tries > 0)
                     {
@@ -431,7 +500,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a mutation with preference.
-                case AlgorithmMutationType.WithPreference:
+                case AlgorithmMutationType.StandardWithPreference:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
                     {

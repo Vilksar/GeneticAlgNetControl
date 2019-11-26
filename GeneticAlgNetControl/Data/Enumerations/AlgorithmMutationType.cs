@@ -12,15 +12,15 @@ namespace GeneticAlgNetControl.Data.Enumerations
     public enum AlgorithmMutationType
     {
         /// <summary>
-        /// Represents the default, standard, crossover algorithm.
+        /// Represents the default, standard, mutation algorithm.
         /// </summary>
         [Display(Name = "Standard")]
         Standard,
 
         /// <summary>
-        /// Represents the crossover algorithm which tries to choose prefer nodes first.
+        /// Represents the default, standard, mutation algorithm that is less likely to mutate preferred nodes.
         /// </summary>
-        [Display(Name = "With preference")]
-        WithPreference
+        [Display(Name = "Standard with preference")]
+        StandardWithPreference
     }
 }
