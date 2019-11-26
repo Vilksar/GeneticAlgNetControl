@@ -293,7 +293,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Stop the measuring watch.
             stopwatch.Stop();
             // Get the path of the output file.
-            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}.json");
+            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Writing the results in JSON format to \"{outputFilepath}\".");
             // Get the text to write to the file.
