@@ -340,7 +340,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     }
                     // End the switch statement.
                     break;
-                // If we have a crossover with preference.
+                // If we have a default crossover with preference.
                 case AlgorithmCrossoverType.DefaultWithPreference:
                     // Repeat while the chromosome is not valid.
                     while (tries > 0)
@@ -350,9 +350,6 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over each of the target nodes.
                         foreach (var item in chromosome.Genes.Keys.ToList())
                         {
-                            // Get the number of occurances in each chromosome.
-                            var inFirst = occurrences[Genes[item]];
-                            var inSecond = occurrences[secondChromosome.Genes[item]];
                             // Check if the gene in any of the chromosomes is a preferred node.
                             var isPreferredFirst = nodeIsPreferred[Genes[item]];
                             var isPreferredSecond = nodeIsPreferred[secondChromosome.Genes[item]];
@@ -371,6 +368,9 @@ namespace GeneticAlgNetControl.Helpers.Models
                             // Otherwise they both have the same state.
                             else
                             {
+                                // Get the number of occurances in each chromosome.
+                                var inFirst = occurrences[Genes[item]];
+                                var inSecond = occurrences[secondChromosome.Genes[item]];
                                 // Choose one of the parent genes with a probability depending on their occurances.
                                 chromosome.Genes[item] = inSecond < inFirst ? Genes[item] : inFirst < inSecond ? secondChromosome.Genes[item] : random.NextDouble() < 0.5 ? Genes[item] : secondChromosome.Genes[item];
                             }
@@ -384,7 +384,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     }
                     // End the switch statement.
                     break;
-                // If we have a crossover with preference.
+                // If we have a standard crossover with preference.
                 case AlgorithmCrossoverType.StandardWithPreference:
                     // Repeat while the chromosome is not valid.
                     while (tries > 0)
@@ -466,6 +466,40 @@ namespace GeneticAlgNetControl.Helpers.Models
             switch (mutationType)
             {
                 // If we have a standard crossover.
+                case AlgorithmMutationType.Default:
+                    // Repeat while the chromosome is not valid.
+                    while (genesMutateDictionary.Any())
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over all of the values in the genes to mutate.
+                        foreach (var item in genesMutateDictionary.Keys.ToList())
+                        {
+                            // Assign a random new value from the list.
+                            Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
+                        }
+                        // Check if the chromosome is valid.
+                        if (IsValid(nodeIndex, powersMatrixCA))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                        // Check if we reached the last try.
+                        else if (tries == 0)
+                        {
+                            // Reset the number of tries.
+                            tries = _tries;
+                            // Get a random gene to remove from the list of genes to mutate.
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
+                            // Assign to it the current value.
+                            Genes[randomGene] = genesMutateDictionary[randomGene];
+                            // Remove it from the list of genes to mutate.
+                            genesMutateDictionary.Remove(randomGene);
+                        }
+                    }
+                    // End the switch statement.
+                    break;
+                // If we have a standard crossover.
                 case AlgorithmMutationType.Standard:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
@@ -500,6 +534,42 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a mutation with preference.
+                case AlgorithmMutationType.DefaultWithPreference:
+                    // Repeat while the chromosome is not valid.
+                    while (genesMutateDictionary.Any())
+                    {
+                        // Decrease the number of tries.
+                        tries--;
+                        // Go over all of the values in the genes to mutate.
+                        foreach (var item in genesMutateDictionary.Keys.ToList())
+                        {
+                            // Get all of the ancestors that are preferred.
+                            var preferredAncestors = targetAncestors[item].Where(item1 => nodeIsPreferred[item1]).ToList();
+                            // Assign a random new value from the list. If any of them are preferred, select a preferred ancestor randomly.
+                            Genes[item] = preferredAncestors.Any() ? preferredAncestors[random.Next(preferredAncestors.Count())] : targetAncestors[item][random.Next(targetAncestors[item].Count())];
+                        }
+                        // Check if the chromosome is valid.
+                        if (IsValid(nodeIndex, powersMatrixCA))
+                        {
+                            // Exit the loop.
+                            break;
+                        }
+                        // Check if we reached the last try.
+                        else if (tries == 0)
+                        {
+                            // Reset the number of tries.
+                            tries = _tries;
+                            // Get a random gene to remove from the list of genes to mutate.
+                            var randomGene = genesMutateDictionary.Keys.ElementAt(random.Next(genesMutateDictionary.Count()));
+                            // Assign to it the current value.
+                            Genes[randomGene] = genesMutateDictionary[randomGene];
+                            // Remove it from the list of genes to mutate.
+                            genesMutateDictionary.Remove(randomGene);
+                        }
+                    }
+                    // End the switch statement.
+                    break;
+                // If we have a mutation with preference.
                 case AlgorithmMutationType.StandardWithPreference:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
@@ -509,7 +579,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over all of the values in the genes to mutate.
                         foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
-                            // Assign a random new value from the list. If it is a preferred node, it it two times less likely to change.
+                            // Assign a random new value from the list. If it is a preferred node, it is two times less likely to change.
                             Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count())] : Genes[item];
                         }
                         // Check if the chromosome is valid.
@@ -535,20 +605,8 @@ namespace GeneticAlgNetControl.Helpers.Models
                     break;
                 // If we have none of the above.
                 default:
-                    // Set the tries to 0, such that the chromosome will be reset.
-                    tries = 0;
                     // End the switch statement.
                     break;
-            }
-            // Check if the new chromosome is still not valid.
-            if (genesMutateDictionary.Any())
-            {
-                // Go over each gene selected for mutation.
-                foreach (var item in genesMutateDictionary)
-                {
-                    // Reset it to the initial values, no mutation taking place.
-                    Genes[item.Key] = item.Value;
-                }
             }
             // Return the chromosome.
             return this;
