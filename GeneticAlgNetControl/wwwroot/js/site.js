@@ -466,10 +466,77 @@ $(window).on('load', () => {
             $(element).find('.item-details-date-time-ended').text(json.dateTimeEndedText);
         };
 
+        // Define a function to style a table on the page with DataTables.
+        const paintDataTable = (element) => {
+            // Make it a datatable.
+            $(element).DataTable();
+        };
+
+        // Define a function to paint a chart element on the page.
+        const paintChart = (element) => {
+            // Get the type, data and the canvas element.
+            const chartType = $(element).data('chart-type');
+            const chartData = JSON.parse($(element).find('.chart-js-data').first().text());
+            const chartCanvas = $(element).find('.chart-js-canvas').first();
+            // Define the chart.
+            const chart = new Chart(chartCanvas, {
+                type: chartType,
+                data: {
+                    labels: [...Array(chartData.AverageFitness.length).keys()],
+                    datasets: [{
+                        label: 'Average fitness',
+                        data: chartData.AverageFitness,
+                        backgroundColor: 'rgba(54, 162, 235, 1)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    },
+                    {
+                        label: 'Best fitness',
+                        data: chartData.BestFitness,
+                        backgroundColor: 'rgba(75, 192, 192, 1)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 1,
+                        fill: false
+                    }]
+                },
+                options: {
+                    title: {
+                        display: true,
+                        text: 'Best and average fitness over the iterations'
+                    },
+                    scales: {
+                        yAxes: [{
+                            ticks: {
+                                min: 0,
+                                max: 100
+                            }
+                        }]
+                    },
+                    elements: {
+                        line: {
+                            tension: 0
+                        }
+                    },
+                    animation: {
+                        duration: 0
+                    },
+                    hover: {
+                        animationDuration: 0
+                    },
+                    responsiveAnimationDuration: 0
+                }
+            });
+        };
+
         // Execute the function on page load.
         (() => {
             // Get the current status.
             const currentStatus = $('.item-details-status').attr('title');
+            // Go over each of the charts and paint them.
+            $('.chart-js-chart').each((index, element) => paintChart(element));
+            // Go over each of the tables and format them.
+            $('table.table').each((index, element) => paintDataTable(element));
             // Check if the page needs to be refreshed.
             if (currentStatus === '' || currentStatus === 'Scheduled' || currentStatus === 'PreparingToStart' || currentStatus === 'Ongoing' || currentStatus === 'ScheduledToStop') {
                 // Repeat the function every few seconds.
@@ -482,106 +549,4 @@ $(window).on('load', () => {
 
     }
 
-    // Check if there is any chart on the page.
-    if ($('.chart-js-chart').length !== 0) {
-        // Go over each of the charts.
-        $('.chart-js-chart').each((index, element) => {
-            // Get the type, data and the canvas element.
-            const chartType = $(element).data('type');
-            const chartData = JSON.parse($(element).find('.chart-js-data').first().text());
-            const chartCanvas = $(element).find('.chart-js-canvas').first();
-            // Set the chart based on the type.
-            if (chartType === 'dashboard') {
-                // Define the chart.
-                const chart = new Chart(chartCanvas, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Algorithms'],
-                        datasets: [{
-                            label: 'Scheduled',
-                            data: chartData.Scheduled,
-                            backgroundColor: 'rgba(255, 206, 86, 0.2)',
-                            borderColor: 'rgba(255, 206, 86, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Ongoing',
-                            data: chartData.Ongoing,
-                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Stopped',
-                            data: chartData.Stopped,
-                            backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                            borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Completed',
-                            data: chartData.Completed,
-                            backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Current algorithms'
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    beginAtZero: true
-                                }
-                            }]
-                        }
-                    }
-                });
-            } else if (chartType === 'details') {
-                // Define the chart.
-                const chart = new Chart(chartCanvas, {
-                    type: 'line',
-                    data: {
-                        labels: [...Array(chartData.AverageFitness.length).keys()],
-                        datasets: [{
-                            label: 'Average fitness',
-                            data: chartData.AverageFitness,
-                            backgroundColor: 'rgba(54, 162, 235, 0)',
-                            borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 1
-                        },
-                        {
-                            label: 'Best fitness',
-                            data: chartData.BestFitness,
-                            backgroundColor: 'rgba(75, 192, 192, 0)',
-                            borderColor: 'rgba(75, 192, 192, 1)',
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        title: {
-                            display: true,
-                            text: 'Progress'
-                        },
-                        scales: {
-                            yAxes: [{
-                                ticks: {
-                                    min: 0,
-                                    max: 100
-                                }
-                            }]
-                        },
-                        elements: {
-                            line: {
-                                tension: 0
-                            }
-                        }
-                    }
-                });
-            }
-        });
-    }
 });

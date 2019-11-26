@@ -28,6 +28,6 @@ main {
 }
 
 /* Style for the navigation tabs. */
-.nav-link.active.text-dark {
-    color: #007bff !important;
+.tab-link.active svg {
+    color: #343a40 !important;
 }
