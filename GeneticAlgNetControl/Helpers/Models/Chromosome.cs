@@ -222,7 +222,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Start from all of the target genes.
             var genesRandom = Genes.Keys.ToList();
             // Check if the lower limit is smaller than the upper limit.
-            if (lowerLimit <= upperLimit)
+            if (lowerLimit < upperLimit)
             {
                 // Get the genes for which to generate randomly the values.
                 genesRandom = genesRandom.GetRange(lowerLimit, upperLimit - lowerLimit);
