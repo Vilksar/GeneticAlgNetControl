@@ -90,10 +90,10 @@ namespace GeneticAlgNetControl
             // Check if we are in production.
             if (env.IsProduction())
             {
-                // Open a browser to the default address for the localhost.
+                // Open a browser to the default address for the localhost, on either the default or a specific port.
                 Process.Start(new ProcessStartInfo
                 {
-                    FileName = "https://localhost:5001",
+                    FileName = Configuration["Urls"]?.Split(";").First() ?? "https://localhost:5001",
                     UseShellExecute = true
                 });
             }

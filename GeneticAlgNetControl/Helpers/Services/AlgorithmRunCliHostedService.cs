@@ -1,6 +1,7 @@
 ﻿using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Models;
 using MathNet.Numerics.Random;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
@@ -20,9 +21,9 @@ namespace GeneticAlgNetControl.Helpers.Services
     public class AlgorithmRunCliHostedService : BackgroundService
     {
         /// <summary>
-        /// Represents the program arguments.
+        /// Represents the configuration.
         /// </summary>
-        private readonly ProgramArguments _arguments;
+        private readonly IConfiguration _configuration;
 
         /// <summary>
         /// Represents the logger.
@@ -34,9 +35,9 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// </summary>
         /// <param name="arguments">Represents the program arguments.</param>
         /// <param name="logger">Represents the logger.</param>
-        public AlgorithmRunCliHostedService(ProgramArguments arguments, ILogger<AlgorithmRunCliHostedService> logger)
+        public AlgorithmRunCliHostedService(IConfiguration configuration, ILogger<AlgorithmRunCliHostedService> logger)
         {
-            _arguments = arguments;
+            _configuration = configuration;
             _logger = logger;
         }
 
@@ -48,21 +49,26 @@ namespace GeneticAlgNetControl.Helpers.Services
         protected override Task ExecuteAsync(CancellationToken cancellationToken)
         {
             // Check if there is any request for displaying the help details.
-            if (_arguments.DisplayHelp)
+            if (bool.TryParse(_configuration["Help"], out var displayHelp) && displayHelp)
             {
                 // Check if the default parameters file doesn't exist.
-                if (!File.Exists("defaultParameters.json"))
+                if (!File.Exists("DefaultParameters.json"))
                 {
                     // Create it.
-                    File.WriteAllText("defaultParameters.json", JsonSerializer.Serialize(new Parameters(), new JsonSerializerOptions { WriteIndented = true }));
+                    File.WriteAllText("DefaultParameters.json", JsonSerializer.Serialize(new Parameters(), new JsonSerializerOptions { WriteIndented = true }));
                 }
                 // Log a message.
                 _logger.LogInformation($"\n\tWelcome to the GeneticAlgNetControl CLI!\n\t---\n\tThe following arguments can be provided:\n\t--help\tUse this option to display this help message.\n\t--edges\tUse this option to specify the path to the file containing the network edges. Each edge should be on a new line, with the source and target nodes in an edge being separated by a tab character.\n\t--targets\tUse this option to specify the path to the file containing the target nodes. Each target node should be on a new line.\n\t--preferred\t(optional) Use this option to specify the path to the file containing the preferred nodes (if any). Each preferred node should be on a new line.\n\t--parameters\tUse this option to specify the path to the JSON file containing the parameter values for the algorithm. The parameters should be formatted as JSON, like in the \"defaultParameters.json\" file containing the default parameter values.\n\n\tExample: \"GeneticAlgNetControl cli --edges FileContainingEdges.extension --target FileContainingTargetNodes.extension\"\n");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
+            // Get the parameters from the configuration.
+            var edgesFilepath = _configuration["Edges"];
+            var targetNodesFilepath = _configuration["Targets"];
+            var preferredNodesFilepath = _configuration["Preferred"];
+            var parametersFilepath = _configuration["Parameters"];
             // Check if we have a file containing the edges.
-            if (string.IsNullOrEmpty(_arguments.EdgesFilepath))
+            if (string.IsNullOrEmpty(edgesFilepath))
             {
                 // Log an error.
                 _logger.LogError("No file containing the network edges has been provided.");
@@ -70,7 +76,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return Task.CompletedTask;
             }
             // Check if we have a file containing the targets.
-            if (string.IsNullOrEmpty(_arguments.TargetNodesFilepath))
+            if (string.IsNullOrEmpty(targetNodesFilepath))
             {
                 // Log an error.
                 _logger.LogError("No file containing the network target nodes has been provided.");
@@ -78,7 +84,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return Task.CompletedTask;
             }
             // Check if we have a file containing the targets.
-            if (string.IsNullOrEmpty(_arguments.ParametersFilepath))
+            if (string.IsNullOrEmpty(parametersFilepath))
             {
                 // Log an error.
                 _logger.LogError("No file containing the parameters has been provided.");
@@ -88,34 +94,34 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Get the current directory.
             var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
             // Check if the file containing the edges exists.
-            if (!File.Exists(_arguments.EdgesFilepath))
+            if (!File.Exists(edgesFilepath))
             {
                 // Log an error.
-                _logger.LogError($"The file \"{_arguments.EdgesFilepath}\" (containing the network edges) could not be found in the current directory \"{currentDirectory}\".");
+                _logger.LogError($"The file \"{edgesFilepath}\" (containing the network edges) could not be found in the current directory \"{currentDirectory}\".");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
             // Check if the file containing the target nodes exists.
-            if (!File.Exists(_arguments.EdgesFilepath))
+            if (!File.Exists(edgesFilepath))
             {
                 // Log an error.
-                _logger.LogError($"The file \"{_arguments.TargetNodesFilepath}\" (containing the network target nodes) could not be found in the current directory \"{currentDirectory}\".");
+                _logger.LogError($"The file \"{targetNodesFilepath}\" (containing the network target nodes) could not be found in the current directory \"{currentDirectory}\".");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
             // Check if the file containing the preferred nodes exists.
-            if (!string.IsNullOrEmpty(_arguments.PreferredNodesFilepath) && !File.Exists(_arguments.EdgesFilepath))
+            if (!string.IsNullOrEmpty(preferredNodesFilepath) && !File.Exists(edgesFilepath))
             {
                 // Log an error.
-                _logger.LogError($"The file \"{_arguments.PreferredNodesFilepath}\" (containing the network preferred nodes) could not be found in the current directory \"{currentDirectory}\".");
+                _logger.LogError($"The file \"{preferredNodesFilepath}\" (containing the network preferred nodes) could not be found in the current directory \"{currentDirectory}\".");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
             // Check if the file containing the parameters exists.
-            if (!File.Exists(_arguments.ParametersFilepath))
+            if (!File.Exists(parametersFilepath))
             {
                 // Log an error.
-                _logger.LogError($"The file \"{_arguments.ParametersFilepath}\" (containing the parameters) could not be found in the current directory \"{currentDirectory}\".");
+                _logger.LogError($"The file \"{parametersFilepath}\" (containing the parameters) could not be found in the current directory \"{currentDirectory}\".");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -129,7 +135,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             try
             {
                 // Read all the rows in the file and parse them into edges.
-                edges = File.ReadAllLines(_arguments.EdgesFilepath)
+                edges = File.ReadAllLines(edgesFilepath)
                     .Select(item => item.Split("\t"))
                     .Where(item => item.Length > 1)
                     .Where(item => !string.IsNullOrEmpty(item[0]) && !string.IsNullOrEmpty(item[1]))
@@ -141,7 +147,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             catch
             {
                 // Log an error.
-                _logger.LogError($"An error occured while reading the file \"{_arguments.EdgesFilepath}\" (containing the edges).");
+                _logger.LogError($"An error occured while reading the file \"{edgesFilepath}\" (containing the edges).");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -149,7 +155,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             try
             {
                 // Read all the rows in the file and parse them into nodes.
-                targetNodes = File.ReadAllLines(_arguments.TargetNodesFilepath)
+                targetNodes = File.ReadAllLines(targetNodesFilepath)
                     .Where(item => !string.IsNullOrEmpty(item))
                     .Distinct()
                     .ToList();
@@ -157,18 +163,18 @@ namespace GeneticAlgNetControl.Helpers.Services
             catch (Exception ex)
             {
                 // Log an error.
-                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{_arguments.TargetNodesFilepath}\" (containing the target nodes).");
+                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{targetNodesFilepath}\" (containing the target nodes).");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
             // Check if there are any preferred nodes to read.
-            if (!string.IsNullOrEmpty(_arguments.PreferredNodesFilepath))
+            if (!string.IsNullOrEmpty(preferredNodesFilepath))
             {
                 // Try to read the preferred nodes from the file.
                 try
                 {
                     // Read all the rows in the file and parse them into nodes.
-                    preferredNodes = File.ReadAllLines(_arguments.PreferredNodesFilepath)
+                    preferredNodes = File.ReadAllLines(preferredNodesFilepath)
                         .Where(item => !string.IsNullOrEmpty(item))
                         .Distinct()
                         .ToList();
@@ -176,7 +182,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 catch (Exception ex)
                 {
                     // Log an error.
-                    _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{_arguments.PreferredNodesFilepath}\" (containing the preferred nodes).");
+                    _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{preferredNodesFilepath}\" (containing the preferred nodes).");
                     // Return a successfully completed task.
                     return Task.CompletedTask;
                 }
@@ -185,12 +191,12 @@ namespace GeneticAlgNetControl.Helpers.Services
             try
             {
                 // Read the parameters file content as a JSON object.
-                parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(_arguments.ParametersFilepath));
+                parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(parametersFilepath));
             }
             catch (Exception ex)
             {
                 // Log an error.
-                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{_arguments.ParametersFilepath}\" (containing the parameters).");
+                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -198,7 +204,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             if (!edges.Any())
             {
                 // Log an error.
-                _logger.LogError($"No edges could be read from the file \"{_arguments.EdgesFilepath}\". Please check again the file and make sure that it is in the required format.");
+                _logger.LogError($"No edges could be read from the file \"{edgesFilepath}\". Please check again the file and make sure that it is in the required format.");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -214,7 +220,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             if (!targetNodes.Any())
             {
                 // Log an error.
-                _logger.LogError($"No target nodes could be read from the file \"{_arguments.TargetNodesFilepath}\", or none of them could be found in the network. Please check again the file and make sure that it is in the required format.");
+                _logger.LogError($"No target nodes could be read from the file \"{targetNodesFilepath}\", or none of them could be found in the network. Please check again the file and make sure that it is in the required format.");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -237,14 +243,14 @@ namespace GeneticAlgNetControl.Helpers.Services
             if (!parameters.IsValid())
             {
                 // Log an error.
-                _logger.LogError($"The parameters read from the file \"{_arguments.ParametersFilepath}\" are not valid. Please check again the file.");
+                _logger.LogError($"The parameters read from the file \"{parametersFilepath}\" are not valid. Please check again the file.");
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
             // Log a message about the loaded data.
-            _logger.LogInformation($"Data loaded successfully.\n\t{edges.Count()} edges and {nodes.Count()} nodes loaded from \"{_arguments.EdgesFilepath}\".\n\t{targetNodes.Count()} target nodes loaded from \"{_arguments.TargetNodesFilepath}\". {preferredNodes.Count()} preferred nodes loaded{(string.IsNullOrEmpty(_arguments.PreferredNodesFilepath) ? string.Empty : $" from {_arguments.PreferredNodesFilepath}")}.");
+            _logger.LogInformation($"Data loaded successfully.\n\t{edges.Count()} edges and {nodes.Count()} nodes loaded from \"{edgesFilepath}\".\n\t{targetNodes.Count()} target nodes loaded from \"{targetNodesFilepath}\". {preferredNodes.Count()} preferred nodes loaded{(string.IsNullOrEmpty(preferredNodesFilepath) ? string.Empty : $" from {preferredNodesFilepath}")}.");
             // Log a message about the parameters.
-            _logger.LogInformation($"The following parameters were loaded from \"{_arguments.ParametersFilepath}\".\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
+            _logger.LogInformation($"The following parameters were loaded from \"{parametersFilepath}\".\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
             // Define a new stopwatch to measure the running time and start it.
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -293,13 +299,13 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Stop the measuring watch.
             stopwatch.Stop();
             // Get the path of the output file.
-            var outputFilepath = _arguments.EdgesFilepath.Replace(Path.GetExtension(_arguments.EdgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
+            var outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Writing the results in JSON format to \"{outputFilepath}\".");
             // Get the text to write to the file.
             var outputText = JsonSerializer.Serialize(new
             {
-                Name = Path.GetFileNameWithoutExtension(_arguments.EdgesFilepath),
+                Name = Path.GetFileNameWithoutExtension(edgesFilepath),
                 CurrentIteration = currentIteration,
                 CurrentIterationWithoutImprovement = currentIterationWithoutImprovement,
                 DateTime = new

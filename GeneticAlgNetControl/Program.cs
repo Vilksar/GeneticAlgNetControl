@@ -23,8 +23,10 @@ namespace GeneticAlgNetControl
         /// <param name="args">Represents the parameters for the application.</param>
         public static void Main(string[] args)
         {
+            // Get the current command-line arguments configuration.
+            var config = new ConfigurationBuilder().AddCommandLine(args).Build();
             // Check if the program should run in the command line.
-            if (args.Contains("cli"))
+            if (bool.TryParse(config["UseCli"], out var useCli) && useCli)
             {
                 // Create a new host.
                 using var host = CreateHostBuilderCli(args).Build();
@@ -89,7 +91,6 @@ namespace GeneticAlgNetControl
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<AlgorithmRunCliHostedService>();
-                    services.AddSingleton(new ProgramArguments(args));
                 });
         }
     }
