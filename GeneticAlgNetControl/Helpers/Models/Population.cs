@@ -200,7 +200,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public List<double> GetCombinedFitnessList()
         {
             // Get the fitness of each chromosome.
-            var fitness = new List<double> { 0.0 }.Concat(GetFitnessList());
+            var fitness = GetFitnessList();
             // Get the total fitness.
             var totalFitness = fitness.Sum();
             // Define a variable to store the temporary sum.
@@ -220,7 +220,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Generate a random value.
             var randomValue = random.NextDouble();
             // Find the index corresponding to the random value.
-            var index = combinedFitnessList.FindLastIndex(item => item <= randomValue);
+            var index = combinedFitnessList.FindIndex(item => randomValue <= item);
             // Return the chromosome at the specified index.
             return Chromosomes[index];
         }

@@ -509,8 +509,16 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over all of the values in the genes to mutate.
                         foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
+                            // Define a random value based on which to select a new value for the mutated gene.
+                            var randomValue = random.NextDouble();
+                            // Get the number of occurences of each ancestor in the current chromosome and select a gene based on the number of occurences.
+                            var occurences = targetAncestors[item].ToDictionary(item1 => item1, item1 => Genes.Values.Count(item2 => item2 == item1) + 1);
+                            // Get the variables required for finding a random index based on the number of occurences.
+                            var totalOccurences = occurences.Values.Sum();
+                            var sum = 0.0;
+                            var randomIndex = occurences.Values.Select(item1 => sum += item1).Select(item1 => item1 / totalOccurences).ToList().FindIndex(item1 => randomValue <= item1);
                             // Assign a random new value from the list.
-                            Genes[item] = targetAncestors[item][random.Next(targetAncestors[item].Count())];
+                            Genes[item] = occurences.ElementAt(randomIndex).Key;
                         }
                         // Check if the chromosome is valid.
                         if (IsValid(nodeIndex, powersMatrixCA))
@@ -579,8 +587,16 @@ namespace GeneticAlgNetControl.Helpers.Models
                         // Go over all of the values in the genes to mutate.
                         foreach (var item in genesMutateDictionary.Keys.ToList())
                         {
-                            // Assign a random new value from the list. If it is a preferred node, it is two times less likely to change.
-                            Genes[item] = nodeIsPreferred[Genes[item]] && random.NextDouble() < 0.5 ? targetAncestors[item][random.Next(targetAncestors[item].Count())] : Genes[item];
+                            // Define a random value based on which to select a new value for the mutated gene.
+                            var randomValue = random.NextDouble();
+                            // Get the number of occurences of each ancestor in the current chromosome and select a gene based on the number of occurences. If the ancestor is preferred, then it is twice more likely to be selected.
+                            var occurences = targetAncestors[item].ToDictionary(item1 => item1, item1 => Genes.Values.Count(item2 => item2 == item1) + 1).ToDictionary(item1 => item1.Key, item1 => nodeIsPreferred[item1.Key] ? 2 * item1.Value : item1.Value);
+                            // Get the variables required for finding a random index based on the number of occurences.
+                            var totalOccurences = occurences.Values.Sum();
+                            var sum = 0.0;
+                            var randomIndex = occurences.Values.Select(item1 => sum += item1).Select(item1 => item1 / totalOccurences).ToList().FindIndex(item1 => randomValue <= item1);
+                            // Assign a random new value from the list.
+                            Genes[item] = occurences.ElementAt(randomIndex).Key;
                         }
                         // Check if the chromosome is valid.
                         if (IsValid(nodeIndex, powersMatrixCA))
