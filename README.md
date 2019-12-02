@@ -109,4 +109,4 @@ The required format of these files, as well as several more details about them a
   * **CrossoverType**. Represents the crossover algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
   * **MutationType**. Represents the mutation algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
 
-If all the files have been successfully read and loaded, a confirmation message will appear in the console and the algorithm will start running, providing constant feedback on its progress.
+If all the files have been successfully read and loaded, a confirmation message will appear in the console and the algorithm will start running, providing constant feedback on its progress. Upon completion, all of the solutions will be saved to a JSON file in the same location and with the same name as the file containing the edges.
