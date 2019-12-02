@@ -30,22 +30,28 @@ namespace GeneticAlgNetControl.Helpers.Services
         private readonly ILogger<AlgorithmRunHostedService> _logger;
 
         /// <summary>
+        /// Represents the host application lifetime.
+        /// </summary>
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="serviceScopeFactory">Represents the service scope factory.</param>
         /// <param name="logger">Represents the logger.</param>
-        public AlgorithmRunHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AlgorithmRunHostedService> logger)
+        public AlgorithmRunHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AlgorithmRunHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
+            _hostApplicationLifetime = hostApplicationLifetime;
         }
 
         /// <summary>
         /// Launches the algorithm run execution.
         /// </summary>
-        /// <param name="stopToken">The cancellation token corresponding to the task.</param>
+        /// <param name="cancellationToken">The cancellation token corresponding to the task.</param>
         /// <returns>A runnable task.</returns>
-        protected override async Task ExecuteAsync(CancellationToken stopToken)
+        protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
             // Use the current scope.
             using var scope = _serviceScopeFactory.CreateScope();
@@ -60,7 +66,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Save the changes to the database.
             await context.SaveChangesAsync();
             // Repeat the task.
-            while (!stopToken.IsCancellationRequested)
+            while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested)
             {
                 // Get the first scheduled algorithm in the database.
                 var algorithm = context.Algorithms.FirstOrDefault(item => item.Status == AlgorithmStatus.Scheduled);
@@ -107,7 +113,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random) : algorithm.Population;
                 var bestFitness = population.HistoricBestFitness.Max();
                 // Move through the generations.
-                while (!stopToken.IsCancellationRequested && algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+                while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
                 {
                     // Move on to the next iterations.
                     currentIteration += 1;
@@ -145,6 +151,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
             }
+            // Stop the application.
+            _hostApplicationLifetime.StopApplication();
         }
     }
 }

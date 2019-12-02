@@ -25,34 +25,16 @@ namespace GeneticAlgNetControl
         {
             // Get the current command-line arguments configuration.
             var config = new ConfigurationBuilder().AddCommandLine(args).Build();
-            // Check if the program should run in the command line.
-            if (bool.TryParse(config["UseCli"], out var useCli) && useCli)
+            // Get the host to run based on the command-line arguments and build it.
+            using var host = (bool.TryParse(config["UseCli"], out var useCli) && useCli ? CreateHostBuilderCli(args) : CreateHostBuilder(args)).Build();
+            // Try to run it.
+            try
             {
-                // Create a new host.
-                using var host = CreateHostBuilderCli(args).Build();
-                // Try to start it.
-                try
-                {
-                    host.Start();
-                }
-                catch (OperationCanceledException)
-                {
-
-                }
+                host.Run();
             }
-            else
+            catch (OperationCanceledException)
             {
-                // Create a new host.
-                using var host = CreateHostBuilder(args).Build();
-                // Try to run it.
-                try
-                {
-                    host.Run();
-                }
-                catch (OperationCanceledException)
-                {
 
-                }
             }
         }
 

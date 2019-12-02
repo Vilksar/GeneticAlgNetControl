@@ -31,14 +31,20 @@ namespace GeneticAlgNetControl.Helpers.Services
         private readonly ILogger<AlgorithmRunCliHostedService> _logger;
 
         /// <summary>
+        /// Represents the host application lifetime.
+        /// </summary>
+        private readonly IHostApplicationLifetime _hostApplicationLifetime;
+
+        /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
         /// <param name="arguments">Represents the program arguments.</param>
         /// <param name="logger">Represents the logger.</param>
-        public AlgorithmRunCliHostedService(IConfiguration configuration, ILogger<AlgorithmRunCliHostedService> logger)
+        public AlgorithmRunCliHostedService(IConfiguration configuration, ILogger<AlgorithmRunCliHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
             _configuration = configuration;
             _logger = logger;
+            _hostApplicationLifetime = hostApplicationLifetime;
         }
 
         /// <summary>
@@ -277,7 +283,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
             // Move through the generations.
-            while (!cancellationToken.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+            while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
             {
                 // Move on to the next iterations.
                 currentIteration += 1;
@@ -343,6 +349,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             }
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm ended in {stopwatch.Elapsed}.");
+            // Stop the application.
+            _hostApplicationLifetime.StopApplication();
             // Return a successfully completed task.
             return Task.CompletedTask;
         }
