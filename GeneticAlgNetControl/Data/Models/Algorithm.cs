@@ -242,9 +242,9 @@ namespace GeneticAlgNetControl.Data.Models
         /// <summary>
         /// Computes, for every taret node, the list of nodes from which it can be reached.
         /// </summary>
-        /// <param name="adjacencyPowers">The list of powers of the adjacency matrix A.</param>
+        /// <param name="powersMatrixA">The list of powers of the adjacency matrix A.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>
-        /// <param name="nodeIndices">The dictionary containing, for each node, its index in the node list.</param>
+        /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
         /// <returns>The list of nodes from which every target node can be reached.</returns>
         public static Dictionary<string, List<string>> GetTargetAncestors(List<Matrix<double>> powersMatrixA, List<string> targetNodes, Dictionary<string, int> nodeIndex)
         {
