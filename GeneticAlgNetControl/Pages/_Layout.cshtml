@@ -26,22 +26,26 @@
                             var activePage = (string)ViewData["ActivePage"];
                         }
                         <span class="font-weight-bold navbar-text text-muted">Overview</span>
-                        <a asp-page="/Index" class="nav-item nav-link d-flex flex-row @(activePage == "Home" ? "active" : string.Empty)">
-                            <span class="col-2 text-center text-dark"><i class="fas fa-home"></i></span>
+                        <a asp-page="/Index" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "Home" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-dark px-1"><i class="fas fa-home"></i></span>
                             <span class="col-10">Home</span>
                         </a>
-                        <a asp-page="/Dashboard" class="nav-item nav-link d-flex flex-row @(activePage == "Dashboard" ? "active" : string.Empty)">
-                            <span class="col-2 text-center text-danger"><i class="fas fa-chart-bar"></i></span>
-                            <span class="col-10">Dashboard</span>
+                        <a asp-page="/About" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "About" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-warning px-1"><i class="fas fa-question-circle"></i></span>
+                            <span class="col-10">About</span>
                         </a>
-                        <a asp-page="/Create" class="nav-item nav-link d-flex flex-row @(activePage == "Create" ? "active" : string.Empty)">
-                            <span class="col-2 text-center text-success"><i class="fas fa-plus"></i></span>
+                        <a asp-page="/Close" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "Close" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-danger px-1"><i class="fas fa-times-circle"></i></span>
+                            <span class="col-10">Close</span>
+                        </a>
+                        <span class="font-weight-bold navbar-text text-muted">Algorithms</span>
+                        <a asp-page="/Create" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "Create" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-success px-1"><i class="fas fa-plus"></i></span>
                             <span class="col-10">Create</span>
                         </a>
-                        <span class="font-weight-bold navbar-text text-muted">Documentation</span>
-                        <a asp-page="/About" class="nav-item nav-link d-flex flex-row @(activePage == "About" ? "active" : string.Empty)">
-                            <span class="col-2 text-center text-info"><i class="fas fa-question-circle"></i></span>
-                            <span class="col-10">About</span>
+                        <a asp-page="/Dashboard" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "Dashboard" ? "active" : string.Empty)">
+                            <span class="col-2 text-center text-info px-1"><i class="fas fa-chart-bar"></i></span>
+                            <span class="col-10">Dashboard</span>
                         </a>
                     </div>
                 </div>

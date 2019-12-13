@@ -1,0 +1,35 @@
+﻿@page
+@model GeneticAlgNetControl.Pages.CloseModel
+@{
+    ViewData["Title"] = "Close";
+    ViewData["ActivePage"] = "Close";
+}
+
+<div class="flex-grow-1 d-flex flex-column justify-content-center">
+    <div class="container">
+        <div class="card p-5 m-2 shadow-sm">
+            <div class="row">
+                <div class="col-lg-4 d-flex flex-column justify-content-center align-items-center my-4 my-lg-0">
+                    <div class="border rounded-circle p-5">
+                        <span class="text-danger"><i class="fas fa-times-circle fa-5x"></i></span>
+                    </div>
+                </div>
+                <div class="col-lg-8 d-flex flex-column justify-content-center align-items-center align-items-lg-start my-4 my-lg-0">
+                    <div class="h4 text-center text-lg-left mb-4">
+                        <span>Are you sure you want to close the application?</span>
+                    </div>
+                    <div class="text-center text-lg-left mb-4">
+                        <span>Pressing the button below will try to gracefully close the application. It will try to save the progress and stop all ongoing algorithms, which will be automatically restarted upon the next application launch. The browser window will close immediately, however the complete operation might take a few moments.</span>
+                    </div>
+                    <div class="text-center">
+                        <form method="post">
+                            <button type="submit" class="btn btn-outline-danger" onclick="window.close();">
+                                <span>Close</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
