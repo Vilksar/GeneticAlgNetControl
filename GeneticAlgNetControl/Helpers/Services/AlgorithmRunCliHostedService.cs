@@ -1,6 +1,5 @@
 ﻿using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Models;
-using MathNet.Numerics.Random;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -57,12 +56,6 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Check if there is any request for displaying the help details.
             if (bool.TryParse(_configuration["Help"], out var displayHelp) && displayHelp)
             {
-                // Check if the default parameters file doesn't exist.
-                if (!File.Exists("DefaultParameters.json"))
-                {
-                    // Create it.
-                    File.WriteAllText("DefaultParameters.json", JsonSerializer.Serialize(new Parameters(), new JsonSerializerOptions { WriteIndented = true }));
-                }
                 // Log a message.
                 _logger.LogInformation(string.Concat(
                     "\n\tWelcome to the GeneticAlgNetControl application!",
@@ -70,7 +63,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                     "\n\t---",
                     "\n\t",
                     "\n\tThe following arguments can be provided:",
-                    "\n\t--Cli\tUse this parameter to run the application in the CLI (and not as a local web server).",
+                    "\n\t--UseCli\tUse this parameter to run the application in the CLI (and not as a local web server).",
                     "\n\t--Help\tUse this parameter to display this help message.",
                     "\n\t--Edges\tUse this parameter to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a tab character.",
                     "\n\t--Targets\tUse this parameter to specify the path to the file containing the target nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
@@ -80,9 +73,11 @@ namespace GeneticAlgNetControl.Helpers.Services
                     "\n\t---",
                     "\n\t",
                     "\n\tExamples of posible usage:",
-                    "\n\t--Cli \"True\" --Help \"True\"",
-                    "\n\t--Cli \"True\" --Edges \"Path/To/FileContainingEdges.extension\" --Targets \"Path/To/FileContainingTargetNodes.extension\" --Parameters \"Path/To/FileContainingParameters.extension\"",
+                    "\n\t--UseCli \"True\" --Help \"True\"",
+                    "\n\t--UseCli \"True\" --Edges \"Path/To/FileContainingEdges.extension\" --Targets \"Path/To/FileContainingTargetNodes.extension\" --Parameters \"Path/To/FileContainingParameters.extension\"",
                     "\n\t"));
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -96,6 +91,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError("No file containing the network edges has been provided.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -104,6 +101,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError("No file containing the network target nodes has been provided.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -112,6 +111,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError("No file containing the parameters has been provided.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -122,6 +123,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The file \"{edgesFilepath}\" (containing the network edges) could not be found in the current directory \"{currentDirectory}\".");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -130,6 +133,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The file \"{targetNodesFilepath}\" (containing the network target nodes) could not be found in the current directory \"{currentDirectory}\".");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -138,6 +143,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The file \"{preferredNodesFilepath}\" (containing the network preferred nodes) could not be found in the current directory \"{currentDirectory}\".");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -146,6 +153,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The file \"{parametersFilepath}\" (containing the parameters) could not be found in the current directory \"{currentDirectory}\".");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -172,6 +181,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"An error occured while reading the file \"{edgesFilepath}\" (containing the edges).");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -188,6 +199,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{targetNodesFilepath}\" (containing the target nodes).");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -207,6 +220,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                 {
                     // Log an error.
                     _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{preferredNodesFilepath}\" (containing the preferred nodes).");
+                    // Stop the application.
+                    _hostApplicationLifetime.StopApplication();
                     // Return a successfully completed task.
                     return Task.CompletedTask;
                 }
@@ -221,6 +236,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -229,6 +246,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"No edges could be read from the file \"{edgesFilepath}\". Please check again the file and make sure that it is in the required format.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -245,6 +264,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"No target nodes could be read from the file \"{targetNodesFilepath}\", or none of them could be found in the network. Please check again the file and make sure that it is in the required format.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -268,6 +289,8 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Log an error.
                 _logger.LogError($"The parameters read from the file \"{parametersFilepath}\" are not valid. Please check again the file.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
@@ -362,6 +385,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                 _logger.LogError($"The error {ex.Message} occured while writing to the results to the file \"{outputFilepath}\". The results will be displayed in the console window instead.");
                 // Log a message.
                 _logger.LogError($"\n{outputText}");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }

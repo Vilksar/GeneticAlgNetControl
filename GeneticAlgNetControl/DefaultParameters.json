@@ -1,0 +1,13 @@
+{
+  "RandomSeed": 713224108,
+  "MaximumIterations": 10000,
+  "MaximumIterationsWithoutImprovement": 1000,
+  "MaximumPathLength": 5,
+  "PopulationSize": 80,
+  "RandomGenesPerChromosome": 25,
+  "PercentageRandom": 0.25,
+  "PercentageElite": 0.25,
+  "ProbabilityMutation": 0.01,
+  "CrossoverType": 0,
+  "MutationType": 0
+}
