@@ -1,17 +1,16 @@
+using GeneticAlgNetControl.Data;
+using GeneticAlgNetControl.Data.Enumerations;
+using GeneticAlgNetControl.Data.Models;
+using GeneticAlgNetControl.Helpers.Extensions;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
-using GeneticAlgNetControl.Data;
-using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Data.Models;
-using GeneticAlgNetControl.Helpers.Extensions;
-using GeneticAlgNetControl.Helpers.Services;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 
 namespace GeneticAlgNetControl.Pages
 {
