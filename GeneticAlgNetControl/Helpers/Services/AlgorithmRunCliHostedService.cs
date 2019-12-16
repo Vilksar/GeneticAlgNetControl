@@ -64,7 +64,25 @@ namespace GeneticAlgNetControl.Helpers.Services
                     File.WriteAllText("DefaultParameters.json", JsonSerializer.Serialize(new Parameters(), new JsonSerializerOptions { WriteIndented = true }));
                 }
                 // Log a message.
-                _logger.LogInformation($"\n\tWelcome to the GeneticAlgNetControl CLI!\n\t---\n\tThe following arguments can be provided:\n\t--help\tUse this option to display this help message.\n\t--edges\tUse this option to specify the path to the file containing the network edges. Each edge should be on a new line, with the source and target nodes in an edge being separated by a tab character.\n\t--targets\tUse this option to specify the path to the file containing the target nodes. Each target node should be on a new line.\n\t--preferred\t(optional) Use this option to specify the path to the file containing the preferred nodes (if any). Each preferred node should be on a new line.\n\t--parameters\tUse this option to specify the path to the JSON file containing the parameter values for the algorithm. The parameters should be formatted as JSON, like in the \"defaultParameters.json\" file containing the default parameter values.\n\n\tExample: \"GeneticAlgNetControl cli --edges FileContainingEdges.extension --target FileContainingTargetNodes.extension\"\n");
+                _logger.LogInformation(string.Concat(
+                    "\n\tWelcome to the GeneticAlgNetControl application!",
+                    "\n\t",
+                    "\n\t---",
+                    "\n\t",
+                    "\n\tThe following arguments can be provided:",
+                    "\n\t--Cli\tUse this parameter to run the application in the CLI (and not as a local web server).",
+                    "\n\t--Help\tUse this parameter to display this help message.",
+                    "\n\t--Edges\tUse this parameter to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a tab character.",
+                    "\n\t--Targets\tUse this parameter to specify the path to the file containing the target nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
+                    "\n\t--Preferred\t(optional) Use this parameter to specify the path to the file containing the preferred nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
+                    "\n\t--Parameters\tUse this parameter to specify the path to the file containing the parameter values for the algorithm. The file should be in a JSON format, as shown in the \"DefaultParameters.json\" file, containing the default parameter values.",
+                    "\n\t",
+                    "\n\t---",
+                    "\n\t",
+                    "\n\tExamples of posible usage:",
+                    "\n\t--Cli \"True\" --Help \"True\"",
+                    "\n\t--Cli \"True\" --Edges \"Path/To/FileContainingEdges.extension\" --Targets \"Path/To/FileContainingTargetNodes.extension\" --Parameters \"Path/To/FileContainingParameters.extension\"",
+                    "\n\t"));
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
