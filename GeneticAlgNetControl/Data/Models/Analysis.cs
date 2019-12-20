@@ -4,104 +4,106 @@ using MathNet.Numerics.LinearAlgebra;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace GeneticAlgNetControl.Data.Models
 {
     /// <summary>
-    /// Represents the database model of an algorithm run.
+    /// Represents the database model of an analysis run.
     /// </summary>
-    public class Algorithm
+    public class Analysis
     {
         /// <summary>
-        /// Represents the unique ID of the algorithm in the database.
+        /// Represents the unique ID of the analysis in the database.
         /// </summary>
         public string Id { get; set; }
 
         /// <summary>
-        /// Represents the algorithm name.
+        /// Represents the analysis name.
         /// </summary>
         public string Name { get; set; }
 
         /// <summary>
-        /// Represents the date and time when the algorithm has been started.
+        /// Represents the date and time when the analysis has been started.
         /// </summary>
         public DateTime? DateTimeStarted { get; set; }
 
         /// <summary>
-        /// Represents the date and time when the algorithm has ended.
+        /// Represents the date and time when the analysis has ended.
         /// </summary>
         public DateTime? DateTimeEnded { get; set; }
 
         /// <summary>
-        /// Represents the periods of time when the algorithm was running.
+        /// Represents the periods of time when the analysis was running, with an underlying format of List&lt;DateTimePeriod&gt;.
         /// </summary>
-        public List<DateTimePeriod> DateTimePeriods { get; set; }
+        /// <value>String</value>
+        public string DateTimePeriods { get; set; }
 
         /// <summary>
-        /// Represents the status of the algorithm.
+        /// Represents the status of the analysis.
         /// </summary>
-        public AlgorithmStatus Status { get; set; }
+        public AnalysisStatus Status { get; set; }
 
         /// <summary>
-        /// Represents the edges of the network corresponding to the algorithm.
+        /// Represents the edges of the network corresponding to the analysis, with an underlying format of List&lt;Edge&gt;.
         /// </summary>
-        public List<Edge> Edges { get; set; }
+        public string Edges { get; set; }
 
         /// <summary>
-        /// Represents the nodes of the network corresponding to the algorithm.
+        /// Represents the nodes of the network corresponding to the analysis, with an underlying format of List&lt;string&gt;.
         /// </summary>
-        public List<string> Nodes { get; set; }
+        public string Nodes { get; set; }
 
         /// <summary>
-        /// Represents the target nodes of the network corresponding to the algorithm.
+        /// Represents the target nodes of the network corresponding to the analysis, with an underlying format of List&lt;string&gt;.
         /// </summary>
-        public List<string> TargetNodes { get; set; }
+        public string TargetNodes { get; set; }
 
         /// <summary>
-        /// Represents the preferred nodes of the network corresponding to the algorithm.
+        /// Represents the preferred nodes of the network corresponding to the analysis, with an underlying format of List&lt;string&gt;.
         /// </summary>
-        public List<string> PreferredNodes { get; set; }
+        public string PreferredNodes { get; set; }
 
         /// <summary>
-        /// Represents the current iteration of the algorithm.
+        /// Represents the current iteration of the analysis.
         /// </summary>
         public int CurrentIteration { get; set; }
 
         /// <summary>
-        /// Represents the current iteration without improvement of the algorithm.
+        /// Represents the current iteration without improvement of the analysis.
         /// </summary>
         public int CurrentIterationWithoutImprovement { get; set; }
 
         /// <summary>
-        /// Represents the parameters of the algorithm.
+        /// Represents the parameters of the analysis, with an underlying format of Parameters.
         /// </summary>
-        public Parameters Parameters { get; set; }
+        public string Parameters { get; set; }
 
         /// <summary>
-        /// Represents the current (last) population of the algorithm.
+        /// Represents the current (last) population of the analysis, with an underlying format of Population.
         /// </summary>
-        public Population Population { get; set; }
+        public string Population { get; set; }
 
         /// <summary>
         /// Initializes a new default instance of the class.
         /// </summary>
-        public Algorithm()
+        public Analysis()
         {
             // Assign the default value for each property.
             Id = Guid.NewGuid().ToString();
-            Name = null;
+            Name = string.Empty;
             DateTimeStarted = null;
             DateTimeEnded = null;
-            DateTimePeriods = new List<DateTimePeriod>();
-            Status = AlgorithmStatus.Scheduled;
-            Nodes = new List<string>();
-            Edges = new List<Edge>();
-            TargetNodes = new List<string>();
-            PreferredNodes = new List<string>();
+            DateTimePeriods = JsonSerializer.Serialize(new List<DateTimePeriod>());
+            Status = AnalysisStatus.Scheduled;
+            Nodes = JsonSerializer.Serialize(new List<string>());
+            Edges = JsonSerializer.Serialize(new List<Edge>());
+            TargetNodes = JsonSerializer.Serialize(new List<string>());
+            PreferredNodes = JsonSerializer.Serialize(new List<string>());
             CurrentIteration = 0;
             CurrentIterationWithoutImprovement = 0;
-            Parameters = new Parameters();
-            Population = new Population();
+            Parameters = JsonSerializer.Serialize(new Parameters());
+            Population = JsonSerializer.Serialize(new Population());
         }
 
         /// <summary>
@@ -113,23 +115,23 @@ namespace GeneticAlgNetControl.Data.Models
         /// <param name="targetNodes">The target nodes of the network corresponding to the algorithm.</param>
         /// <param name="preferredNodes">The preferred nodes of the network corresponding to the algorithm.</param>
         /// <param name="parameters">The parameters of the algorithm.</param>
-        public Algorithm(string name, IEnumerable<Edge> edges, IEnumerable<string> nodes, IEnumerable<string> targetNodes, IEnumerable<string> preferredNodes, Parameters parameters)
+        public Analysis(string name, IEnumerable<Edge> edges, IEnumerable<string> nodes, IEnumerable<string> targetNodes, IEnumerable<string> preferredNodes, Parameters parameters)
         {
             // Assign the value for each property.
             Id = Guid.NewGuid().ToString();
             Name = name;
             DateTimeStarted = null;
             DateTimeEnded = null;
-            DateTimePeriods = new List<DateTimePeriod>();
-            Status = AlgorithmStatus.Scheduled;
-            Nodes = nodes.ToList();
-            Edges = edges.ToList();
-            TargetNodes = targetNodes.ToList();
-            PreferredNodes = preferredNodes.ToList();
+            DateTimePeriods = JsonSerializer.Serialize(new List<DateTimePeriod>());
+            Status = AnalysisStatus.Scheduled;
+            Nodes = JsonSerializer.Serialize(nodes.ToList());
+            Edges = JsonSerializer.Serialize(edges.ToList());
+            TargetNodes = JsonSerializer.Serialize(targetNodes.ToList());
+            PreferredNodes = JsonSerializer.Serialize(preferredNodes.ToList());
             CurrentIteration = 0;
             CurrentIterationWithoutImprovement = 0;
-            Parameters = parameters;
-            Population = new Population();
+            Parameters = JsonSerializer.Serialize(parameters);
+            Population = JsonSerializer.Serialize(new Population());
         }
 
         /// <summary>

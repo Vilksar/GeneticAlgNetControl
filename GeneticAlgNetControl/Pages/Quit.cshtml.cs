@@ -4,11 +4,11 @@ using Microsoft.Extensions.Hosting;
 
 namespace GeneticAlgNetControl.Pages
 {
-    public class CloseModel : PageModel
+    public class QuitModel : PageModel
     {
         private readonly IHostApplicationLifetime _hostApplicationLifetime;
 
-        public CloseModel(IHostApplicationLifetime hostApplicationLifetime)
+        public QuitModel(IHostApplicationLifetime hostApplicationLifetime)
         {
             _hostApplicationLifetime = hostApplicationLifetime;
         }
@@ -24,7 +24,7 @@ namespace GeneticAlgNetControl.Pages
             // Stop the application.
             _hostApplicationLifetime.StopApplication();
             // Return the page.
-            return Page();
+            return new NoContentResult();
         }
     }
 }

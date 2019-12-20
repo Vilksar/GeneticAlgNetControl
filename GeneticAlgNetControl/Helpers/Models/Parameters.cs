@@ -4,27 +4,27 @@ using System;
 namespace GeneticAlgNetControl.Helpers.Models
 {
     /// <summary>
-    /// Represents the parameters for the algorithm.
+    /// Represents the parameters for the analysis.
     /// </summary>
     public class Parameters
     {
         /// <summary>
-        /// Represents the random seed to be used in the algorithm.
+        /// Represents the random seed to be used in the analysis.
         /// </summary>
         public int RandomSeed { get; set; }
 
         /// <summary>
-        /// Represents the maximum number of iteration for which the algorithm to run.
+        /// Represents the maximum number of iteration for which the analysis to run.
         /// </summary>
         public int MaximumIterations { get; set; }
 
         /// <summary>
-        /// Represents the maximum number of iterations without improvement for which the algorithm to run.
+        /// Represents the maximum number of iterations without improvement for which the analysis to run.
         /// </summary>
         public int MaximumIterationsWithoutImprovement { get; set; }
 
         /// <summary>
-        /// Represents the maximum path length to be used in the algorithm.
+        /// Represents the maximum path length to be used in the analysis.
         /// </summary>
         public int MaximumPathLength { get; set; }
 
@@ -56,12 +56,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <summary>
         /// Represents the crossover algorithm to be used.
         /// </summary>
-        public AlgorithmCrossoverType CrossoverType { get; set; }
+        public AnalysisCrossoverType CrossoverType { get; set; }
 
         /// <summary>
         /// Represents the mutation algorithm to be used.
         /// </summary>
-        public AlgorithmMutationType MutationType { get; set; }
+        public AnalysisMutationType MutationType { get; set; }
 
         /// <summary>
         /// Initializes a new default instance of the class.
@@ -96,7 +96,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="probabilityMutation">The probability of mutation for each gene of a chromosome.</param>
         /// <param name="crossoverType">The crossover algorithm to be used.</param>
         /// <param name="mutationType">The mutation algorithm to be used.</param>
-        public Parameters(int randomSeed, int maximumIterations, int maximumIterationsWithoutImprovement, int maximumPathLength, int populationSize, int randomGenesPerChromosome, double percentageRandom, double percentageElite, double probabilityMutation, AlgorithmCrossoverType crossoverType, AlgorithmMutationType mutationType)
+        public Parameters(int randomSeed, int maximumIterations, int maximumIterationsWithoutImprovement, int maximumPathLength, int populationSize, int randomGenesPerChromosome, double percentageRandom, double percentageElite, double probabilityMutation, AnalysisCrossoverType crossoverType, AnalysisMutationType mutationType)
         {
             // Assign the value for each parameter.
             RandomSeed = randomSeed;
@@ -128,8 +128,8 @@ namespace GeneticAlgNetControl.Helpers.Models
                 0.0 <= PercentageRandom && PercentageRandom <= 1.0 &&
                 0.0 <= PercentageElite && PercentageElite <= 1.0 &&
                 0.0 <= ProbabilityMutation && ProbabilityMutation <= 1.0 &&
-                Enum.IsDefined(typeof(AlgorithmCrossoverType), CrossoverType) &&
-                Enum.IsDefined(typeof(AlgorithmMutationType), MutationType);
+                Enum.IsDefined(typeof(AnalysisCrossoverType), CrossoverType) &&
+                Enum.IsDefined(typeof(AnalysisMutationType), MutationType);
         }
 
         /// <summary>
@@ -155,7 +155,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// <summary>
             /// Represents the default value for the maximum path length to be used in the algorithm.
             /// </summary>
-            public static int MaximumPathLength { get; } = 5;
+            public static int MaximumPathLength { get; } = 15;
 
             /// <summary>
             /// Represents the default value for the number of chromosomes in each population.
@@ -185,12 +185,12 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// <summary>
             /// Represents the default value for the crossover algorithm to be used.
             /// </summary>
-            public static AlgorithmCrossoverType CrossoverType { get; } = AlgorithmCrossoverType.Default;
+            public static AnalysisCrossoverType CrossoverType { get; } = AnalysisCrossoverType.WeightedRandom;
 
             /// <summary>
             /// Represents the default value for the mutation algorithm to be used.
             /// </summary>
-            public static AlgorithmMutationType MutationType { get; } = AlgorithmMutationType.Default;
+            public static AnalysisMutationType MutationType { get; } = AnalysisMutationType.WeightedRandomAncestor;
         }
     }
 }

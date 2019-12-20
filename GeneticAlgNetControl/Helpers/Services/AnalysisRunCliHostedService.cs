@@ -15,9 +15,9 @@ using System.Threading.Tasks;
 namespace GeneticAlgNetControl.Helpers.Services
 {
     /// <summary>
-    /// Represents the hosted service corresponding to a CLI algorithm run.
+    /// Represents the hosted service corresponding to an analysis run using the CLI.
     /// </summary>
-    public class AlgorithmRunCliHostedService : BackgroundService
+    public class AnalysisRunCliHostedService : BackgroundService
     {
         /// <summary>
         /// Represents the configuration.
@@ -27,7 +27,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Represents the logger.
         /// </summary>
-        private readonly ILogger<AlgorithmRunCliHostedService> _logger;
+        private readonly ILogger<AnalysisRunCliHostedService> _logger;
 
         /// <summary>
         /// Represents the host application lifetime.
@@ -37,9 +37,10 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Initializes a new instance of the class.
         /// </summary>
-        /// <param name="arguments">Represents the program arguments.</param>
+        /// <param name="configuration">Represents the application configuration.</param>
         /// <param name="logger">Represents the logger.</param>
-        public AlgorithmRunCliHostedService(IConfiguration configuration, ILogger<AlgorithmRunCliHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        /// <param name="hostApplicationLifetime">Represents the application lifetime.</param>
+        public AnalysisRunCliHostedService(IConfiguration configuration, ILogger<AnalysisRunCliHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
             _configuration = configuration;
             _logger = logger;
@@ -47,7 +48,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         }
 
         /// <summary>
-        /// Launches the algorithm run execution.
+        /// Launches an analysis run execution.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token corresponding to the task.</param>
         /// <returns>A runnable task.</returns>
@@ -63,12 +64,12 @@ namespace GeneticAlgNetControl.Helpers.Services
                     "\n\t---",
                     "\n\t",
                     "\n\tThe following arguments can be provided:",
-                    "\n\t--UseCli\tUse this parameter to run the application in the CLI (and not as a local web server).",
+                    "\n\t--UseCli\tUse this parameter to run an analysis in the application using the CLI (and not as a local web server).",
                     "\n\t--Help\tUse this parameter to display this help message.",
                     "\n\t--Edges\tUse this parameter to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a tab character.",
                     "\n\t--Targets\tUse this parameter to specify the path to the file containing the target nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
                     "\n\t--Preferred\t(optional) Use this parameter to specify the path to the file containing the preferred nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
-                    "\n\t--Parameters\tUse this parameter to specify the path to the file containing the parameter values for the algorithm. The file should be in a JSON format, as shown in the \"DefaultParameters.json\" file, containing the default parameter values.",
+                    "\n\t--Parameters\tUse this parameter to specify the path to the file containing the parameter values for the analysis. The file should be in a JSON format, as shown in the \"DefaultParameters.json\" file, containing the default parameter values.",
                     "\n\t",
                     "\n\t---",
                     "\n\t",
@@ -158,7 +159,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Return a successfully completed task.
                 return Task.CompletedTask;
             }
-            // Define the variables needed for the algorithm.
+            // Define the variables needed for the analysis.
             var nodes = new List<string>();
             var edges = new List<Edge>();
             var targetNodes = new List<string>();
@@ -302,17 +303,17 @@ namespace GeneticAlgNetControl.Helpers.Services
             var stopwatch = new Stopwatch();
             stopwatch.Start();
             // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm started.");
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Analysis started.");
             // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}: Computing the variables needed for the algorithm.");
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Computing the variables needed for the analysis.");
             // Get the additional needed variables.
-            var nodeIndex = Algorithm.GetNodeIndex(nodes);
-            var nodeIsPreferred = Algorithm.GetNodeIsPreferred(nodes, preferredNodes);
-            var matrixA = Algorithm.GetMatrixA(nodeIndex, edges);
-            var matrixC = Algorithm.GetMatrixC(nodeIndex, targetNodes);
-            var powersMatrixA = Algorithm.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
-            var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
-            var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
+            var nodeIndex = Analysis.GetNodeIndex(nodes);
+            var nodeIsPreferred = Analysis.GetNodeIsPreferred(nodes, preferredNodes);
+            var matrixA = Analysis.GetMatrixA(nodeIndex, edges);
+            var matrixC = Analysis.GetMatrixC(nodeIndex, targetNodes);
+            var powersMatrixA = Analysis.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
+            var powersMatrixCA = Analysis.GetPowersMatrixCA(matrixC, powersMatrixA);
+            var targetAncestors = Analysis.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
             // Log a message.
             _logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
             // Set up the first iteration.
@@ -362,8 +363,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                 Parameters = new
                 {
                     Parameters = parameters,
-                    CrossoverAlgorithm = parameters.CrossoverType.ToString(),
-                    MutationAlgorithm = parameters.MutationType.ToString()
+                    CrossoverType = parameters.CrossoverType.ToString(),
+                    MutationType = parameters.MutationType.ToString()
                 },
                 Solutions = new
                 {
@@ -391,7 +392,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return Task.CompletedTask;
             }
             // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}: Algorithm ended in {stopwatch.Elapsed}.");
+            _logger.LogInformation($"{DateTime.Now.ToString()}: Analysis ended in {stopwatch.Elapsed}.");
             // Stop the application.
             _hostApplicationLifetime.StopApplication();
             // Return a successfully completed task.

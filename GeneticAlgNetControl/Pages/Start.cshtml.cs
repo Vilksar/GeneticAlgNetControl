@@ -46,7 +46,7 @@ namespace GeneticAlgNetControl.Pages
 
         public class ViewModel
         {
-            public IEnumerable<Algorithm> Items { get; set; }
+            public IEnumerable<Analysis> Items { get; set; }
         }
 
         public IActionResult OnGet(IEnumerable<string> id)
@@ -62,8 +62,8 @@ namespace GeneticAlgNetControl.Pages
             // Define the view.
             View = new ViewModel
             {
-                Items = _context.Algorithms
-                    .Where(item => id.Contains(item.Id) && item.Status == AlgorithmStatus.Stopped)
+                Items = _context.Analyses
+                    .Where(item => id.Contains(item.Id) && item.Status == AnalysisStatus.Stopped)
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -97,8 +97,8 @@ namespace GeneticAlgNetControl.Pages
             // Define the view.
             View = new ViewModel
             {
-                Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id) && item.Status == AlgorithmStatus.Stopped)
+                Items = _context.Analyses
+                    .Where(item => itemIds.Contains(item.Id) && item.Status == AnalysisStatus.Stopped)
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -116,7 +116,7 @@ namespace GeneticAlgNetControl.Pages
             foreach (var item in View.Items)
             {
                 // Update its status.
-                item.Status = AlgorithmStatus.Scheduled;
+                item.Status = AnalysisStatus.Scheduled;
             }
             // Try to update the database.
             try
@@ -132,7 +132,7 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Display a message.
-            TempData["StatusMessage"] = $"Success: {itemCount.ToString()} algorithm{(itemCount != 1 ? "s" : string.Empty)} scheduled to stop successfully.";
+            TempData["StatusMessage"] = $"Success: {itemCount.ToString()} item{(itemCount != 1 ? "s" : string.Empty)} have been successfully scheduled to start.";
             // Redirect to the index page.
             return RedirectToPage("/Dashboard");
         }

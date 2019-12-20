@@ -48,7 +48,7 @@
                     <div class="form-group">
                         <label asp-for="Input.Name" class="font-weight-bold">Name</label>
                         <input asp-for="Input.Name" class="form-control" />
-                        <span asp-description-for="Input.Name" class="text-muted small">The name of the new algorithm run.</span>
+                        <span asp-description-for="Input.Name" class="text-muted small">The name of the new analysis.</span>
                         <span asp-validation-for="Input.Name" class="text-danger small"></span>
                     </div>
                 </div>
@@ -123,7 +123,7 @@
                         <div class="form-group" hidden>
                             <label asp-for="Input.TargetNodes" class="font-weight-bold">Target nodes</label>
                             <textarea asp-for="Input.TargetNodes" class="form-control file-group-input"></textarea>
-                            <span asp-description-for="Input.TargetNodes" class="text-muted small">The nodes to be used as target by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
+                            <span asp-description-for="Input.TargetNodes" class="text-muted small">The nodes to be used as target by the analysis, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
                             <span asp-validation-for="Input.TargetNodes" class="text-danger small"></span>
                         </div>
                         <div class="form-group">
@@ -161,7 +161,7 @@
                         <div class="form-group" hidden>
                             <label asp-for="Input.PreferredNodes" class="font-weight-bold">Preferred nodes</label>
                             <textarea asp-for="Input.PreferredNodes" class="form-control file-group-input"></textarea>
-                            <span asp-description-for="Input.PreferredNodes" class="text-muted small">The nodes to be used as preferred by the algorithm, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
+                            <span asp-description-for="Input.PreferredNodes" class="text-muted small">The nodes to be used as preferred by the analysis, formatted as a JSON string array. This field should not be directly interacted with, the form entries below should be used to edit the data instead.</span>
                             <span asp-validation-for="Input.PreferredNodes" class="text-danger small"></span>
                         </div>
                         <div class="form-group">
@@ -219,7 +219,7 @@
                             <input asp-for="Input.RandomSeed" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.RandomSeed" />
                         </div>
                         <div class="col-lg-4 order-1 order-lg-3 mb-3">
-                            <span asp-description-for="Input.RandomSeed" class="text-muted small">The random seed to be used by the algorithm.</span>
+                            <span asp-description-for="Input.RandomSeed" class="text-muted small">The random seed to be used by the analysis.</span>
                             <span asp-validation-for="Input.RandomSeed" class="text-danger small"></span>
                         </div>
                         <div class="col-lg-4 order-2 order-lg-1 align-self-center">
@@ -229,7 +229,7 @@
                             <input asp-for="Input.MaximumIterations" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.MaximumIterations" />
                         </div>
                         <div class="col-lg-4 order-2 order-lg-3 mb-3">
-                            <span asp-description-for="Input.MaximumIterations" class="text-muted small">The maximum number of generations for which the algorithm will run.</span>
+                            <span asp-description-for="Input.MaximumIterations" class="text-muted small">The maximum number of generations for which the analysis will run.</span>
                             <span asp-validation-for="Input.MaximumIterations" class="text-danger small"></span>
                         </div>
                         <div class="col-lg-4 order-3 order-lg-1 align-self-center">
@@ -239,7 +239,7 @@
                             <input asp-for="Input.MaximumIterationsWithoutImprovement" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.MaximumIterationsWithoutImprovement" />
                         </div>
                         <div class="col-lg-4 order-3 order-lg-3 mb-3">
-                            <span asp-description-for="Input.MaximumIterationsWithoutImprovement" class="text-muted small">The maximum number of generations without improvement in the size of the best solutions before the algorithm will stop.</span>
+                            <span asp-description-for="Input.MaximumIterationsWithoutImprovement" class="text-muted small">The maximum number of generations without improvement in the size of the best solutions before the analysis will stop.</span>
                             <span asp-validation-for="Input.MaximumIterationsWithoutImprovement" class="text-danger small"></span>
                         </div>
                     </div>
@@ -312,7 +312,7 @@
                             <label asp-for="Input.CrossoverType" class="font-weight-bold">Crossover type</label>
                         </div>
                         <div class="col-lg-6 order-1 order-lg-2">
-                            <select asp-for="Input.CrossoverType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmCrossoverType>()" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.CrossoverType"></select>
+                            <select asp-for="Input.CrossoverType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AnalysisCrossoverType>()" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.CrossoverType"></select>
                         </div>
                         <div class="col-lg-6 order-1 order-lg-3 mb-3">
                             <span asp-description-for="Input.CrossoverType" class="text-muted small">The crossover algorithm which will be used.</span>
@@ -322,7 +322,7 @@
                             <label asp-for="Input.MutationType" class="font-weight-bold">Mutation type</label>
                         </div>
                         <div class="col-lg-6 order-2 order-lg-2">
-                            <select asp-for="Input.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AlgorithmMutationType>()" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.MutationType"></select>
+                            <select asp-for="Input.MutationType" asp-items="Html.GetEnumSelectList<Data.Enumerations.AnalysisMutationType>()" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.MutationType"></select>
                         </div>
                         <div class="col-lg-6 order-2 order-lg-3 mb-3">
                             <span asp-description-for="Input.MutationType" class="text-muted small">The mutation algorithm which will be used.</span>

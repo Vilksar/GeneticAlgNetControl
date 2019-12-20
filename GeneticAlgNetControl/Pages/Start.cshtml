@@ -29,7 +29,7 @@
         <div class="alert alert-info mb-0 shadow-sm">
             <span><i class="fas fa-info-circle"></i></span>
             <span>The following @Model.View.Items.Count() item@(Model.View.Items.Count() != 1 ? "s" : string.Empty) will be started again.</span>
-            <span class="font-weight-bold">Only the algorithms having the status "Stopped" can be started.</span>
+            <span class="font-weight-bold">Only the analyses having the status "Stopped" can be started.</span>
         </div>
     </div>
     @if (!Model.View.Items.Any())
@@ -58,7 +58,7 @@
                                 <div class="form-group" hidden>
                                     <label asp-for="Input.Ids" class="font-weight-bold">IDs</label>
                                     <input asp-for="Input.Ids" type="hidden" class="form-control" />
-                                    <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the algorithms to be started, formatted as a JSON string array.</span>
+                                    <span asp-description-for="Input.Ids" class="text-muted small">The internal IDs of the analyses to be started, formatted as a JSON string array.</span>
                                     <span asp-validation-for="Input.Ids" class="text-danger small"></span>
                                 </div>
                                 <button type="submit" class="btn btn-block btn-success text-wrap my-1" title="Start all">

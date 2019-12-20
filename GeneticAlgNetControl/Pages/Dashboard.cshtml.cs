@@ -2,6 +2,7 @@ using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -10,6 +11,7 @@ using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace GeneticAlgNetControl.Pages
 {
@@ -59,7 +61,7 @@ namespace GeneticAlgNetControl.Pages
 
             public string ClearFiltersUrl { get; set; }
 
-            public IEnumerable<Algorithm> Items { get; set; }
+            public IEnumerable<Analysis> Items { get; set; }
         }
 
         public IActionResult OnGet(string searchString, IEnumerable<string> searchIn, IEnumerable<string> filter, string sortBy, string sortDirection, int itemsPerPage, int currentPage)
@@ -89,27 +91,27 @@ namespace GeneticAlgNetControl.Pages
                 CurrentPage = currentPage
             };
             // Start with all of the items in the database that match the search string. The ".AsEnumerable()" is included as the search for nodes needs client-side evaluation, and the application is not expected to manage a large amount of data, so the performance impact should not be noticeable. This can be removed if anything changes, and a more efficient solution can be implemented.
-            var query = _context.Algorithms.AsEnumerable()
+            var query = _context.Analyses.AsEnumerable()
                 .Where(item => !View.SearchIn.Any() ||
                     View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
                     View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
-                    View.SearchIn.Contains("Nodes") && item.Nodes.Any(item1 => item1.Contains(View.SearchString)) ||
-                    View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Any(item1 => item1.Contains(View.SearchString)) ||
-                    View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Any(item1 => item1.Contains(View.SearchString)));
+                    View.SearchIn.Contains("Nodes") && item.Nodes.Contains(View.SearchString) ||
+                    View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Contains(View.SearchString) ||
+                    View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Contains(View.SearchString));
             // Select the results matching the filter parameter.
             query = query
-                .Where(item => View.Filter.Contains("IsScheduled") ? item.Status == AlgorithmStatus.Scheduled : true)
-                .Where(item => View.Filter.Contains("IsNotScheduled") ? item.Status != AlgorithmStatus.Scheduled : true)
-                .Where(item => View.Filter.Contains("IsPreparingToStart") ? item.Status == AlgorithmStatus.PreparingToStart : true)
-                .Where(item => View.Filter.Contains("IsNotPreparingToStart") ? item.Status != AlgorithmStatus.PreparingToStart : true)
-                .Where(item => View.Filter.Contains("IsOngoing") ? item.Status == AlgorithmStatus.Ongoing : true)
-                .Where(item => View.Filter.Contains("IsNotOngoing") ? item.Status != AlgorithmStatus.Ongoing : true)
-                .Where(item => View.Filter.Contains("IsScheduledToStop") ? item.Status == AlgorithmStatus.ScheduledToStop : true)
-                .Where(item => View.Filter.Contains("IsNotScheduledToStop") ? item.Status != AlgorithmStatus.ScheduledToStop : true)
-                .Where(item => View.Filter.Contains("IsStopped") ? item.Status == AlgorithmStatus.Stopped : true)
-                .Where(item => View.Filter.Contains("IsNotStopped") ? item.Status != AlgorithmStatus.Stopped : true)
-                .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AlgorithmStatus.Completed : true)
-                .Where(item => View.Filter.Contains("IsNotCompleted") ? item.Status != AlgorithmStatus.Completed : true);
+                .Where(item => View.Filter.Contains("IsScheduled") ? item.Status == AnalysisStatus.Scheduled : true)
+                .Where(item => View.Filter.Contains("IsNotScheduled") ? item.Status != AnalysisStatus.Scheduled : true)
+                .Where(item => View.Filter.Contains("IsPreparingToStart") ? item.Status == AnalysisStatus.Initializing : true)
+                .Where(item => View.Filter.Contains("IsNotPreparingToStart") ? item.Status != AnalysisStatus.Initializing : true)
+                .Where(item => View.Filter.Contains("IsOngoing") ? item.Status == AnalysisStatus.Ongoing : true)
+                .Where(item => View.Filter.Contains("IsNotOngoing") ? item.Status != AnalysisStatus.Ongoing : true)
+                .Where(item => View.Filter.Contains("IsScheduledToStop") ? item.Status == AnalysisStatus.Stopping : true)
+                .Where(item => View.Filter.Contains("IsNotScheduledToStop") ? item.Status != AnalysisStatus.Stopping : true)
+                .Where(item => View.Filter.Contains("IsStopped") ? item.Status == AnalysisStatus.Stopped : true)
+                .Where(item => View.Filter.Contains("IsNotStopped") ? item.Status != AnalysisStatus.Stopped : true)
+                .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AnalysisStatus.Completed : true)
+                .Where(item => View.Filter.Contains("IsNotCompleted") ? item.Status != AnalysisStatus.Completed : true);
             // Sort it according to the parameters.
             switch ((View.SortBy, View.SortDirection))
             {
@@ -200,16 +202,16 @@ namespace GeneticAlgNetControl.Pages
             switch (statisticName)
             {
                 case "Scheduled":
-                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Scheduled);
+                    statisticCount = _context.Analyses.Count(item => item.Status == AnalysisStatus.Scheduled);
                     break;
                 case "Ongoing":
-                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.PreparingToStart || item.Status == AlgorithmStatus.Ongoing || item.Status == AlgorithmStatus.ScheduledToStop);
+                    statisticCount = _context.Analyses.Count(item => item.Status == AnalysisStatus.Initializing || item.Status == AnalysisStatus.Ongoing || item.Status == AnalysisStatus.Stopping);
                     break;
                 case "Stopped":
-                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Stopped);
+                    statisticCount = _context.Analyses.Count(item => item.Status == AnalysisStatus.Stopped);
                     break;
                 case "Completed":
-                    statisticCount = _context.Algorithms.Count(item => item.Status == AlgorithmStatus.Completed);
+                    statisticCount = _context.Analyses.Count(item => item.Status == AnalysisStatus.Completed);
                     break;
                 default:
                     break;
@@ -224,10 +226,10 @@ namespace GeneticAlgNetControl.Pages
 
         public IActionResult OnGetRefreshItem(string id)
         {
-            // Get the algorithm with the provided ID.
-            var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
-            // Check if there wasn't any algorithm found.
-            if (algorithm == null)
+            // Get the analysis with the provided ID.
+            var analysis = _context.Analyses.FirstOrDefault(item => item.Id == id);
+            // Check if there wasn't any analysis found.
+            if (analysis == null)
             {
                 // Return an empty JSON object.
                 return new JsonResult(new
@@ -242,15 +244,17 @@ namespace GeneticAlgNetControl.Pages
                     ProgressIterationsWithoutImprovementText = string.Empty
                 });
             }
+            // Get the parameters.
+            var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
             // Get the required data.
-            var status = algorithm.Status;
-            var timeSpan = algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
-            var progressIterations = (double)algorithm.CurrentIteration / algorithm.Parameters.MaximumIterations * 100;
-            var progressIterationsWithoutImprovement = (double)algorithm.CurrentIterationWithoutImprovement / algorithm.Parameters.MaximumIterationsWithoutImprovement * 100;
+            var status = analysis.Status;
+            var timeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var progressIterations = (double)analysis.CurrentIteration / parameters.MaximumIterations * 100;
+            var progressIterationsWithoutImprovement = (double)analysis.CurrentIterationWithoutImprovement / parameters.MaximumIterationsWithoutImprovement * 100;
             // Return a new JSON object.
             return new JsonResult(new
             {
-                StatusTitle = status.ToActualString(),
+                StatusTitle = status.ToString(),
                 StatusText = status.ToString(),
                 TimeSpanTitle = timeSpan.ToString(),
                 TimeSpanText = timeSpan.ToString("dd\\:hh\\:mm\\:ss"),

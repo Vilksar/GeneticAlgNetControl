@@ -6,16 +6,18 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GeneticAlgNetControl.Helpers.Services
 {
     /// <summary>
-    /// Represents the hosted service corresponding to an algorithm run.
+    /// Represents the hosted service corresponding to an analysis run.
     /// </summary>
-    public class AlgorithmRunHostedService : BackgroundService
+    public class AnalysisRunHostedService : BackgroundService
     {
         /// <summary>
         /// Represents the service scope factory.
@@ -25,7 +27,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Represents the logger.
         /// </summary>
-        private readonly ILogger<AlgorithmRunHostedService> _logger;
+        private readonly ILogger<AnalysisRunHostedService> _logger;
 
         /// <summary>
         /// Represents the host application lifetime.
@@ -37,7 +39,8 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// </summary>
         /// <param name="serviceScopeFactory">Represents the service scope factory.</param>
         /// <param name="logger">Represents the logger.</param>
-        public AlgorithmRunHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AlgorithmRunHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        /// <param name="hostApplicationLifetime">Represents the application lifetime.</param>
+        public AnalysisRunHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AnalysisRunHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;
@@ -56,69 +59,76 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Get the application context.
             var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             // Go over each algorithm in the database that is ongoing at start.
-            foreach (var algorithm in context.Algorithms.Where(item => item.Status == AlgorithmStatus.Ongoing))
+            foreach (var algorithm in context.Analyses.Where(item => item.Status == AnalysisStatus.Ongoing))
             {
                 // Update its status.
-                algorithm.Status = AlgorithmStatus.Scheduled;
+                algorithm.Status = AnalysisStatus.Scheduled;
             }
             // Save the changes to the database.
             await context.SaveChangesAsync();
             // Repeat the task.
             while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested)
             {
-                // Get the first scheduled algorithm in the database.
-                var algorithm = context.Algorithms.FirstOrDefault(item => item.Status == AlgorithmStatus.Scheduled);
-                // Check if there wasn't any algorithm found.
-                if (algorithm == null)
+                // Get the first scheduled analysis in the database.
+                var analysis = context.Analyses.FirstOrDefault(item => item.Status == AnalysisStatus.Scheduled);
+                // Check if there wasn't any analysis found.
+                if (analysis == null)
                 {
                     // Wait for 30 seconds.
                     await Task.Delay(30000);
                     // Continue.
                     continue;
                 }
-                // Mark the algorithm for updating.
-                context.Update(algorithm);
-                // Update the algorithm status and stats.
-                algorithm.Status = AlgorithmStatus.PreparingToStart;
-                algorithm.DateTimeStarted = DateTime.Now;
-                algorithm.DateTimePeriods = algorithm.DateTimePeriods.Append(new DateTimePeriod(algorithm.DateTimeStarted, null)).ToList();
+                // Mark the analysis for updating.
+                context.Update(analysis);
+                // Update the analysis status and stats.
+                analysis.Status = AnalysisStatus.Initializing;
+                analysis.DateTimeStarted = DateTime.Now;
+                analysis.DateTimePeriods = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Append(new DateTimePeriod(analysis.DateTimeStarted, null)));
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
                 // Reload it for a fresh start.
-                await context.Entry(algorithm).ReloadAsync();
+                await context.Entry(analysis).ReloadAsync();
                 // Get the edges, nodes, target nodes, preferred nodes and parameters.
-                var nodes = algorithm.Nodes;
-                var edges = algorithm.Edges;
-                var targetNodes = algorithm.TargetNodes;
-                var preferredNodes = algorithm.PreferredNodes;
-                var parameters = algorithm.Parameters;
+                var nodes = JsonSerializer.Deserialize<List<string>>(analysis.Nodes);
+                var edges = JsonSerializer.Deserialize<List<Edge>>(analysis.Edges);
+                var targetNodes = JsonSerializer.Deserialize<List<string>>(analysis.TargetNodes);
+                var preferredNodes = JsonSerializer.Deserialize<List<string>>(analysis.PreferredNodes);
+                var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
                 // Get the additional needed variables.
-                var nodeIndex = Algorithm.GetNodeIndex(nodes);
-                var nodeIsPreferred = Algorithm.GetNodeIsPreferred(nodes, preferredNodes);
-                var matrixA = Algorithm.GetMatrixA(nodeIndex, edges);
-                var matrixC = Algorithm.GetMatrixC(nodeIndex, targetNodes);
-                var powersMatrixA = Algorithm.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
-                var powersMatrixCA = Algorithm.GetPowersMatrixCA(matrixC, powersMatrixA);
-                var targetAncestors = Algorithm.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
-                // Update the algorithm status.
-                algorithm.Status = AlgorithmStatus.Ongoing;
+                var nodeIndex = Analysis.GetNodeIndex(nodes);
+                var nodeIsPreferred = Analysis.GetNodeIsPreferred(nodes, preferredNodes);
+                var matrixA = Analysis.GetMatrixA(nodeIndex, edges);
+                var matrixC = Analysis.GetMatrixC(nodeIndex, targetNodes);
+                var powersMatrixA = Analysis.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
+                var powersMatrixCA = Analysis.GetPowersMatrixCA(matrixC, powersMatrixA);
+                var targetAncestors = Analysis.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
+                // Update the analysis status.
+                analysis.Status = AnalysisStatus.Ongoing;
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
                 // Set up the current iteration.
                 var random = new Random(parameters.RandomSeed);
-                var currentIteration = algorithm.CurrentIteration;
-                var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
-                var population = !algorithm.Population.Chromosomes.Any() ? new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random) : algorithm.Population;
+                var currentIteration = analysis.CurrentIteration;
+                var currentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement;
+                var population = JsonSerializer.Deserialize<Population>(analysis.Population);
+                // Check if the current population is empty.
+                if (!population.Chromosomes.Any())
+                {
+                    // Initialize a new population.
+                    population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
+                }
+                // Get the best fitness so far.
                 var bestFitness = population.HistoricBestFitness.Max();
                 // Move through the generations.
-                while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && algorithm != null && algorithm.Status == AlgorithmStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+                while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && analysis != null && analysis.Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
                 {
                     // Move on to the next iterations.
                     currentIteration += 1;
                     currentIterationWithoutImprovement += 1;
                     // Update the iteration count.
-                    algorithm.CurrentIteration = currentIteration;
-                    algorithm.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
+                    analysis.CurrentIteration = currentIteration;
+                    analysis.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
                     // Save the changes in the database.
                     await context.SaveChangesAsync();
                     // Move on to the next population.
@@ -133,19 +143,19 @@ namespace GeneticAlgNetControl.Helpers.Services
                         currentIterationWithoutImprovement = 0;
                     }
                     // Reload it for a fresh start.
-                    await context.Entry(algorithm).ReloadAsync();
+                    await context.Entry(analysis).ReloadAsync();
                 }
-                // Check if the algorithm doesn't exist anymore (if it has been deleted).
-                if (algorithm == null)
+                // Check if the analysis doesn't exist anymore (if it has been deleted).
+                if (analysis == null)
                 {
                     // End the function.
                     continue;
                 }
                 // Update the solutions, end time and the status.
-                algorithm.Population = population;
-                algorithm.Status = algorithm.Status == AlgorithmStatus.ScheduledToStop ? AlgorithmStatus.Stopped : AlgorithmStatus.Completed;
-                algorithm.DateTimeEnded = DateTime.Now;
-                algorithm.DateTimePeriods = algorithm.DateTimePeriods.SkipLast(1).Append(new DateTimePeriod(algorithm.DateTimeStarted, algorithm.DateTimeEnded)).ToList();
+                analysis.Population = JsonSerializer.Serialize(population);
+                analysis.Status = analysis.Status == AnalysisStatus.Stopping ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
+                analysis.DateTimeEnded = DateTime.Now;
+                analysis.DateTimePeriods = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).SkipLast(1).Append(new DateTimePeriod(analysis.DateTimeStarted, analysis.DateTimeEnded)));
                 // Save the changes in the database.
                 await context.SaveChangesAsync();
             }

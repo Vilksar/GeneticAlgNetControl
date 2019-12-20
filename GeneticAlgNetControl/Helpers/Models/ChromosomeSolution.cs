@@ -5,7 +5,7 @@ using System.Linq;
 namespace GeneticAlgNetControl.Helpers.Models
 {
     /// <summary>
-    /// Represents the details of a chromosome which is provided as a solution of the algorithm.
+    /// Represents the details of a chromosome which is provided as a solution of the analysis.
     /// </summary>
     public class ChromosomeSolution
     {

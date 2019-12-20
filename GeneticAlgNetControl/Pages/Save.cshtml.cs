@@ -2,6 +2,7 @@ using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -51,7 +52,7 @@ namespace GeneticAlgNetControl.Pages
 
         public class ViewModel
         {
-            public IEnumerable<Algorithm> Items { get; set; }
+            public IEnumerable<Analysis> Items { get; set; }
         }
 
         public IActionResult OnGet(IEnumerable<string> id)
@@ -67,8 +68,8 @@ namespace GeneticAlgNetControl.Pages
             // Define the view.
             View = new ViewModel
             {
-                Items = _context.Algorithms
-                    .Where(item => id.Contains(item.Id) && (item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
+                Items = _context.Analyses
+                    .Where(item => id.Contains(item.Id) && (item.Status == AnalysisStatus.Stopped || item.Status == AnalysisStatus.Completed))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -103,8 +104,8 @@ namespace GeneticAlgNetControl.Pages
             // Define the view.
             View = new ViewModel
             {
-                Items = _context.Algorithms
-                    .Where(item => itemIds.Contains(item.Id) && (item.Status == AlgorithmStatus.Stopped || item.Status == AlgorithmStatus.Completed))
+                Items = _context.Analyses
+                    .Where(item => itemIds.Contains(item.Id) && (item.Status == AnalysisStatus.Stopped || item.Status == AnalysisStatus.Completed))
             };
             // Check if there weren't any items found.
             if (View.Items == null || !View.Items.Any())
@@ -124,6 +125,10 @@ namespace GeneticAlgNetControl.Pages
                 // Go over each of the items.
                 foreach (var item in View.Items)
                 {
+                    // Get the analysis related data.
+                    var dateTimePeriods = JsonSerializer.Deserialize<List<DateTimePeriod>>(item.DateTimePeriods);
+                    var parameters = JsonSerializer.Deserialize<Parameters>(item.Parameters);
+                    var population = JsonSerializer.Deserialize<Population>(item.Population);
                     // Define a new memory stream.
                     var memoryStream = new MemoryStream();
                     // Check the file type to return.
@@ -139,31 +144,22 @@ namespace GeneticAlgNetControl.Pages
                             CurrentIterationWithoutImprovement = item.CurrentIterationWithoutImprovement,
                             DateTime = new
                             {
-                                DateTimeStarted = item.DateTimeStarted,
-                                DateTimeEnded = item.DateTimeEnded,
-                                DateTimePeriods = item.DateTimePeriods,
-                                TimeElapsed = item.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value)
+                                DateTimePeriods = dateTimePeriods,
+                                TimeElapsed = dateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value)
                             },
                             Parameters = new
                             {
-                                Parameters = item.Parameters,
-                                CrossoverAlgorithm = item.Parameters.CrossoverType.ToString(),
-                                MutationAlgorithm = item.Parameters.MutationType.ToString()
+                                Parameters = parameters,
+                                CrossoverAlgorithm = parameters.CrossoverType.ToString(),
+                                MutationAlgorithm = parameters.MutationType.ToString()
                             },
                             Solutions = new
                             {
-                                NumberOfSolutions = item.Population.Solutions.Count(),
-                                Solutions = item.Population.Solutions
+                                NumberOfSolutions = population.Solutions.Count(),
+                                Solutions = population.Solutions
                             },
-                            HistoricAverageFitness = item.Population.HistoricAverageFitness,
-                            HistoricBestFitness = item.Population.HistoricBestFitness,
-                            Network = new
-                            {
-                                Nodes = item.Nodes,
-                                Edges = item.Edges,
-                                TargetNodes = item.TargetNodes,
-                                PreferredNodes = item.PreferredNodes
-                            }
+                            HistoricAverageFitness = population.HistoricAverageFitness,
+                            HistoricBestFitness = population.HistoricBestFitness
                         }, new JsonSerializerOptions { WriteIndented = true });
                         // Define the stream of the file to be downloaded.
                         memoryStream.Write(Encoding.UTF8.GetBytes(outputText));
@@ -184,7 +180,7 @@ namespace GeneticAlgNetControl.Pages
                 }
             }
             // Return the file.
-            return File(zipStream.ToArray(), "application/zip", $"Algorithms-{DateTime.Now.ToShortDateString()}.zip");
+            return File(zipStream.ToArray(), "application/zip", $"Analyses-{DateTime.Now.ToShortDateString()}.zip");
         }
     }
 }

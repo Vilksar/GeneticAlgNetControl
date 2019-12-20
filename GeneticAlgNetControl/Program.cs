@@ -68,7 +68,7 @@ namespace GeneticAlgNetControl
                 })
                 .ConfigureServices((hostContext, services) =>
                 {
-                    services.AddHostedService<AlgorithmRunCliHostedService>();
+                    services.AddHostedService<AnalysisRunCliHostedService>();
                 });
         }
     }

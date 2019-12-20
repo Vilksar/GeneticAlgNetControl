@@ -1,11 +1,15 @@
 using GeneticAlgNetControl.Data;
+using GeneticAlgNetControl.Data.Enumerations;
 using GeneticAlgNetControl.Data.Models;
 using GeneticAlgNetControl.Helpers.Extensions;
+using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 
 namespace GeneticAlgNetControl.Pages
 {
@@ -23,7 +27,33 @@ namespace GeneticAlgNetControl.Pages
 
         public class ViewModel
         {
-            public Algorithm Algorithm { get; set; }
+            public string Id { get; set; }
+
+            public string Name { get; set; }
+
+            public AnalysisStatus Status { get; set; }
+
+            public DateTime? DateTimeStarted { get; set; }
+
+            public DateTime? DateTimeEnded { get; set; }
+
+            public TimeSpan DateTimeSpan { get; set; }
+
+            public int CurrentIteration { get; set; }
+
+            public int CurrentIterationWithoutImprovement { get; set; }
+
+            public List<string> Nodes { get; set; }
+
+            public List<Edge> Edges { get; set; }
+
+            public List<string> TargetNodes { get; set; }
+
+            public List<string> PreferredNodes { get; set; }
+
+            public Parameters Parameters { get; set; }
+
+            public Population Population { get; set; }
         }
 
         public IActionResult OnGet(string id)
@@ -37,10 +67,10 @@ namespace GeneticAlgNetControl.Pages
                 return RedirectToPage("/Dashboard");
             }
             // Get the item.
-            var algorithm = _context.Algorithms
+            var analysis = _context.Analyses
                     .FirstOrDefault(item => item.Id == id);
             // Check if the item has not been found.
-            if (algorithm == null)
+            if (analysis == null)
             {
                 // Display a message.
                 TempData["StatusMessage"] = "Error: No item has been found with the provided ID.";
@@ -50,7 +80,20 @@ namespace GeneticAlgNetControl.Pages
             // Define the view.
             View = new ViewModel
             {
-                Algorithm = algorithm
+                Id = analysis.Id,
+                Name = analysis.Name,
+                Status = analysis.Status,
+                DateTimeStarted = analysis.DateTimeStarted,
+                DateTimeEnded = analysis.DateTimeEnded,
+                DateTimeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value),
+                CurrentIteration = analysis.CurrentIteration,
+                CurrentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement,
+                Nodes = JsonSerializer.Deserialize<List<string>>(analysis.Nodes),
+                Edges = JsonSerializer.Deserialize<List<Edge>>(analysis.Edges),
+                TargetNodes = JsonSerializer.Deserialize<List<string>>(analysis.TargetNodes),
+                PreferredNodes = JsonSerializer.Deserialize<List<string>>(analysis.PreferredNodes),
+                Parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters),
+                Population = JsonSerializer.Deserialize<Population>(analysis.Population)
             };
             // Return the page.
             return Page();
@@ -58,10 +101,10 @@ namespace GeneticAlgNetControl.Pages
 
         public IActionResult OnGetRefresh(string id)
         {
-            // Get the algorithm with the provided ID.
-            var algorithm = _context.Algorithms.FirstOrDefault(item => item.Id == id);
-            // Check if there wasn't any algorithm found.
-            if (algorithm == null)
+            // Get the analysis with the provided ID.
+            var analysis = _context.Analyses.FirstOrDefault(item => item.Id == id);
+            // Check if there wasn't any analysis found.
+            if (analysis == null)
             {
                 // Return an empty JSON object.
                 return new JsonResult(new
@@ -76,19 +119,21 @@ namespace GeneticAlgNetControl.Pages
                     TimeSpanText = string.Empty
                 });
             }
+            // Get the parameters.
+            var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
             // Get the required values.
-            var status = algorithm.Status;
-            var currentIteration = algorithm.CurrentIteration;
-            var currentIterationWithoutImprovement = algorithm.CurrentIterationWithoutImprovement;
-            var maximumIterations = algorithm.Parameters.MaximumIterations;
-            var maximumIterationsWithoutImprovement = algorithm.Parameters.MaximumIterationsWithoutImprovement;
-            var dateTimeStarted = algorithm.DateTimeStarted;
-            var timeSpan = algorithm.DateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
-            var dateTimeEnded = algorithm.DateTimeEnded;
+            var status = analysis.Status;
+            var currentIteration = analysis.CurrentIteration;
+            var currentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement;
+            var maximumIterations = parameters.MaximumIterations;
+            var maximumIterationsWithoutImprovement = parameters.MaximumIterationsWithoutImprovement;
+            var dateTimeStarted = analysis.DateTimeStarted;
+            var timeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var dateTimeEnded = analysis.DateTimeEnded;
             // Return a new JSON object.
             return new JsonResult(new
             {
-                StatusTitle = status.ToActualString(),
+                StatusTitle = status.ToString(),
                 StatusText = status.ToString(),
                 CurrentIterationTitle = $"{currentIteration} / {maximumIterations}",
                 CurrentIterationText = $"{currentIteration} / {maximumIterations}",

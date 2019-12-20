@@ -3,7 +3,7 @@
 namespace GeneticAlgNetControl.Helpers.Models
 {
     /// <summary>
-    /// Represents a time period in which an algorithm can run.
+    /// Represents a time period in which the analysis runs.
     /// </summary>
     public class DateTimePeriod
     {
@@ -35,8 +35,8 @@ namespace GeneticAlgNetControl.Helpers.Models
         public DateTimePeriod(DateTime? startTime, DateTime? endTime)
         {
             // Assign the value for each property.
-            DateTimeStarted = startTime ?? null;
-            DateTimeEnded = endTime ?? null;
+            DateTimeStarted = startTime;
+            DateTimeEnded = endTime;
         }
     }
 }

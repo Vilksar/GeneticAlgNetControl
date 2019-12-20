@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace GeneticAlgNetControl.Helpers.Models
 {
     /// <summary>
-    /// Represents a population of chromosomes used by the algorithm.
+    /// Represents a population of chromosomes used by the analysis.
     /// </summary>
     public class Population
     {
@@ -37,6 +37,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// </summary>
         public Population()
         {
+            // Assign the default value for each property.
             Chromosomes = new List<Chromosome>();
             Solutions = new List<ChromosomeSolution>();
             HistoricBestFitness = new List<double>();

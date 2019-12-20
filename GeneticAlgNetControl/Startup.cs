@@ -45,7 +45,7 @@ namespace GeneticAlgNetControl
                 options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
             });
             // Add the algorithm run service.
-            services.AddHostedService<AlgorithmRunHostedService>();
+            services.AddHostedService<AnalysisRunHostedService>();
             // Add Razor pages.
             services.AddRazorPages();
         }
