@@ -31,7 +31,7 @@ $(window).on('load', () => {
                     // Get the current status.
                     const status = $(element).find('.item-group-item-status').first().attr('title');
                     // Select the element if it needs updating.
-                    return status === '' || status === 'Scheduled' || status === 'PreparingToStart' || status === 'Ongoing' || status === 'ScheduledToStop';
+                    return status === '' || status === 'Scheduled' || status === 'Initializing' || status === 'Ongoing' || status === 'Stopping';
                 });
                 // Check if any item needs updating.
                 if (itemsToUpdate.length !== 0) {
@@ -41,7 +41,7 @@ $(window).on('load', () => {
                         const status = $(element).find('.item-group-item-status').first().attr('title');
                         // Get the ID.
                         const id = $(element).find('.item-group-item-id').first().text();
-                        // Retrieve the new data for the algorithm with the mentioned ID.
+                        // Retrieve the new data for the analysis with the mentioned ID.
                         const json = $.ajax({
                             url: `${window.location.pathname}?handler=RefreshItem&id=${id}`,
                             async: false,
@@ -71,7 +71,7 @@ $(window).on('load', () => {
                                 $(element).find('.item-group-item-button-stop').removeClass('d-none');
                                 $(element).find('.item-group-item-button-save').addClass('d-none');
                                 $(element).find('.item-group-item-button-delete').addClass('d-none');
-                            } else if (json.statusTitle === 'ScheduledToStop') {
+                            } else if (json.statusTitle === 'Stopping') {
                                 // Hide and show the corresponding buttons.
                                 $(element).find('.item-group-item-button-start').addClass('d-none');
                                 $(element).find('.item-group-item-button-stop').addClass('d-none');
@@ -221,7 +221,7 @@ $(window).on('load', () => {
                     // Get an array containing the statuses of all items.
                     const statuses = $(element).find('.item-group-item-status').map((index, element) => $(element).attr('title')).toArray();
                     // Check if the page will need refreshing.
-                    if (statuses.some((item) => item === '' || item === 'Scheduled' || item === 'PreparingToStart' || item === 'Ongoing' || item === 'ScheduledToStop')) {
+                    if (statuses.some((item) => item === '' || item === 'Scheduled' || item === 'Initializing' || item === 'Ongoing' || item === 'Stopping')) {
                         // Refresh everything every few seconds.
                         setInterval(() => refresh(), _refreshInterval);
                     }
@@ -437,7 +437,7 @@ $(window).on('load', () => {
                         $(element).find('.item-details-status-icon').addClass('text-warning');
                         $(element).find('.item-details-status-icon svg').addClass('fa-clock');
                         break;
-                    case 'PreparingToStart':
+                    case 'Initializing':
                         $(element).find('.item-details-status-icon').addClass('text-dark');
                         $(element).find('.item-details-status-icon svg').addClass('fa-stopwatch');
                         break;
@@ -445,7 +445,7 @@ $(window).on('load', () => {
                         $(element).find('.item-details-status-icon').addClass('text-primary');
                         $(element).find('.item-details-status-icon svg').addClass('fa-spinner fa-spin');
                         break;
-                    case 'ScheduledToStop':
+                    case 'Stopping':
                         $(element).find('.item-details-status-icon').addClass('text-secondary');
                         $(element).find('.item-details-status-icon svg').addClass('fa-pause-circle');
                         break;
@@ -538,7 +538,7 @@ $(window).on('load', () => {
             // Go over each of the tables and format them.
             $('table.table-datatable').each((index, element) => paintDataTable(element));
             // Check if the page needs to be refreshed.
-            if (currentStatus === '' || currentStatus === 'Scheduled' || currentStatus === 'PreparingToStart' || currentStatus === 'Ongoing' || currentStatus === 'ScheduledToStop') {
+            if (currentStatus === '' || currentStatus === 'Scheduled' || currentStatus === 'Initializing' || currentStatus === 'Ongoing' || currentStatus === 'Stopping') {
                 // Repeat the function every few seconds.
                 setInterval(() => {
                     // Go over all elements in the page.
