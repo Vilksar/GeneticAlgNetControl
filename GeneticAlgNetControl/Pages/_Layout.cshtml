@@ -12,10 +12,10 @@
     <div class="d-flex flex-column flex-md-row flex-grow-1 bg-light">
         <div class="col-md-4 col-lg-3 col-xl-2 flex-grow-0 flex-md-grow-1 bg-white shadow-sm">
             <div class="navbar navbar-expand-md navbar-light flex-row flex-md-column sticky-top">
-                <div class="navbar-brand d-flex flex-row flex-md-column align-items-center mx-0 my-md-4">
-                    <img src="~/img/geneticalgnetcontrol-icon.png" width="30" height="30" class="align-top mx-1" />
-                    <span>GeneticAlg</span>
-                    <span>NetControl</span>
+                <div class="navbar-brand d-flex flex-row flex-md-column align-items-center mx-0 my-md-4 h2">
+                    <img src="~/img/geneticalgnetcontrol-icon.png" width="50" height="50" class="align-top mx-1" />
+                    <span class="h4">GeneticAlg</span>
+                    <span class="h4">NetControl</span>
                 </div>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target=".collapse.navbar-collapse" title="Toggle navigation">
                     <span><i class="fas fa-bars"></i></span>
@@ -38,7 +38,7 @@
                             <span class="col-2 text-center text-danger px-1"><i class="fas fa-times-circle"></i></span>
                             <span class="col-10">Quit</span>
                         </a>
-                        <span class="font-weight-bold navbar-text text-muted">Algorithms</span>
+                        <span class="font-weight-bold navbar-text text-muted">Analyses</span>
                         <a asp-page="/Create" class="nav-item nav-link d-flex flex-row align-items-center @(activePage == "Create" ? "active" : string.Empty)">
                             <span class="col-2 text-center text-success px-1"><i class="fas fa-plus"></i></span>
                             <span class="col-10">Create</span>
