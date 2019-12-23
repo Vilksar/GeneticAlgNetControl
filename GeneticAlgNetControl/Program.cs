@@ -20,9 +20,9 @@ namespace GeneticAlgNetControl
         public static void Main(string[] args)
         {
             // Get the current command-line arguments configuration.
-            var config = new ConfigurationBuilder().AddCommandLine(args).Build();
+            var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
             // Get the host to run based on the command-line arguments and build it.
-            using var host = (bool.TryParse(config["UseCli"], out var useCli) && useCli ? CreateHostBuilderCli(args) : CreateHostBuilder(args)).Build();
+            using var host = (bool.TryParse(configuration["UseCli"], out var useCli) && useCli ? CreateCliHostBuilder(args) : CreateWebHostBuilder(args)).Build();
             // Try to run it.
             try
             {
@@ -39,7 +39,7 @@ namespace GeneticAlgNetControl
         /// </summary>
         /// <param name="args">Represents the parameters for the web host builder.</param>
         /// <returns>Returns a new web host as defined in the "Startup" class.</returns>
-        public static IHostBuilder CreateHostBuilder(string[] args)
+        public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
             // Return a web host with the given parameters.
             return Host.CreateDefaultBuilder(args)
@@ -58,7 +58,7 @@ namespace GeneticAlgNetControl
         /// </summary>
         /// <param name="args">Represents the parameters for the web host builder.</param>
         /// <returns>Returns a new host containing the given hosted service.</returns>
-        public static IHostBuilder CreateHostBuilderCli(string[] args)
+        public static IHostBuilder CreateCliHostBuilder(string[] args)
         {
             // Return a hosted service with the given options.
             return Host.CreateDefaultBuilder(args)

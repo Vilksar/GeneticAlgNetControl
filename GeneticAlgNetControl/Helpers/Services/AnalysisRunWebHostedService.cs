@@ -17,7 +17,7 @@ namespace GeneticAlgNetControl.Helpers.Services
     /// <summary>
     /// Represents the hosted service corresponding to an analysis run.
     /// </summary>
-    public class AnalysisRunHostedService : BackgroundService
+    public class AnalysisRunWebHostedService : BackgroundService
     {
         /// <summary>
         /// Represents the service scope factory.
@@ -27,7 +27,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Represents the logger.
         /// </summary>
-        private readonly ILogger<AnalysisRunHostedService> _logger;
+        private readonly ILogger<AnalysisRunWebHostedService> _logger;
 
         /// <summary>
         /// Represents the host application lifetime.
@@ -40,7 +40,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <param name="serviceScopeFactory">Represents the service scope factory.</param>
         /// <param name="logger">Represents the logger.</param>
         /// <param name="hostApplicationLifetime">Represents the application lifetime.</param>
-        public AnalysisRunHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AnalysisRunHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        public AnalysisRunWebHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AnalysisRunWebHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
             _serviceScopeFactory = serviceScopeFactory;
             _logger = logger;

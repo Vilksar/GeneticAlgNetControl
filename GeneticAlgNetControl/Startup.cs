@@ -45,7 +45,7 @@ namespace GeneticAlgNetControl
                 options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
             });
             // Add the algorithm run service.
-            services.AddHostedService<AnalysisRunHostedService>();
+            services.AddHostedService<AnalysisRunWebHostedService>();
             // Add Razor pages.
             services.AddRazorPages();
         }
@@ -74,7 +74,6 @@ namespace GeneticAlgNetControl
                 app.UseHsts();
             }
             // Parameters for the application.
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
             app.UseRouting();
             app.UseAuthorization();
@@ -89,7 +88,7 @@ namespace GeneticAlgNetControl
                 // Open a browser to the default address for the localhost, on either the default or a specific port.
                 Process.Start(new ProcessStartInfo
                 {
-                    FileName = Configuration["Urls"]?.Split(";").First() ?? "https://localhost:5001",
+                    FileName = Configuration["Urls"],
                     UseShellExecute = true
                 });
             }
