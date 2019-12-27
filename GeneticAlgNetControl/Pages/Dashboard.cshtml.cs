@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using static GeneticAlgNetControl.Data.Models.Analysis;
 
 namespace GeneticAlgNetControl.Pages
 {
@@ -90,8 +91,8 @@ namespace GeneticAlgNetControl.Pages
                 ItemsPerPage = itemsPerPage,
                 CurrentPage = currentPage
             };
-            // Start with all of the items in the database that match the search string. The ".AsEnumerable()" is included as the search for nodes needs client-side evaluation, and the application is not expected to manage a large amount of data, so the performance impact should not be noticeable. This can be removed if anything changes, and a more efficient solution can be implemented.
-            var query = _context.Analyses.AsEnumerable()
+            // Start with all of the items in the database that match the search string.
+            var query = _context.Analyses
                 .Where(item => !View.SearchIn.Any() ||
                     View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
                     View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
@@ -146,28 +147,28 @@ namespace GeneticAlgNetControl.Pages
                     query = query.OrderByDescending(item => item.Status);
                     break;
                 case var sort when sort == ("NodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.Nodes.Count());
+                    query = query.OrderBy(item => item.NumberOfNodes);
                     break;
                 case var sort when sort == ("NodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.Nodes.Count());
+                    query = query.OrderByDescending(item => item.NumberOfNodes);
                     break;
                 case var sort when sort == ("TargetNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.TargetNodes.Count());
+                    query = query.OrderBy(item => item.NumberOfTargetNodes);
                     break;
                 case var sort when sort == ("TargetNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.TargetNodes.Count());
+                    query = query.OrderByDescending(item => item.NumberOfTargetNodes);
                     break;
                 case var sort when sort == ("PreferredNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.PreferredNodes.Count());
+                    query = query.OrderBy(item => item.NumberOfPreferredNodes);
                     break;
                 case var sort when sort == ("PreferredNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.PreferredNodes.Count());
+                    query = query.OrderByDescending(item => item.NumberOfPreferredNodes);
                     break;
                 case var sort when sort == ("EdgeCount", "Ascending"):
-                    query = query.OrderBy(item => item.Edges.Count());
+                    query = query.OrderBy(item => item.NumberOfEdges);
                     break;
                 case var sort when sort == ("EdgeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.Edges.Count());
+                    query = query.OrderByDescending(item => item.NumberOfEdges);
                     break;
                 default:
                     break;
@@ -248,7 +249,7 @@ namespace GeneticAlgNetControl.Pages
             var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
             // Get the required data.
             var status = analysis.Status;
-            var timeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var timeSpan = JsonSerializer.Deserialize<List<DateTimeInterval>>(analysis.DateTimeIntervals).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
             var progressIterations = (double)analysis.CurrentIteration / parameters.MaximumIterations * 100;
             var progressIterationsWithoutImprovement = (double)analysis.CurrentIterationWithoutImprovement / parameters.MaximumIterationsWithoutImprovement * 100;
             // Return a new JSON object.

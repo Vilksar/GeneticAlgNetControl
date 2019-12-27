@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
+using static GeneticAlgNetControl.Data.Models.Analysis;
 
 namespace GeneticAlgNetControl.Pages
 {
@@ -85,7 +86,7 @@ namespace GeneticAlgNetControl.Pages
                 Status = analysis.Status,
                 DateTimeStarted = analysis.DateTimeStarted,
                 DateTimeEnded = analysis.DateTimeEnded,
-                DateTimeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value),
+                DateTimeSpan = JsonSerializer.Deserialize<List<DateTimeInterval>>(analysis.DateTimeIntervals).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value),
                 CurrentIteration = analysis.CurrentIteration,
                 CurrentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement,
                 Nodes = JsonSerializer.Deserialize<List<string>>(analysis.Nodes),
@@ -128,7 +129,7 @@ namespace GeneticAlgNetControl.Pages
             var maximumIterations = parameters.MaximumIterations;
             var maximumIterationsWithoutImprovement = parameters.MaximumIterationsWithoutImprovement;
             var dateTimeStarted = analysis.DateTimeStarted;
-            var timeSpan = JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
+            var timeSpan = JsonSerializer.Deserialize<List<DateTimeInterval>>(analysis.DateTimeIntervals).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
             var dateTimeEnded = analysis.DateTimeEnded;
             // Return a new JSON object.
             return new JsonResult(new

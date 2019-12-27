@@ -125,44 +125,13 @@ namespace GeneticAlgNetControl.Pages
                 // Go over each of the items.
                 foreach (var item in View.Items)
                 {
-                    // Get the analysis related data.
-                    var dateTimePeriods = JsonSerializer.Deserialize<List<DateTimePeriod>>(item.DateTimePeriods);
-                    var parameters = JsonSerializer.Deserialize<Parameters>(item.Parameters);
-                    var population = JsonSerializer.Deserialize<Population>(item.Population);
                     // Define a new memory stream.
                     var memoryStream = new MemoryStream();
                     // Check the file type to return.
                     if (Input.Type == "Json")
                     {
-                        // Define the text to be written to the file.
-                        var outputText = JsonSerializer.Serialize(new
-                        {
-                            Id = item.Id,
-                            Name = item.Name,
-                            Status = item.Status.ToString(),
-                            CurrentIteration = item.CurrentIteration,
-                            CurrentIterationWithoutImprovement = item.CurrentIterationWithoutImprovement,
-                            DateTime = new
-                            {
-                                DateTimePeriods = dateTimePeriods,
-                                TimeElapsed = dateTimePeriods.Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value)
-                            },
-                            Parameters = new
-                            {
-                                Parameters = parameters,
-                                CrossoverAlgorithm = parameters.CrossoverType.ToString(),
-                                MutationAlgorithm = parameters.MutationType.ToString()
-                            },
-                            Solutions = new
-                            {
-                                NumberOfSolutions = population.Solutions.Count(),
-                                Solutions = population.Solutions
-                            },
-                            HistoricAverageFitness = population.HistoricAverageFitness,
-                            HistoricBestFitness = population.HistoricBestFitness
-                        }, new JsonSerializerOptions { WriteIndented = true });
                         // Define the stream of the file to be downloaded.
-                        memoryStream.Write(Encoding.UTF8.GetBytes(outputText));
+                        memoryStream.Write(Encoding.UTF8.GetBytes(item.ToJson()));
                     }
                     else
                     {

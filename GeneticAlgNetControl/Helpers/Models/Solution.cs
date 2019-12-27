@@ -7,10 +7,10 @@ namespace GeneticAlgNetControl.Helpers.Models
     /// <summary>
     /// Represents the details of a chromosome which is provided as a solution of the analysis.
     /// </summary>
-    public class ChromosomeSolution
+    public class Solution
     {
         /// <summary>
-        /// Represents the fitness of the chromosome.
+        /// Represents the fitness of the corresponding chromosome.
         /// </summary>
         public double Fitness { get; set; }
 
@@ -20,12 +20,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         public int MaximumControlPathLength { get; set; }
 
         /// <summary>
-        /// Represents the number of unique control nodes of the chromosome.
+        /// Represents the number of unique control nodes of the corresponding chromosome.
         /// </summary>
         public int NumberOfUniqueControlNodes { get; set; }
 
         /// <summary>
-        /// Represents the number of unique preferred nodes of the chromosome.
+        /// Represents the number of unique preferred nodes of the corresponding chromosome.
         /// </summary>
         public int NumberOfUniquePreferredControlNodes { get; set; }
 
@@ -35,24 +35,24 @@ namespace GeneticAlgNetControl.Helpers.Models
         public int NumberOfTargetNodesControlledByPreferredControlNodes { get; set; }
 
         /// <summary>
-        /// Represents the unique control nodes of the chromosome.
+        /// Represents the unique control nodes of the corresponding chromosome.
         /// </summary>
         public IEnumerable<string> UniqueControlNodes { get; set; }
 
         /// <summary>
-        /// Represents the unique preferred control nodes of the chromosome.
+        /// Represents the unique preferred control nodes of the corresponding chromosome.
         /// </summary>
         public IEnumerable<string> UniquePreferredControlNodes { get; set; }
 
         /// <summary>
-        /// Represents the actual gene mapping of the chromosome.
+        /// Represents the actual gene mapping of the corresponding chromosome.
         /// </summary>
         public Dictionary<string, string> Genes { get; set; }
 
         /// <summary>
         /// Initializes a new default instance of the class.
         /// </summary>
-        public ChromosomeSolution()
+        public Solution()
         {
             // Assign the default value for each property.
             Fitness = 0.0;
@@ -72,7 +72,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIndex">The dictionary containing, for each node, its index in the node list.</param>
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, its preferred status.</param>
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
-        public ChromosomeSolution(Chromosome chromosome, Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
+        public Solution(Chromosome chromosome, Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
         {
             // Assign the value for each property.
             Genes = chromosome.Genes;

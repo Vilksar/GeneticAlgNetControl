@@ -1,14 +1,9 @@
 ﻿using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Data.Models;
-using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -79,85 +74,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                     // Continue.
                     continue;
                 }
-                // Mark the analysis for updating.
-                context.Update(analysis);
-                // Update the analysis status and stats.
-                analysis.Status = AnalysisStatus.Initializing;
-                analysis.DateTimeStarted = DateTime.Now;
-                analysis.DateTimePeriods = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).Append(new DateTimePeriod(analysis.DateTimeStarted, null)));
-                // Save the changes in the database.
-                await context.SaveChangesAsync();
-                // Reload it for a fresh start.
-                await context.Entry(analysis).ReloadAsync();
-                // Get the edges, nodes, target nodes, preferred nodes and parameters.
-                var nodes = JsonSerializer.Deserialize<List<string>>(analysis.Nodes);
-                var edges = JsonSerializer.Deserialize<List<Edge>>(analysis.Edges);
-                var targetNodes = JsonSerializer.Deserialize<List<string>>(analysis.TargetNodes);
-                var preferredNodes = JsonSerializer.Deserialize<List<string>>(analysis.PreferredNodes);
-                var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
-                // Get the additional needed variables.
-                var nodeIndex = Analysis.GetNodeIndex(nodes);
-                var nodeIsPreferred = Analysis.GetNodeIsPreferred(nodes, preferredNodes);
-                var matrixA = Analysis.GetMatrixA(nodeIndex, edges);
-                var matrixC = Analysis.GetMatrixC(nodeIndex, targetNodes);
-                var powersMatrixA = Analysis.GetPowersMatrixA(matrixA, parameters.MaximumPathLength);
-                var powersMatrixCA = Analysis.GetPowersMatrixCA(matrixC, powersMatrixA);
-                var targetAncestors = Analysis.GetTargetAncestors(powersMatrixA, targetNodes, nodeIndex);
-                // Update the analysis status.
-                analysis.Status = AnalysisStatus.Ongoing;
-                // Save the changes in the database.
-                await context.SaveChangesAsync();
-                // Set up the current iteration.
-                var random = new Random(parameters.RandomSeed);
-                var currentIteration = analysis.CurrentIteration;
-                var currentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement;
-                var population = JsonSerializer.Deserialize<Population>(analysis.Population);
-                // Check if the current population is empty.
-                if (!population.Chromosomes.Any())
-                {
-                    // Initialize a new population.
-                    population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
-                }
-                // Get the best fitness so far.
-                var bestFitness = population.HistoricBestFitness.Max();
-                // Move through the generations.
-                while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && analysis != null && analysis.Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
-                {
-                    // Move on to the next iterations.
-                    currentIteration += 1;
-                    currentIterationWithoutImprovement += 1;
-                    // Update the iteration count.
-                    analysis.CurrentIteration = currentIteration;
-                    analysis.CurrentIterationWithoutImprovement = currentIterationWithoutImprovement;
-                    // Save the changes in the database.
-                    await context.SaveChangesAsync();
-                    // Move on to the next population.
-                    population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
-                    // Get the best fitness of the current population.
-                    var fitness = population.HistoricBestFitness.Last();
-                    // Check if the current solution is better than the previous solution.
-                    if (bestFitness < fitness)
-                    {
-                        // Update the fitness.
-                        bestFitness = fitness;
-                        currentIterationWithoutImprovement = 0;
-                    }
-                    // Reload it for a fresh start.
-                    await context.Entry(analysis).ReloadAsync();
-                }
-                // Check if the analysis doesn't exist anymore (if it has been deleted).
-                if (analysis == null)
-                {
-                    // End the function.
-                    continue;
-                }
-                // Update the solutions, end time and the status.
-                analysis.Population = JsonSerializer.Serialize(population);
-                analysis.Status = analysis.Status == AnalysisStatus.Stopping ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
-                analysis.DateTimeEnded = DateTime.Now;
-                analysis.DateTimePeriods = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimePeriod>>(analysis.DateTimePeriods).SkipLast(1).Append(new DateTimePeriod(analysis.DateTimeStarted, analysis.DateTimeEnded)));
-                // Save the changes in the database.
-                await context.SaveChangesAsync();
+                // Run the analysis.
+                await analysis.Run(_logger, _hostApplicationLifetime, context);
             }
             // Stop the application.
             _hostApplicationLifetime.StopApplication();
