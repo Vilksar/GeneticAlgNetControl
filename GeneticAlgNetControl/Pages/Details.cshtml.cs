@@ -1,7 +1,5 @@
 using GeneticAlgNetControl.Data;
 using GeneticAlgNetControl.Data.Enumerations;
-using GeneticAlgNetControl.Data.Models;
-using GeneticAlgNetControl.Helpers.Extensions;
 using GeneticAlgNetControl.Helpers.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
