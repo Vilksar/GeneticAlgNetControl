@@ -23,9 +23,8 @@ namespace GeneticAlgNetControl
             var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
             // Get the mode in which to run the application.
             var mode = configuration["Mode"] ?? "Web";
-            var help = bool.TryParse(configuration["Help"], out var displayHelp) && displayHelp;
             // Get the host to run based on the command-line arguments and build it.
-            using var host = (!help && mode == "Web" ? CreateWebHostBuilder(args) : !help && mode == "Cli" ? CreateCliHostBuilder(args) : CreateDefaultHostBuilder(args)).Build();
+            using var host = (mode == "Web" ? CreateWebHostBuilder(args) : mode == "Cli" ? CreateCliHostBuilder(args) : CreateDefaultHostBuilder(args)).Build();
             // Try to run the application host.
             try
             {
@@ -87,6 +86,10 @@ namespace GeneticAlgNetControl
                 .ConfigureLogging(logging =>
                 {
                     logging.SetMinimumLevel(LogLevel.Information);
+                })
+                .ConfigureServices((hostContext, services) =>
+                {
+                    services.AddHostedService<AnalysisRunDefaultHostedService>();
                 });
         }
     }

@@ -46,16 +46,17 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <returns>A runnable task.</returns>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            // Wait for a completed task, in order to not get a warning about having an async method.
+            await Task.CompletedTask;
             // Log a message.
             _logger.LogInformation(string.Concat(
                 "\n\tWelcome to the GeneticAlgNetControl application!",
                 "\n\t",
                 "\n\t---",
                 "\n\t",
-                "\n\tThe following arguments can be provided:",
-                "\n\t--Help\tUse this argument to display this help message.",
-                "\n\t--Mode\tUse this argument to apecify the mode in which the application will run. The possible values are \"Web\" (the application will run as a local web server) and \"Cli\" (the application will run in the command-line). The default value is \"Web\".",
-                "\n\t--Urls\tUse this argument to specify the local address on which to run the web server. It can also be configured in the \"appsettings.json\" file. The default value is \"http://localhost:5000\".",
+                "\n\tAll argument names and values are case-sensitive. The following arguments can be provided:",
+                "\n\t--Mode\tUse this argument to apecify the mode in which the application will run. The possible values are \"Web\" (the application will run as a local web server), \"Cli\" (the application will run in the command-line) and \"Help\" (the application will display this help message). The default value is \"Web\".",
+                "\n\t--Urls\t(only for Web, optional) Use this argument to specify the local address on which to run the web server. It can also be configured in the \"appsettings.json\" file. The default value is \"http://localhost:5000\".",
                 "\n\t--Edges\t(only for CLI) Use this argument to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a semicolon character. This argument has no default value.",
                 "\n\t--Targets\t(only for CLI) Use this argument to specify the path to the file containing the target nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line. This argument has no default value.",
                 "\n\t--Preferred\t(only for CLI, optional) Use this argument to specify the path to the file containing the preferred nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line. This argument has no default value.",
@@ -64,12 +65,22 @@ namespace GeneticAlgNetControl.Helpers.Services
                 "\n\t---",
                 "\n\t",
                 "\n\tExamples of posible usage:",
-                "\n\t--Help \"True\"",
+                "\n\t--Mode \"Help\"",
                 "\n\t--Mode \"Web\"",
                 "\n\t--Mode \"Cli\" --Edges \"Path/To/FileContainingEdges.extension\" --Targets \"Path/To/FileContainingTargetNodes.extension\" --Parameters \"Path/To/FileContainingParameters.extension\"",
                 "\n\t"));
-            // Wait for a completed task, in order to not get a warning about having an async method.
-            await Task.CompletedTask;
+            // Get the mode in which to run the application.
+            var mode = _configuration["Mode"];
+            // Check if the mode is not valid.
+            if (mode != "Help")
+            {
+                // Log an error.
+                _logger.LogError($"The provided mode \"{mode}\" for running the application is not valid.");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
+                // Return a successfully completed task.
+                return;
+            }
             // Stop the application.
             _hostApplicationLifetime.StopApplication();
             // Return a successfully completed task.
