@@ -1,5 +1,5 @@
 {
-  "RandomSeed": 713224108,
+  "RandomSeed": -1,
   "MaximumIterations": 10000,
   "MaximumIterationsWithoutImprovement": 1000,
   "MaximumPathLength": 5,

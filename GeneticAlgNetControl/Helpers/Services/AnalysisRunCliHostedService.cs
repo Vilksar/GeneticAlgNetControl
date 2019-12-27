@@ -290,7 +290,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             // Run the analysis.
             await analysis.Run(_logger, _hostApplicationLifetime, null);
             // Get the path of the output file.
-            var outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
+            var outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output{(preferredNodes.Any() ? "_Preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
             // Get the text to write to the file.
             var outputText = analysis.ToJson();
             // Try to write to the specified file.

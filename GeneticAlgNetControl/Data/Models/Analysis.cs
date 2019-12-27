@@ -321,6 +321,12 @@ namespace GeneticAlgNetControl.Data.Models
             Status = Status == AnalysisStatus.Stopping ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
             DateTimeEnded = DateTime.Now;
             DateTimeIntervals = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimeInterval>>(DateTimeIntervals).SkipLast(1).Append(new DateTimeInterval(DateTimeStarted, DateTimeEnded)));
+            // Check if the application is stopping, but the analysis has not ended.
+            if (hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+            {
+                // Update the status such that it will start automatically upon the next application launch.
+                Status = AnalysisStatus.Ongoing;
+            }
             // Check if there is a context provided.
             if (context != null)
             {
