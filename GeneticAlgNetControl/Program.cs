@@ -21,9 +21,12 @@ namespace GeneticAlgNetControl
         {
             // Get the current command-line arguments configuration.
             var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
+            // Get the mode in which to run the application.
+            var mode = configuration["Mode"] ?? "Web";
+            var help = bool.TryParse(configuration["Help"], out var displayHelp) && displayHelp;
             // Get the host to run based on the command-line arguments and build it.
-            using var host = (bool.TryParse(configuration["UseCli"], out var useCli) && useCli ? CreateCliHostBuilder(args) : CreateWebHostBuilder(args)).Build();
-            // Try to run it.
+            using var host = (!help && mode == "Web" ? CreateWebHostBuilder(args) : !help && mode == "Cli" ? CreateCliHostBuilder(args) : CreateDefaultHostBuilder(args)).Build();
+            // Try to run the application host.
             try
             {
                 host.Run();
@@ -41,11 +44,11 @@ namespace GeneticAlgNetControl
         /// <returns>Returns a new web host as defined in the "Startup" class.</returns>
         public static IHostBuilder CreateWebHostBuilder(string[] args)
         {
-            // Return a web host with the given parameters.
+            // Return a host with the given parameters.
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
                 {
-                    logging.SetMinimumLevel(LogLevel.Warning);
+                    logging.SetMinimumLevel(LogLevel.Information);
                 })
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
@@ -54,13 +57,13 @@ namespace GeneticAlgNetControl
         }
 
         /// <summary>
-        /// Creates a host builder with the given parameters.
+        /// Creates a CLI host builder with the given parameters.
         /// </summary>
         /// <param name="args">Represents the parameters for the web host builder.</param>
         /// <returns>Returns a new host containing the given hosted service.</returns>
         public static IHostBuilder CreateCliHostBuilder(string[] args)
         {
-            // Return a hosted service with the given options.
+            // Return a host with the given options.
             return Host.CreateDefaultBuilder(args)
                 .ConfigureLogging(logging =>
                 {
@@ -69,6 +72,21 @@ namespace GeneticAlgNetControl
                 .ConfigureServices((hostContext, services) =>
                 {
                     services.AddHostedService<AnalysisRunCliHostedService>();
+                });
+        }
+
+        /// <summary>
+        /// Creates a default host builder with the given parameters.
+        /// </summary>
+        /// <param name="args">Represents the parameters for the web host builder.</param>
+        /// <returns>Returns a new host containing the given hosted service.</returns>
+        public static IHostBuilder CreateDefaultHostBuilder(string[] args)
+        {
+            // Return a host with the given options.
+            return Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging =>
+                {
+                    logging.SetMinimumLevel(LogLevel.Information);
                 });
         }
     }

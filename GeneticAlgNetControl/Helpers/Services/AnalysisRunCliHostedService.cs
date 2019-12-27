@@ -48,40 +48,12 @@ namespace GeneticAlgNetControl.Helpers.Services
         }
 
         /// <summary>
-        /// Launches an analysis run execution.
+        /// Executes the background service.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token corresponding to the task.</param>
         /// <returns>A runnable task.</returns>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            // Check if there is any request for displaying the help details.
-            if (bool.TryParse(_configuration["Help"], out var displayHelp) && displayHelp)
-            {
-                // Log a message.
-                _logger.LogInformation(string.Concat(
-                    "\n\tWelcome to the GeneticAlgNetControl application!",
-                    "\n\t",
-                    "\n\t---",
-                    "\n\t",
-                    "\n\tThe following arguments can be provided:",
-                    "\n\t--UseCli\tUse this parameter to run an analysis in the application using the CLI (and not as a local web server).",
-                    "\n\t--Help\tUse this parameter to display this help message.",
-                    "\n\t--Edges\tUse this parameter to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a tab character.",
-                    "\n\t--Targets\tUse this parameter to specify the path to the file containing the target nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
-                    "\n\t--Preferred\t(optional) Use this parameter to specify the path to the file containing the preferred nodes of the network. Only nodes appearing in the network will be considered. Each node should be on a new line.",
-                    "\n\t--Parameters\tUse this parameter to specify the path to the file containing the parameter values for the analysis. The file should be in a JSON format, as shown in the \"DefaultParameters.json\" file, containing the default parameter values.",
-                    "\n\t",
-                    "\n\t---",
-                    "\n\t",
-                    "\n\tExamples of posible usage:",
-                    "\n\t--UseCli \"True\" --Help \"True\"",
-                    "\n\t--UseCli \"True\" --Edges \"Path/To/FileContainingEdges.extension\" --Targets \"Path/To/FileContainingTargetNodes.extension\" --Parameters \"Path/To/FileContainingParameters.extension\"",
-                    "\n\t"));
-                // Stop the application.
-                _hostApplicationLifetime.StopApplication();
-                // Return a successfully completed task.
-                return;
-            }
             // Get the parameters from the configuration.
             var edgesFilepath = _configuration["Edges"];
             var targetNodesFilepath = _configuration["Targets"];
@@ -170,7 +142,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Read all the rows in the file and parse them into edges.
                 edges = File.ReadAllLines(edgesFilepath)
-                    .Select(item => item.Split("\t"))
+                    .Select(item => item.Split(";"))
                     .Where(item => item.Length > 1)
                     .Where(item => !string.IsNullOrEmpty(item[0]) && !string.IsNullOrEmpty(item[1]))
                     .Select(item => (item[0], item[1]))
@@ -296,17 +268,29 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return;
             }
             // Log a message about the loaded data.
-            _logger.LogInformation($"Data loaded successfully.\n\t{edges.Count()} edges and {nodes.Count()} nodes loaded from \"{edgesFilepath}\".\n\t{targetNodes.Count()} target nodes loaded from \"{targetNodesFilepath}\". {preferredNodes.Count()} preferred nodes loaded{(string.IsNullOrEmpty(preferredNodesFilepath) ? string.Empty : $" from {preferredNodesFilepath}")}.");
+            _logger.LogInformation(string.Concat("The following data has been loaded.",
+                $"\n\t{edges.Count()} edges and {nodes.Count()} nodes loaded from \"{edgesFilepath}\".",
+                $"\n\t{targetNodes.Count()} target nodes loaded from \"{targetNodesFilepath}\".",
+                $"\n\t{preferredNodes.Count()} preferred nodes loaded{(string.IsNullOrEmpty(preferredNodesFilepath) ? string.Empty : $" from {preferredNodesFilepath}")}."));
             // Log a message about the parameters.
-            _logger.LogInformation($"The following parameters were loaded from \"{parametersFilepath}\".\n\tRandomSeed = {parameters.RandomSeed}\n\tMaximumIterations = {parameters.MaximumIterations}\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}\n\tMaximumPathLength = {parameters.MaximumPathLength}\n\tPopulationSize = {parameters.PopulationSize}\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}\n\tPercentageRandom = {parameters.PercentageRandom}\n\tPercentageElite = {parameters.PercentageElite}\n\tProbabilityMutation = {parameters.ProbabilityMutation}\n\tCrossoverType = {parameters.CrossoverType.ToString()}\n\tMutationType = {parameters.MutationType.ToString()}");
+            _logger.LogInformation(string.Concat($"The following parameters have been loaded from \"{parametersFilepath}\".",
+                $"\n\tRandomSeed = {parameters.RandomSeed}",
+                $"\n\tMaximumIterations = {parameters.MaximumIterations}",
+                $"\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}",
+                $"\n\tMaximumPathLength = {parameters.MaximumPathLength}",
+                $"\n\tPopulationSize = {parameters.PopulationSize}",
+                $"\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}",
+                $"\n\tPercentageRandom = {parameters.PercentageRandom}",
+                $"\n\tPercentageElite = {parameters.PercentageElite}",
+                $"\n\tProbabilityMutation = {parameters.ProbabilityMutation}",
+                $"\n\tCrossoverType = {parameters.CrossoverType.ToString()}",
+                $"\n\tMutationType = {parameters.MutationType.ToString()}"));
             // Define a new analysis.
             var analysis = new Analysis(Path.GetFileNameWithoutExtension(edgesFilepath), edges, nodes, targetNodes, preferredNodes, parameters);
             // Run the analysis.
             await analysis.Run(_logger, _hostApplicationLifetime, null);
             // Get the path of the output file.
             var outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_output{(preferredNodes.Any() ? "_preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
-            // Log a message.
-            _logger.LogInformation($"{DateTime.Now.ToString()}: Writing the results in JSON format to \"{outputFilepath}\".");
             // Get the text to write to the file.
             var outputText = analysis.ToJson();
             // Try to write to the specified file.
@@ -314,13 +298,15 @@ namespace GeneticAlgNetControl.Helpers.Services
             {
                 // Write the text to the file.
                 File.WriteAllText(outputFilepath, outputText);
+                // Log a message.
+                _logger.LogInformation($"The results have been written in JSON format to the file \"{outputFilepath}\".");
             }
             catch (Exception ex)
             {
                 // Log an error.
-                _logger.LogError($"The error {ex.Message} occured while writing to the results to the file \"{outputFilepath}\". The results will be displayed in the console window instead.");
+                _logger.LogError(ex.Message);
                 // Log a message.
-                _logger.LogInformation($"\n{outputText}\n");
+                _logger.LogInformation($"An error occured while writing the results to the file \"{outputFilepath}\". The results will be displayed below instead.\n\n{outputText}\n");
                 // Stop the application.
                 _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.

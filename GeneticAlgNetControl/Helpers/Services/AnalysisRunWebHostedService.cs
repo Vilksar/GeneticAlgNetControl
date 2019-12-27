@@ -43,7 +43,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         }
 
         /// <summary>
-        /// Launches the algorithm run execution.
+        /// Executes the background service.
         /// </summary>
         /// <param name="cancellationToken">The cancellation token corresponding to the task.</param>
         /// <returns>A runnable task.</returns>
