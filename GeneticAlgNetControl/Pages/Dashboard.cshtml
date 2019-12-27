@@ -134,6 +134,10 @@
                             <label for="search-in-nodes" class="custom-control-label">Nodes</label>
                         </div>
                         <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="search-in-edges" name="searchIn" value="Edges" checked="@(Model.View.SearchIn.Contains("Edges") ? "checked" : null)" class="custom-control-input" />
+                            <label for="search-in-edges" class="custom-control-label">Edges</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="search-in-target-nodes" name="searchIn" value="TargetNodes" checked="@(Model.View.SearchIn.Contains("TargetNodes") ? "checked" : null)" class="custom-control-input" />
                             <label for="search-in-target-nodes" class="custom-control-label">Target nodes</label>
                         </div>
@@ -148,20 +152,48 @@
                             <label for="filter-is-scheduled" class="custom-control-label">Is scheduled</label>
                         </div>
                         <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-not-scheduled" name="filter" value="IsNotScheduled" checked="@(Model.View.Filter.Contains("IsNotScheduled") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-scheduled" class="custom-control-label">Is not scheduled</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-initializing" name="filter" value="IsInitializing" checked="@(Model.View.Filter.Contains("IsInitializing") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-initializing" class="custom-control-label">Is initializing</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-not-initializing" name="filter" value="IsNotInitializing" checked="@(Model.View.Filter.Contains("IsNotInitializing") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-initializing" class="custom-control-label">Is not initializing</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="filter-is-ongoing" name="filter" value="IsOngoing" checked="@(Model.View.Filter.Contains("IsOngoing") ? "checked" : null)" class="custom-control-input" />
                             <label for="filter-is-ongoing" class="custom-control-label">Is ongoing</label>
                         </div>
                         <div class="custom-control custom-checkbox">
-                            <input type="checkbox" id="filter-is-scheduled-to-stop" name="filter" value="IsScheduledToStop" checked="@(Model.View.Filter.Contains("IsScheduledToStop") ? "checked" : null)" class="custom-control-input" />
-                            <label for="filter-is-scheduled-to-stop" class="custom-control-label">Is scheduled to stop</label>
+                            <input type="checkbox" id="filter-is-not-ongoing" name="filter" value="IsNotOngoing" checked="@(Model.View.Filter.Contains("IsNotOngoing") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-ongoing" class="custom-control-label">Is not ongoing</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-stopping" name="filter" value="IsStopping" checked="@(Model.View.Filter.Contains("IsStopping") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-stopping" class="custom-control-label">Is stopping</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-not-stopping" name="filter" value="IsNotStopping" checked="@(Model.View.Filter.Contains("IsNotStopping") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-stopping" class="custom-control-label">Is not stopping</label>
                         </div>
                         <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="filter-is-stopped" name="filter" value="IsStopped" checked="@(Model.View.Filter.Contains("IsStopped") ? "checked" : null)" class="custom-control-input" />
                             <label for="filter-is-stopped" class="custom-control-label">Is stopped</label>
                         </div>
                         <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-not-stopped" name="filter" value="IsNotStopped" checked="@(Model.View.Filter.Contains("IsNotStopped") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-stopped" class="custom-control-label">Is not stopped</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
                             <input type="checkbox" id="filter-is-completed" name="filter" value="IsCompleted" checked="@(Model.View.Filter.Contains("IsCompleted") ? "checked" : null)" class="custom-control-input" />
                             <label for="filter-is-completed" class="custom-control-label">Is completed</label>
+                        </div>
+                        <div class="custom-control custom-checkbox">
+                            <input type="checkbox" id="filter-is-not-completed" name="filter" value="IsNotCompleted" checked="@(Model.View.Filter.Contains("IsNotCompleted") ? "checked" : null)" class="custom-control-input" />
+                            <label for="filter-is-not-completed" class="custom-control-label">Is not completed</label>
                         </div>
                     </div>
                 </div>
@@ -200,20 +232,20 @@
                             <label for="sort-by-status" class="custom-control-label">Status</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-node-count" name="sortBy" value="NodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "NodeCount" ? "checked" : null)" />
-                            <label for="sort-by-node-count" class="custom-control-label">Number of nodes</label>
+                            <input type="radio" id="sort-by-number-of-nodes" name="sortBy" value="NumberOfNodes" class="custom-control-input" checked="@(Model.View.SortBy == "NumberOfNodes" ? "checked" : null)" />
+                            <label for="sort-by-number-of-nodes" class="custom-control-label">Number of nodes</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-target-node-count" name="sortBy" value="TargetNodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "TargetNodeCount" ? "checked" : null)" />
-                            <label for="sort-by-target-node-count" class="custom-control-label">Number of target nodes</label>
+                            <input type="radio" id="sort-by-number-of-edges" name="sortBy" value="NumberOfEdges" class="custom-control-input" checked="@(Model.View.SortBy == "NumberOfEdges" ? "checked" : null)" />
+                            <label for="sort-by-number-of-edges" class="custom-control-label">Number of edges</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-preferred-node-count" name="sortBy" value="PreferredNodeCount" class="custom-control-input" checked="@(Model.View.SortBy == "PreferredNodeCount" ? "checked" : null)" />
-                            <label for="sort-by-preferred-node-count" class="custom-control-label">Number of preferred nodes</label>
+                            <input type="radio" id="sort-by-number-of-target-nodes" name="sortBy" value="NumberOfTargetNodes" class="custom-control-input" checked="@(Model.View.SortBy == "NumberOfTargetNodes" ? "checked" : null)" />
+                            <label for="sort-by-number-of-target-nodes" class="custom-control-label">Number of target nodes</label>
                         </div>
                         <div class="custom-control custom-radio">
-                            <input type="radio" id="sort-by-edge-count" name="sortBy" value="EdgeCount" class="custom-control-input" checked="@(Model.View.SortBy == "EdgeCount" ? "checked" : null)" />
-                            <label for="sort-by-edge-count" class="custom-control-label">Number of edges</label>
+                            <input type="radio" id="sort-by-number-of-preferred-nodes" name="sortBy" value="NumberOfPreferredNodes" class="custom-control-input" checked="@(Model.View.SortBy == "NumberOfPreferredNodes" ? "checked" : null)" />
+                            <label for="sort-by-number-of-preferred-nodes" class="custom-control-label">Number of preferred nodes</label>
                         </div>
                         <div class="dropdown-divider"></div>
                         <label asp-for="View.SortDirection" class="dropdown-item-text font-weight-bold">Sort direction</label>
@@ -256,11 +288,11 @@
                 <span><i class="fas fa-info-circle"></i></span>
                 @if (!string.IsNullOrEmpty(Model.View.ClearFiltersUrl))
                 {
-                    <span>No algorithms have been found with the applied filters.</span>
+                    <span>No analyses have been found with the applied filters.</span>
                 }
                 else
                 {
-                    <span>No algorithms have been found in the database. <a asp-page="/Create" class="alert-link">Create a new one?</a></span>
+                    <span>No analyses have been found in the database. <a asp-page="/Create" class="alert-link">Create a new one?</a></span>
                 }
             </div>
         </div>

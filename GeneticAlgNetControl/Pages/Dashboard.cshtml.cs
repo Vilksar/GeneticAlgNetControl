@@ -96,18 +96,19 @@ namespace GeneticAlgNetControl.Pages
                     View.SearchIn.Contains("Id") && item.Id.Contains(View.SearchString) ||
                     View.SearchIn.Contains("Name") && item.Name.Contains(View.SearchString) ||
                     View.SearchIn.Contains("Nodes") && item.Nodes.Contains(View.SearchString) ||
+                    View.SearchIn.Contains("Edges") && item.Edges.Contains(View.SearchString) ||
                     View.SearchIn.Contains("TargetNodes") && item.TargetNodes.Contains(View.SearchString) ||
                     View.SearchIn.Contains("PreferredNodes") && item.PreferredNodes.Contains(View.SearchString));
             // Select the results matching the filter parameter.
             query = query
                 .Where(item => View.Filter.Contains("IsScheduled") ? item.Status == AnalysisStatus.Scheduled : true)
                 .Where(item => View.Filter.Contains("IsNotScheduled") ? item.Status != AnalysisStatus.Scheduled : true)
-                .Where(item => View.Filter.Contains("IsPreparingToStart") ? item.Status == AnalysisStatus.Initializing : true)
-                .Where(item => View.Filter.Contains("IsNotPreparingToStart") ? item.Status != AnalysisStatus.Initializing : true)
+                .Where(item => View.Filter.Contains("IsInitializing") ? item.Status == AnalysisStatus.Initializing : true)
+                .Where(item => View.Filter.Contains("IsNotInitializing") ? item.Status != AnalysisStatus.Initializing : true)
                 .Where(item => View.Filter.Contains("IsOngoing") ? item.Status == AnalysisStatus.Ongoing : true)
                 .Where(item => View.Filter.Contains("IsNotOngoing") ? item.Status != AnalysisStatus.Ongoing : true)
-                .Where(item => View.Filter.Contains("IsScheduledToStop") ? item.Status == AnalysisStatus.Stopping : true)
-                .Where(item => View.Filter.Contains("IsNotScheduledToStop") ? item.Status != AnalysisStatus.Stopping : true)
+                .Where(item => View.Filter.Contains("IsStopping") ? item.Status == AnalysisStatus.Stopping : true)
+                .Where(item => View.Filter.Contains("IsNotStopping") ? item.Status != AnalysisStatus.Stopping : true)
                 .Where(item => View.Filter.Contains("IsStopped") ? item.Status == AnalysisStatus.Stopped : true)
                 .Where(item => View.Filter.Contains("IsNotStopped") ? item.Status != AnalysisStatus.Stopped : true)
                 .Where(item => View.Filter.Contains("IsCompleted") ? item.Status == AnalysisStatus.Completed : true)
@@ -145,29 +146,29 @@ namespace GeneticAlgNetControl.Pages
                 case var sort when sort == ("Status", "Descending"):
                     query = query.OrderByDescending(item => item.Status);
                     break;
-                case var sort when sort == ("NodeCount", "Ascending"):
+                case var sort when sort == ("NumberOfNodes", "Ascending"):
                     query = query.OrderBy(item => item.NumberOfNodes);
                     break;
-                case var sort when sort == ("NodeCount", "Descending"):
+                case var sort when sort == ("NumberOfNodes", "Descending"):
                     query = query.OrderByDescending(item => item.NumberOfNodes);
                     break;
-                case var sort when sort == ("TargetNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.NumberOfTargetNodes);
-                    break;
-                case var sort when sort == ("TargetNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.NumberOfTargetNodes);
-                    break;
-                case var sort when sort == ("PreferredNodeCount", "Ascending"):
-                    query = query.OrderBy(item => item.NumberOfPreferredNodes);
-                    break;
-                case var sort when sort == ("PreferredNodeCount", "Descending"):
-                    query = query.OrderByDescending(item => item.NumberOfPreferredNodes);
-                    break;
-                case var sort when sort == ("EdgeCount", "Ascending"):
+                case var sort when sort == ("NumberOfEdges", "Ascending"):
                     query = query.OrderBy(item => item.NumberOfEdges);
                     break;
-                case var sort when sort == ("EdgeCount", "Descending"):
+                case var sort when sort == ("NumberOfEdges", "Descending"):
                     query = query.OrderByDescending(item => item.NumberOfEdges);
+                    break;
+                case var sort when sort == ("NumberOfTargetNodes", "Ascending"):
+                    query = query.OrderBy(item => item.NumberOfTargetNodes);
+                    break;
+                case var sort when sort == ("NumberOfTargetNodes", "Descending"):
+                    query = query.OrderByDescending(item => item.NumberOfTargetNodes);
+                    break;
+                case var sort when sort == ("NumberOfPreferredNodes", "Ascending"):
+                    query = query.OrderBy(item => item.NumberOfPreferredNodes);
+                    break;
+                case var sort when sort == ("NumberOfPreferredNodes", "Descending"):
+                    query = query.OrderByDescending(item => item.NumberOfPreferredNodes);
                     break;
                 default:
                     break;
