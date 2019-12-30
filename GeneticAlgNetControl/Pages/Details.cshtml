@@ -23,7 +23,7 @@
                                 <span><i class="fas fa-play"></i></span>
                             </a>
                         }
-                        @if (Model.View.Status == Data.Enumerations.AnalysisStatus.Ongoing)
+                        @if (Model.View.Status == Data.Enumerations.AnalysisStatus.Initializing || Model.View.Status == Data.Enumerations.AnalysisStatus.Ongoing)
                         {
                             <a asp-page="/Stop" asp-route-id="@Model.View.Id" class="nav-item nav-link mx-2" title="Stop">
                                 <span><i class="fas fa-stop"></i></span>

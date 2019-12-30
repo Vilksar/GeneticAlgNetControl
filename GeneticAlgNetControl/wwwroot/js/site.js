@@ -417,13 +417,11 @@ $(window).on('load', () => {
                 async: false,
                 dataType: 'json'
             }).responseJSON;
-            // Check if the item has ended.
-            if (json.statusTitle === 'Stopped' || json.statusTitle === 'Completed') {
+            // Check if the status has changed.
+            if (status === json.statusTitle) {
                 // Reload the page.
                 location.reload(true);
-            }
-            // Check if the status has changed.
-            if (status !== json.statusTitle) {
+            } else {
                 // Update the corresponding fields.
                 $(element).find('.item-details-status').attr('title', json.statusTitle);
                 $(element).find('.item-details-status').text(json.statusText);

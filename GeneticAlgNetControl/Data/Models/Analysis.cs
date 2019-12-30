@@ -290,7 +290,7 @@ namespace GeneticAlgNetControl.Data.Models
             var historicBestFitness = JsonSerializer.Deserialize<List<double>>(HistoricBestFitness);
             var historicAverageFitness = JsonSerializer.Deserialize<List<double>>(HistoricAverageFitness);
             // Check if the current population is empty.
-            if (!population.Chromosomes.Any())
+            if (currentIteration == 0 || !historicBestFitness.Any())
             {
                 // Log a message.
                 logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
@@ -345,6 +345,8 @@ namespace GeneticAlgNetControl.Data.Models
             }
             // Update the solutions, end time and the status.
             Population = JsonSerializer.Serialize(population);
+            HistoricBestFitness = JsonSerializer.Serialize(historicBestFitness);
+            HistoricAverageFitness = JsonSerializer.Serialize(historicAverageFitness);
             Solutions = JsonSerializer.Serialize(population.GetSolutions().Select(item => new Solution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)));
             Status = currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
             DateTimeEnded = DateTime.Now;

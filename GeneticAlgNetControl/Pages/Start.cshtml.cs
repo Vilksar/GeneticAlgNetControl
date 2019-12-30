@@ -132,7 +132,7 @@ namespace GeneticAlgNetControl.Pages
                 return Page();
             }
             // Display a message.
-            TempData["StatusMessage"] = $"Success: {itemCount.ToString()} item{(itemCount != 1 ? "s" : string.Empty)} have been successfully scheduled to start.";
+            TempData["StatusMessage"] = $"Success: {itemCount.ToString()} item{(itemCount != 1 ? "s have" : " has")} been successfully scheduled to start.";
             // Redirect to the index page.
             return RedirectToPage("/Dashboard");
         }
