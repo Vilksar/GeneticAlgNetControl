@@ -9,7 +9,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace GeneticAlgNetControl.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20191227111755_Initial")]
+    [Migration("20191230123747_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -41,6 +41,12 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("Edges")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("HistoricAverageFitness")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HistoricBestFitness")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
@@ -66,6 +72,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PreferredNodes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Solutions")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")

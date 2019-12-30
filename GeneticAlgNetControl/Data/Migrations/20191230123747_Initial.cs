@@ -28,7 +28,10 @@ namespace GeneticAlgNetControl.Data.Migrations
                     CurrentIteration = table.Column<int>(nullable: false),
                     CurrentIterationWithoutImprovement = table.Column<int>(nullable: false),
                     Parameters = table.Column<string>(nullable: true),
-                    Population = table.Column<string>(nullable: true)
+                    Population = table.Column<string>(nullable: true),
+                    HistoricBestFitness = table.Column<string>(nullable: true),
+                    HistoricAverageFitness = table.Column<string>(nullable: true),
+                    Solutions = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {

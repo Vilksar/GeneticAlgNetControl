@@ -53,6 +53,12 @@ namespace GeneticAlgNetControl.Pages
             public Parameters Parameters { get; set; }
 
             public Population Population { get; set; }
+
+            public List<double> HistoricBestFitness { get; set; }
+
+            public List<double> HistoricAverageFitness { get; set; }
+
+            public List<Solution> Solutions { get; set; }
         }
 
         public IActionResult OnGet(string id)
@@ -92,7 +98,10 @@ namespace GeneticAlgNetControl.Pages
                 TargetNodes = JsonSerializer.Deserialize<List<string>>(analysis.TargetNodes),
                 PreferredNodes = JsonSerializer.Deserialize<List<string>>(analysis.PreferredNodes),
                 Parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters),
-                Population = JsonSerializer.Deserialize<Population>(analysis.Population)
+                Population = JsonSerializer.Deserialize<Population>(analysis.Population),
+                HistoricBestFitness = JsonSerializer.Deserialize<List<double>>(analysis.HistoricBestFitness),
+                HistoricAverageFitness = JsonSerializer.Deserialize<List<double>>(analysis.HistoricAverageFitness),
+                Solutions = JsonSerializer.Deserialize<List<Solution>>(analysis.Solutions)
             };
             // Return the page.
             return Page();

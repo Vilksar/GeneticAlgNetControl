@@ -18,30 +18,12 @@ namespace GeneticAlgNetControl.Helpers.Models
         public List<Chromosome> Chromosomes { get; set; }
 
         /// <summary>
-        /// Represents the solutions of the current population.
-        /// </summary>
-        public List<Solution> Solutions { get; set; }
-
-        /// <summary>
-        /// Represents the list of best fitnesses over consequent populations.
-        /// </summary>
-        public List<double> HistoricBestFitness { get; set; }
-
-        /// <summary>
-        /// Represents the list of average fitnesses over consequent populations.
-        /// </summary>
-        public List<double> HistoricAverageFitness { get; set; }
-
-        /// <summary>
         /// Constructor for an empty population.
         /// </summary>
         public Population()
         {
             // Assign the default value for each property.
             Chromosomes = new List<Chromosome>();
-            Solutions = new List<Solution>();
-            HistoricBestFitness = new List<double>();
-            HistoricAverageFitness = new List<double>();
         }
 
         /// <summary>
@@ -102,11 +84,6 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
-            // Get the solutions.
-            Solutions = GetSolutions().Select(item => new Solution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)).ToList();
-            // Define the historic best and average fitness.
-            HistoricBestFitness = new List<double> { GetFitnessList().Max() };
-            HistoricAverageFitness = new List<double> { GetFitnessList().Average() };
         }
 
         /// <summary>
@@ -174,11 +151,6 @@ namespace GeneticAlgNetControl.Helpers.Models
             });
             // Add all chromosomes to the current population.
             Chromosomes.AddRange(bag);
-            // Get the solutions.
-            Solutions = GetSolutions().Select(item => new Solution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)).ToList();
-            // Get the historic best and average fitness.
-            HistoricBestFitness = previousPopulation.HistoricBestFitness.Append(GetFitnessList().Max()).ToList();
-            HistoricAverageFitness = previousPopulation.HistoricAverageFitness.Append(GetFitnessList().Average()).ToList();
         }
 
         /// <summary>

@@ -108,6 +108,21 @@ namespace GeneticAlgNetControl.Data.Models
         public string Population { get; set; }
 
         /// <summary>
+        /// Represents the list of best fitnesses over all of the populations, with an underlying format of List&lt;double&gt;.
+        /// </summary>
+        public string HistoricBestFitness { get; set; }
+
+        /// <summary>
+        /// Represents the list of average fitnesses over all of the populations, with an underlying format of List&lt;double&gt;.
+        /// </summary>
+        public string HistoricAverageFitness { get; set; }
+
+        /// <summary>
+        /// Represents the solutions of the analysis, with an underlying format of List&lt;Solution&gt;.
+        /// </summary>
+        public string Solutions { get; set; }
+
+        /// <summary>
         /// Initializes a new default instance of the class.
         /// </summary>
         public Analysis()
@@ -131,6 +146,9 @@ namespace GeneticAlgNetControl.Data.Models
             CurrentIterationWithoutImprovement = 0;
             Parameters = JsonSerializer.Serialize(new Parameters());
             Population = JsonSerializer.Serialize(new Population());
+            Solutions = JsonSerializer.Serialize(new List<Solution>());
+            HistoricBestFitness = JsonSerializer.Serialize(new List<double>());
+            HistoricAverageFitness = JsonSerializer.Serialize(new List<double>());
         }
 
         /// <summary>
@@ -163,6 +181,9 @@ namespace GeneticAlgNetControl.Data.Models
             CurrentIterationWithoutImprovement = 0;
             Parameters = JsonSerializer.Serialize(parameters);
             Population = JsonSerializer.Serialize(new Population());
+            Solutions = JsonSerializer.Serialize(new List<Solution>());
+            HistoricBestFitness = JsonSerializer.Serialize(new List<double>());
+            HistoricAverageFitness = JsonSerializer.Serialize(new List<double>());
         }
 
         /// <summary>
@@ -175,6 +196,9 @@ namespace GeneticAlgNetControl.Data.Models
             var dateTimePeriods = JsonSerializer.Deserialize<List<DateTimeInterval>>(DateTimeIntervals);
             var parameters = JsonSerializer.Deserialize<Parameters>(Parameters);
             var population = JsonSerializer.Deserialize<Population>(Population);
+            var historicBestFitness = JsonSerializer.Deserialize<List<double>>(HistoricBestFitness);
+            var historicAverageFitness = JsonSerializer.Deserialize<List<double>>(HistoricAverageFitness);
+            var solutions = JsonSerializer.Deserialize<List<Solution>>(Solutions);
             // Define the text to return.
             return JsonSerializer.Serialize(new
             {
@@ -196,11 +220,11 @@ namespace GeneticAlgNetControl.Data.Models
                 },
                 Solutions = new
                 {
-                    NumberOfSolutions = population.Solutions.Count(),
-                    Solutions = population.Solutions
+                    NumberOfSolutions = solutions.Count(),
+                    Solutions = solutions
                 },
-                HistoricAverageFitness = population.HistoricAverageFitness,
-                HistoricBestFitness = population.HistoricBestFitness
+                HistoricAverageFitness = historicAverageFitness,
+                HistoricBestFitness = historicBestFitness
             }, new JsonSerializerOptions { WriteIndented = true });
         }
 
@@ -263,6 +287,8 @@ namespace GeneticAlgNetControl.Data.Models
             var currentIteration = CurrentIteration;
             var currentIterationWithoutImprovement = CurrentIterationWithoutImprovement;
             var population = JsonSerializer.Deserialize<Population>(Population);
+            var historicBestFitness = JsonSerializer.Deserialize<List<double>>(HistoricBestFitness);
+            var historicAverageFitness = JsonSerializer.Deserialize<List<double>>(HistoricAverageFitness);
             // Check if the current population is empty.
             if (!population.Chromosomes.Any())
             {
@@ -270,11 +296,12 @@ namespace GeneticAlgNetControl.Data.Models
                 logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
                 // Initialize a new population.
                 population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
+                // Update the fitness lists.
+                historicBestFitness.Add(population.GetFitnessList().Max());
+                historicAverageFitness.Add(population.GetFitnessList().Average());
             }
-            // Get the best fitness so far.
-            var bestFitness = population.HistoricBestFitness.Max();
             // Log a message.
-            logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
+            logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
             // Move through the generations.
             while (!hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && this != null && Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
             {
@@ -292,17 +319,17 @@ namespace GeneticAlgNetControl.Data.Models
                 }
                 // Move on to the next population.
                 population = new Population(population, nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
-                // Get the best fitness of the current population.
-                var fitness = population.HistoricBestFitness.Last();
+                // Update the fitness lists.
+                historicBestFitness.Add(population.GetFitnessList().Max());
+                historicAverageFitness.Add(population.GetFitnessList().Average());
                 // Check if the current solution is better than the previous solution.
-                if (bestFitness < fitness)
+                if (historicBestFitness.SkipLast(1).Last() < historicBestFitness.Last())
                 {
                     // Update the fitness.
-                    bestFitness = fitness;
                     currentIterationWithoutImprovement = 0;
                 }
                 // Log a message.
-                logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{bestFitness}\t|\t{population.HistoricAverageFitness.Last()}");
+                logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
                 // Check if there is a context provided.
                 if (context != null)
                 {
@@ -318,6 +345,7 @@ namespace GeneticAlgNetControl.Data.Models
             }
             // Update the solutions, end time and the status.
             Population = JsonSerializer.Serialize(population);
+            Solutions = JsonSerializer.Serialize(population.GetSolutions().Select(item => new Solution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)));
             Status = currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
             DateTimeEnded = DateTime.Now;
             DateTimeIntervals = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimeInterval>>(DateTimeIntervals).SkipLast(1).Append(new DateTimeInterval(DateTimeStarted, DateTimeEnded)));
@@ -518,7 +546,7 @@ namespace GeneticAlgNetControl.Data.Models
         }
 
         /// <summary>
-        /// Computes, for every taret node, the list of nodes from which it can be reached.
+        /// Computes, for every target node, the list of nodes from which it can be reached.
         /// </summary>
         /// <param name="powersMatrixA">The list of powers of the adjacency matrix A.</param>
         /// <param name="targetNodes">The target nodes for the algorithm.</param>

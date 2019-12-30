@@ -39,6 +39,12 @@ namespace GeneticAlgNetControl.Data.Migrations
                     b.Property<string>("Edges")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("HistoricAverageFitness")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("HistoricBestFitness")
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("Name")
                         .HasColumnType("TEXT");
 
@@ -64,6 +70,9 @@ namespace GeneticAlgNetControl.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<string>("PreferredNodes")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Solutions")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("Status")

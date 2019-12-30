@@ -244,13 +244,13 @@
             </div>
         </div>
     </div>
-    @if (Model.View.Population.Chromosomes.Any())
+    @if (Model.View.Solutions.Any())
     {
         <div class="container my-2">
             <div class="card shadow-sm">
                 <div class="card-body">
                     <div class="chart-js-chart" data-chart-type="line">
-                        <span class="chart-js-data" hidden>@JsonSerializer.Serialize(new { AverageFitness = Model.View.Population.HistoricAverageFitness, BestFitness = Model.View.Population.HistoricBestFitness })</span>
+                        <span class="chart-js-data" hidden>@JsonSerializer.Serialize(new { AverageFitness = Model.View.HistoricAverageFitness, BestFitness = Model.View.HistoricBestFitness })</span>
                         <canvas class="chart-js-canvas"></canvas>
                     </div>
                 </div>
@@ -275,7 +275,7 @@
                         </thead>
                         <tbody>
                             @{ 
-                                var solution = Model.View.Population.Solutions.First();
+                                var solution = Model.View.Solutions.First();
                             }
                             @foreach (var controlNode in solution.UniqueControlNodes)
                             {
