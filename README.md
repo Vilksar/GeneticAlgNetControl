@@ -6,13 +6,13 @@ Welcome to the GeneticAlgNetControl repository! This is a C# / .Net Core applica
 
 ## Download
 
-You can download the application from the [releases page](https://github.com/vicbgdn/GeneticAlgNetControl/releases). You should choose the release corresponding to your operating system. No prerequisites are needed in order to run it, although specific rights (namely, the right to execute the application and the right to create files in the current working directory) might be needed.
+You can download the application (corresponding to your operating system) from the [releases page](https://github.com/vicbgdn/GeneticAlgNetControl/releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
 
-After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually set the application as executable.
+After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
 
 ## Usage
 
-Several launch options (such as CLI) require adding several arguments to the application executable. The easiest way to do this would be to launch the application from the OS' terminal (either CMD or Powershell for Windows, or Terminal for MacOS and Linux). In order to find out more about the usage and possible parameters to be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
+Some options (such as CLI) require adding several arguments when launching the application. The easiest way to achieve this would be to launch the application from the OS' terminal (either CMD or Powershell for Windows, or Terminal for MacOS and Linux). In order to find out more about the usage and possible parameters to be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
 
 ```
 --Mode "Help"
