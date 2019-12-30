@@ -6,79 +6,81 @@ Welcome to the GeneticAlgNetControl repository! This is a C# / .Net Core applica
 
 ## Download
 
-You can download the application as a single, runnable JAR file, from the [releases page](https://github.com/vicbgdn/GeneticAlgNetControl/releases). No prerequisites are needed in order to run it, although administrator rights (namely, rights to create files in the current working directory) might be needed. After downloading the ZIP archive for your operating system, simply unarchive it and it is ready to run, no installation being required.
+You can download the application from the [releases page](https://github.com/vicbgdn/GeneticAlgNetControl/releases). You should choose the release corresponding to your operating system. No prerequisites are needed in order to run it, although specific rights (namely, the right to execute the application and the right to create files in the current working directory) might be needed.
+
+After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually set the application as executable.
 
 ## Usage
 
-Several launch options (such as CLI) require adding several arguments to the application executable. The easiest way to do this would be to launch the application from the OS' terminal (either CMD or Powershell for Windows, or Terminal for MacOS and Linux).
+Several launch options (such as CLI) require adding several arguments to the application executable. The easiest way to do this would be to launch the application from the OS' terminal (either CMD or Powershell for Windows, or Terminal for MacOS and Linux). In order to find out more about the usage and possible parameters to be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
+
+```
+--Mode "Help"
+```
 
 ### Usage (GUI)
 
-To run the application via GUI, it is enough to launch the executable (either by double clicking on it, or launching it from the command line). You will get several information messages, notifying that a local web server was started on your computer, and your default browser will open to the home page of the application. Afterwards, it can be used just as any other website / web application (with the difference that everything runs locally, so no internet connection is needed). The application was tested on Chrome, but it should render and work nicely in any browser. Once the web browser is opened on the 
-
-If there exists another local server using `localhost` on the default ports `5000` and `5001`, the application may encounter an error and fail to start. You can configure the ports that it will use by launching it using the `--Urls` argument. For example, omitting this argument entirely is equivalent with launching the program using:
+To run the application via GUI, it is enough to double click the `GeneticAlgNetControl` file or launch it from the terminal either with no arguments (default), or with the `--Mode` argument set to `Web`, for example:
 
 ```
---Urls "http://localhost:5000;https://localhost:5001"
+--Mode "Web"
 ```
 
-Upon the first launch, your browser might issue an warning that the certificate of the website could not be verified, thus the connection might not be secure. Considering that everything happens locally (the web server is hosted on your computer, and the browsar connects locally to it), no certificate is actually needed, as no data gets transfered, and the warning can be safely ignored (by selecting the options "I understand the risks." or "I want to continue anyway.").
+Logging is enabled by default, so you will get several information messages throughout the execution of the application, firstly notifying that a local web server was started on your computer.
 
-To close the application, simply select it (and not the browser!) again and press `CTRL + C` (or `CMD + C` on MacOS). It is recommended to wait for it to gracefully shut down. If you close the application, you will lose all progress on currently running algorithms (although none of the other ones will be affected), but they will automatically start running again on the next application launch. This is the reason why it is recommended to stop beforehand all ongoing algorithms.
+Your default browser should open automatically to the home page of the application. If not, you should copy the local web server's address (by default, it is `http://localhost:5000`) and paste it into the address bar of your favorite browser. Afterwards, it can be used just as any other website / web application (with the difference that everything runs locally, so no internet connection is needed). The application was tested on Chrome, but it should render and work nicely in any browser.
+
+If there is another local server that uses `localhost` on the default ports `5000` and `5001`, the application may encounter an error and fail to start. You can configure the ports that it will use by launching it using the `--Urls` argument, for example (default):
+
+```
+--Mode "Web" --Urls "http://localhost:5000;https://localhost:5001"
+```
+
+Upon the first launch, if using the `https` protocol (thus, requesting a secure connection), your browser might issue an warning that the certificate of the website could not be verified, thus the connection might not be secure. Considering that everything happens locally (the web server is hosted on your computer, and the browsar connects locally to it), no certificate is actually needed, as no data gets transfered, and the warning can be safely ignored (by selecting the options similar to "I understand the risks." or "I want to continue anyway.").
+
+To close the application, you can navigate to the `Quit` page, or you can simply select the terminal where the application is running (and not the browser!) again and press `CTRL + C` (or `CMD + C` on MacOS). It is recommended to wait for it to gracefully shut down, as this will automatically stop and save the progress of all currently running analyses. If you forcefully close the application, you will lose all progress on the currently running analyses, however they will automatically restart on the next application launch.
 
 ### Usage (CLI)
 
-To run the application via CLI, you need to launch it using the `--UseCli` argument set to `true`, for example:
+To run the application via CLI, you need to launch it from the terminal with the `--Mode` argument set to `Cli`, for example:
 
 ```
---UseCli "true"
+--Mode "Cli"
 ```
 
-If you would like to know the possible and required arguments to run it using the CLI, you can also add the `--Help` argument.
+There are three mandatory arguments (omitting any of them will return an error) and two optional ones:
 
-```
---UseCli "true" --Help "true"
-```
-
-Either way, there are three arguments that always need to be specified (in addition to an optional one). Omitting any of the mandatory arguments will result into the application returning an error. The mandatory ones are `--Edges`, specifying the path to a file containing the network edges, `--Targets`, specifying the path to a file containing the list of target nodes, and `--Parameters`, specifying the path to a file containing the parameters to be used by the algorithm. The optional argument is `--Preferred`, specifying the path to a file containing a list of preferred nodes. Thus, a complete set of arguments for an algorithm run via the CLI could be:
-
-```
---UseCli "true" --Edges "path/to/edges/file.extension" --Targets "/path/to/targets/file.extension" --Parameters "/path/to/parameters/file.extension"
-```
-
-The required format of these files, as well as several more details about them are presented below.
-
-* The "**Edges**" file must containg ordered pairs of nodes, each on a separate line. The source and target node of an edge must be separated by a tab character. For example:
-
+* `--Edges`. Use this argument to specify the path to the file containing the edges of the network. Each edge should be on a new line, with its source and target nodes being separated by a semicolon character, for example:
+  
   ```
-  Node A    Node B
-  Node A    Node C
-  Node A    Node D
-  Node C    Node D
+  Node A;Node B
+  Node A;Node C
+  Node A;Node D
+  Node C;Node D
   ```
+  
+  If the file is in a different format, or no nodes or edges could be found, an error will be returned. The order of the nodes is important, as the network is directed. Thus, `Node A;Node B` is not the same as `Node B;Node A`, and they can both appear in the network. Any duplicate edges will be ignored. The set of nodes in the network will be automatically inferred from the set of edges. This argument is mandatory and does not have a default value.
 
-  If the file is in a different format, or no nodes or edges could be found, an error will be returned. The order of the nodes is important, as the network is directed. Thus, `Node A    Node B` is not the same as `Node B    Node A`, and they can both appear in a network. Any duplicate edges will be ignored. The set of nodes of the network will be automatically taken from the set of edges.
-
-* The "**Targets**" file must contain a list of nodes, each on a separate line. For example:
-
+* `--Targets`. Use this argument to specify the path to the file containing the target nodes of the network. Each node should be on a new line.
+  
   ```
   Node C
   Node D
   ```
+  
+  If the file is in a different format, or no nodes could be found in the network, an error will be returned. Only the nodes which already appear in the network will be considered. Any duplicate nodes will be ignored. This argument is mandatory and does not have a default value.
 
-  If the file is in a different format, or no nodes could be found in the network, an error will be returned. The node names should match the ones used when defining the edges. Additionally, any given target nodes that do not appear in the network will simply be ignored.
-
-* (*optional*) The "**Preferred**" file must contain a list of nodes, each on a separate line. For example:
-
+* `--Preferred`. Use this argument to specify the path to the file containing the preferred nodes of the network. Each node should be on a new line.
+  
   ```
   Node A
   Node C
   ```
+  
+  If the file is in a different format, or no nodes could be found in the network, an error will be returned. Only the nodes which already appear in the network will be considered. Any duplicate nodes will be ignored. This argument is optional and does not have a default value.
 
-  If the file is in a different format, an error will be returned. The node names should match the ones used when defining the edges. A node can be both a target node and a preferred node. Additionally, the given preferred nodes that do not appear in the network will simply be ignored.
-
-* The "**Parameters**" file must contain a JSON object, properly formatted. If any of the parameters are missing, then their default values will be used. Upon launching the application for the first time via the CLI with the argument `--Help "true"`, a new file, named `DefaultParameters.json`, will be created in the working directory. This file provides an editable model of the required type of parameters file and contains the default values of all parameters.
-
+* `--Parameters`. Use this argument to specify the path to the file containing the parameter values for the analysis. The file should be in JSON format, using the same model as the `DefaultParameters.json` file, which contains the default parameter values.
+  
   ```
   {
     "RandomSeed": -1,
@@ -94,19 +96,27 @@ The required format of these files, as well as several more details about them a
     "MutationType": 0
   }
   ```
-
-  The possible parameters, their meaning, as well as their restrictions, are presented below.
   
-  * **RandomSeed**. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is `-1`, then it will be randomly generated. Its default value is `-1`.
-  * **MaximumIterations**. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is `10000`.
-  * **MaximumIterationsWithoutImprovement**. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population. It must be a positive integer, and its default value is `1000`.
-  * **MaximumPathLength**. Represents the maximum number of interactions in a control path. It must be a positive integer, and its default value is `5`.
-  * **PopulationSize**. Represents the total number of chromosomes in a generation. It must be a positive integer greater than `1`, and its default value is `80`.
-  * **RandomGenesPerChromosome**. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is `15`.
-  * **PercentageElite**. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
-  * **PercentageRandom**. Represents the maximum percentage of randomly generated chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
-  * **ProbabilityMutation**. Represents the probability of mutation for a chromosome. It must be a real number in the `[0, 1]` interval, and its default value is `0.01`.
-  * **CrossoverType**. Represents the crossover algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
-  * **MutationType**. Represents the mutation algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
+  If the file is in a different format, an error will be returned. Additionally, if any of the parameters are missing, their default values will be used. The parameters are presented below.
+  
+  * `RandomSeed`. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is `-1`, then it will be randomly generated. Its default value is `-1`, which means that it will be randomly generated every time.
+  * `MaximumIterations`. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is `10000`.
+  * `MaximumIterationsWithoutImprovement`. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population. It must be a positive integer, and its default value is `1000`.
+  * `MaximumPathLength`. Represents the maximum number of interactions in a control path. It must be a positive integer, and its default value is `5`.
+  * `PopulationSize`. Represents the total number of chromosomes in a generation. It must be a positive integer greater than `1`, and its default value is `80`.
+  * `RandomGenesPerChromosome`. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is `15`.
+  * `PercentageElite`. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
+  * `PercentageRandom`. Represents the maximum percentage of randomly generated chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
+  * `ProbabilityMutation`. Represents the probability of mutation for a chromosome. It must be a real number in the `[0, 1]` interval, and its default value is `0.01`.
+  * `CrossoverType`. Represents the crossover algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
+  * `MutationType`. Represents the mutation algorithm to be used by the genetic algorithm. It must be an integer in the set `{0, 1, 2, 3}`, and its default value is `0`.
 
-If all the files have been successfully read and loaded, a confirmation message will appear in the console and the algorithm will start running, providing constant feedback on its progress. Upon completion, all of the solutions will be saved to a JSON file in the same location and with the same name as the file containing the edges.
+* `--Output`. Use this argument to specify the path to the output file where the solutions of the analysis will be written. Permission to write is needed for the corresponding folder. If a file with the same name already exists, it will be automatically overwritten. The default value is the name of the file containing the edges, followed by the current date and time.
+
+Thus, a complete set of arguments for an algorithm run via the CLI could be:
+
+```
+--Mode "Cli" --Edges "path/to/edges/file.extension" --Targets "/path/to/targets/file.extension" --Parameters "/path/to/parameters/file.extension"
+```
+
+If all the files have been successfully read and loaded, a confirmation message will be logged to the terminal and the algorithm will start running, providing constant feedback on its progress. Upon completion, all of the solutions will be written to the JSON file specified by the `--Output` argument.
