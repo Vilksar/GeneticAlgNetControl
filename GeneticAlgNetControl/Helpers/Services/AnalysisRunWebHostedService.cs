@@ -17,7 +17,7 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <summary>
         /// Represents the service scope factory.
         /// </summary>
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly ApplicationDbContext _context;
 
         /// <summary>
         /// Represents the logger.
@@ -35,9 +35,9 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <param name="serviceScopeFactory">Represents the service scope factory.</param>
         /// <param name="logger">Represents the logger.</param>
         /// <param name="hostApplicationLifetime">Represents the application lifetime.</param>
-        public AnalysisRunWebHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AnalysisRunWebHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        public AnalysisRunWebHostedService(ApplicationDbContext context, ILogger<AnalysisRunWebHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
-            _serviceScopeFactory = serviceScopeFactory;
+            _context = context;
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
@@ -49,23 +49,19 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <returns>A runnable task.</returns>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
-            // Use the current scope.
-            using var scope = _serviceScopeFactory.CreateScope();
-            // Get the application context.
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             // Go over each algorithm in the database that is ongoing at start.
-            foreach (var algorithm in context.Analyses.Where(item => item.Status == AnalysisStatus.Ongoing))
+            foreach (var algorithm in _context.Analyses.Where(item => item.Status == AnalysisStatus.Initializing || item.Status == AnalysisStatus.Ongoing || item.Status == AnalysisStatus.Stopping))
             {
                 // Update its status.
                 algorithm.Status = AnalysisStatus.Scheduled;
             }
             // Save the changes to the database.
-            await context.SaveChangesAsync();
+            await _context.SaveChangesAsync();
             // Repeat the task.
             while (!_hostApplicationLifetime.ApplicationStopping.IsCancellationRequested)
             {
                 // Get the first scheduled analysis in the database.
-                var analysis = context.Analyses.FirstOrDefault(item => item.Status == AnalysisStatus.Scheduled);
+                var analysis = _context.Analyses.FirstOrDefault(item => item.Status == AnalysisStatus.Scheduled);
                 // Check if there wasn't any analysis found.
                 if (analysis == null)
                 {
@@ -75,7 +71,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                     continue;
                 }
                 // Run the analysis.
-                await analysis.Run(_logger, _hostApplicationLifetime, context);
+                await analysis.Run(_logger, _hostApplicationLifetime, _context);
             }
             // Stop the application.
             _hostApplicationLifetime.StopApplication();
