@@ -259,7 +259,7 @@
         <div class="container my-2">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <table class="table table-light table-striped table-hover table-bordered">
+                    <table class="table table-light table-striped table-hover table-bordered table-datatable">
                         <thead class="thead-light">
                             <tr>
                                 <th>
@@ -269,12 +269,15 @@
                                     <span>Reachable target nodes</span>
                                 </th>
                                 <th>
+                                    <span>#</span>
+                                </th>
+                                <th data-sortable="false">
                                     <span></span>
                                 </th>
                             </tr>
                         </thead>
                         <tbody>
-                            @{ 
+                            @{
                                 var solution = Model.View.Solutions.First();
                             }
                             @foreach (var controlNode in solution.UniqueControlNodes)
@@ -287,6 +290,9 @@
                                     </td>
                                     <td>
                                         <span>@string.Join(", ", currentTargetNodes)</span>
+                                    </td>
+                                    <td>
+                                        <span>@currentTargetNodes.Count()</span>
                                     </td>
                                     <td>
                                         <div class="progress">
