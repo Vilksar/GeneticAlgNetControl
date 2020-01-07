@@ -4,10 +4,11 @@
 
 * [Introduction](#introduction)
 * [Download](#download)
+  * [Build](#build)
+  * [Release](#release)
 * [Usage](#usage)
-  * [Usage (GUI)](usage-gui)
-  * [Usage (CLI)](usage-cli)
-* [Build](build)
+  * [Usage (GUI)](#usage-gui)
+  * [Usage (CLI)](#usage-cli)
  
 ## Introduction
 
@@ -15,7 +16,17 @@ Welcome to the GeneticAlgNetControl repository! This is a C# / .Net Core applica
 
 ## Download
 
-You can download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
+You can either download the repository or the already compiled application.
+
+### Build
+
+You can download the repository to run or build the project yourself. You need to have [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) installed on your computer in order to run it, or the corresponding SDK in order to also be able to build it.
+
+The repository consists of a Visual Studio 2019 project.
+
+### Release
+
+You can directly download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
 
 After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
 
