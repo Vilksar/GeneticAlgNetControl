@@ -1,4 +1,13 @@
 # GeneticAlgNetControl
+
+## Table of contents
+
+* [Introduction](#introduction)
+* [Download](#download)
+* [Usage](#usage)
+  * [Usage (GUI)](usage-gui)
+  * [Usage (CLI)](usage-cli)
+* [Build](build)
  
 ## Introduction
 
@@ -6,7 +15,7 @@ Welcome to the GeneticAlgNetControl repository! This is a C# / .Net Core applica
 
 ## Download
 
-You can download the application (corresponding to your operating system) from the [releases page](https://github.com/vicbgdn/GeneticAlgNetControl/releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
+You can download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
 
 After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
 
