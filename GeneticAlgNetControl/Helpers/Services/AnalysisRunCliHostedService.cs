@@ -59,6 +59,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             var targetNodesFilepath = _configuration["Targets"];
             var preferredNodesFilepath = _configuration["Preferred"];
             var parametersFilepath = _configuration["Parameters"];
+            var outputFilepath = _configuration["Output"];
             // Check if we have a file containing the edges.
             if (string.IsNullOrEmpty(edgesFilepath))
             {
@@ -199,20 +200,29 @@ namespace GeneticAlgNetControl.Helpers.Services
                     return;
                 }
             }
-            // Try to read the parameters from the file.
-            try
+            // Check if there is an output filepath provided.
+            if (!string.IsNullOrEmpty(outputFilepath))
             {
-                // Read the parameters file content as a JSON object.
-                parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(parametersFilepath));
+                // Try to write to the output file.
+                try
+                {
+                    // Write to the specified output file.
+                    File.WriteAllText(outputFilepath, string.Empty);
+                }
+                catch (Exception ex)
+                {
+                    // Log an error.
+                    _logger.LogError($"The error \"{ex.Message}\" occured while trying to write to the output file \"{outputFilepath}\".");
+                    // Stop the application.
+                    _hostApplicationLifetime.StopApplication();
+                    // Return a successfully completed task.
+                    return;
+                }
             }
-            catch (Exception ex)
+            else
             {
-                // Log an error.
-                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
-                // Stop the application.
-                _hostApplicationLifetime.StopApplication();
-                // Return a successfully completed task.
-                return;
+                // Assign the default value to the output filepath.
+                outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
             }
             // Check if there weren't any edges found.
             if (!edges.Any())
@@ -289,8 +299,6 @@ namespace GeneticAlgNetControl.Helpers.Services
             var analysis = new Analysis(Path.GetFileNameWithoutExtension(edgesFilepath), edges, nodes, targetNodes, preferredNodes, parameters);
             // Run the analysis.
             await analysis.Run(_logger, _hostApplicationLifetime, null);
-            // Get the path of the output file.
-            var outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output{(preferredNodes.Any() ? "_Preferred" : string.Empty)}_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
             // Get the text to write to the file.
             var outputText = analysis.ToJson();
             // Try to write to the specified file.
