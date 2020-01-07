@@ -12,7 +12,9 @@
  
 ## Introduction
 
-Welcome to the GeneticAlgNetControl repository! This is a C# / .Net Core application which aims to solve the target network controllability problem using genetic algorithms. The application is cross-platform, working on all modern operating systems (Windows, MacOS, Linux) and can be run through a web-based GUI (graphical user interface), or via CLI (command-line interface).
+Welcome to the GeneticAlgNetControl repository!
+
+This is a C# / .Net Core application which aims to solve the target network controllability problem using genetic algorithms. The application is cross-platform, working on all modern operating systems (Windows, MacOS, Linux) and can be run through a web-based GUI (graphical user interface), or via CLI (command-line interface).
 
 ## Download
 
@@ -20,9 +22,7 @@ You can either download the repository or the already compiled application.
 
 ### Build
 
-You can download the repository to run or build the project yourself. You need to have [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) installed on your computer in order to run it, or the corresponding SDK in order to also be able to build it.
-
-The repository consists of a Visual Studio 2019 project.
+The repository consists of a Visual Studio 2019 project. You can download it to run or build the application yourself. You need to have [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) installed on your computer in order to run it, or the corresponding SDK in order to also be able to build it.
 
 ### Release
 
@@ -32,7 +32,7 @@ After downloading the ZIP archive, simply unarchive it and it is ready to run, n
 
 ## Usage
 
-Some options (such as CLI) require adding several arguments when launching the application. The easiest way to achieve this would be to launch the application from the OS' terminal (either CMD or Powershell for Windows, or Terminal for MacOS and Linux). In order to find out more about the usage and possible parameters to be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
+Some options (such as CLI) require adding several command-line arguments when launching the application. This can be achieved by launching the application from your operating system's terminal or console. In order to find out more about the usage and possible arguments which can be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
 
 ```
 --Mode "Help"
@@ -120,7 +120,7 @@ This mode has three mandatory arguments (omitting any of them will return an err
   * `RandomSeed`. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is `-1`, then it will be randomly generated. Its default value is `-1`, which means that it will be randomly generated every time.
   * `MaximumIterations`. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is `10000`.
   * `MaximumIterationsWithoutImprovement`. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population. It must be a positive integer, and its default value is `1000`.
-  * `MaximumPathLength`. Represents the maximum number of interactions in a control path. It must be a positive integer, and its default value is `5`.
+  * `MaximumPathLength`. Represents the maximum number of edges in a control path. It must be a positive integer, and its default value is `5`.
   * `PopulationSize`. Represents the total number of chromosomes in a generation. It must be a positive integer greater than `1`, and its default value is `80`.
   * `RandomGenesPerChromosome`. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is `15`.
   * `PercentageElite`. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
