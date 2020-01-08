@@ -20,9 +20,9 @@ namespace GeneticAlgNetControl
         public static void Main(string[] args)
         {
             // Get the current command-line arguments configuration.
-            var configuration = new ConfigurationBuilder().AddCommandLine(args).Build();
+            var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.json", true).AddCommandLine(args).Build();
             // Get the mode in which to run the application.
-            var mode = configuration["Mode"] ?? "Web";
+            var mode = configuration["Mode"];
             // Get the host to run based on the command-line arguments and build it.
             using var host = (mode == "Web" ? CreateWebHostBuilder(args) : mode == "Cli" ? CreateCliHostBuilder(args) : CreateDefaultHostBuilder(args)).Build();
             // Try to run the application host.
