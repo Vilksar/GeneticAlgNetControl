@@ -30,6 +30,5 @@ namespace GeneticAlgNetControl.Data.Enumerations
         /// </summary>
         [Display(Name = "Dominant preferred parent")]
         DominantWithPreference
-
     }
 }

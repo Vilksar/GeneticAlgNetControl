@@ -42,55 +42,57 @@ $(window).on('load', () => {
                         // Get the ID.
                         const id = $(element).find('.item-group-item-id').first().text();
                         // Retrieve the new data for the analysis with the mentioned ID.
-                        const json = $.ajax({
+                        const ajaxCall = $.ajax({
                             url: `${window.location.pathname}?handler=RefreshItem&id=${id}`,
-                            async: false,
-                            dataType: 'json'
-                        }).responseJSON;
-                        // Update the corresponding fields.
-                        $(element).find('.item-group-item-status').attr('title', json.statusTitle);
-                        $(element).find('.item-group-item-status').text(json.statusText);
-                        $(element).find('.item-group-item-time-span').attr('title', json.timeSpanTitle);
-                        $(element).find('.item-group-item-time-span').text(json.timeSpanText);
-                        $(element).find('.item-group-item-progress-iterations').attr('title', json.progressIterationsTitle);
-                        $(element).find('.item-group-item-progress-iterations').text(json.progressIterationsText);
-                        $(element).find('.item-group-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
-                        $(element).find('.item-group-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
-                        // Check if the status has been updated.
-                        if (status !== json.statusTitle) {
-                            // Check the new status.
-                            if (json.statusTitle === 'Scheduled') {
-                                // Hide and show the corresponding buttons.
-                                $(element).find('.item-group-item-button-start').addClass('d-none');
-                                $(element).find('.item-group-item-button-stop').addClass('d-none');
-                                $(element).find('.item-group-item-button-save').addClass('d-none');
-                                $(element).find('.item-group-item-button-delete').removeClass('d-none');
-                            } else if (json.statusTitle === 'Ongoing') {
-                                // Hide and show the corresponding buttons.
-                                $(element).find('.item-group-item-button-start').addClass('d-none');
-                                $(element).find('.item-group-item-button-stop').removeClass('d-none');
-                                $(element).find('.item-group-item-button-save').addClass('d-none');
-                                $(element).find('.item-group-item-button-delete').addClass('d-none');
-                            } else if (json.statusTitle === 'Stopping') {
-                                // Hide and show the corresponding buttons.
-                                $(element).find('.item-group-item-button-start').addClass('d-none');
-                                $(element).find('.item-group-item-button-stop').addClass('d-none');
-                                $(element).find('.item-group-item-button-save').addClass('d-none');
-                                $(element).find('.item-group-item-button-delete').addClass('d-none');
-                            } else if (json.statusTitle === 'Stopped') {
-                                // Hide and show the corresponding buttons.
-                                $(element).find('.item-group-item-button-start').removeClass('d-none');
-                                $(element).find('.item-group-item-button-stop').addClass('d-none');
-                                $(element).find('.item-group-item-button-save').removeClass('d-none');
-                                $(element).find('.item-group-item-button-delete').removeClass('d-none');
-                            } else if (json.statusTitle === 'Completed') {
-                                // Hide and show the corresponding buttons.
-                                $(element).find('.item-group-item-button-start').addClass('d-none');
-                                $(element).find('.item-group-item-button-stop').addClass('d-none');
-                                $(element).find('.item-group-item-button-save').removeClass('d-none');
-                                $(element).find('.item-group-item-button-delete').removeClass('d-none');
-                            }
-                        }
+                            dataType: 'json',
+                            success: (json) => {
+                                // Update the corresponding fields.
+                                $(element).find('.item-group-item-status').attr('title', json.statusTitle);
+                                $(element).find('.item-group-item-status').text(json.statusText);
+                                $(element).find('.item-group-item-time-span').attr('title', json.timeSpanTitle);
+                                $(element).find('.item-group-item-time-span').text(json.timeSpanText);
+                                $(element).find('.item-group-item-progress-iterations').attr('title', json.progressIterationsTitle);
+                                $(element).find('.item-group-item-progress-iterations').text(json.progressIterationsText);
+                                $(element).find('.item-group-item-progress-iterations-without-improvement').attr('title', json.progressIterationsWithoutImprovementTitle);
+                                $(element).find('.item-group-item-progress-iterations-without-improvement').text(json.progressIterationsWithoutImprovementText);
+                                // Check if the status has been updated.
+                                if (status !== json.statusTitle) {
+                                    // Check the new status.
+                                    if (json.statusTitle === 'Scheduled') {
+                                        // Hide and show the corresponding buttons.
+                                        $(element).find('.item-group-item-button-start').addClass('d-none');
+                                        $(element).find('.item-group-item-button-stop').addClass('d-none');
+                                        $(element).find('.item-group-item-button-save').addClass('d-none');
+                                        $(element).find('.item-group-item-button-delete').removeClass('d-none');
+                                    } else if (json.statusTitle === 'Ongoing') {
+                                        // Hide and show the corresponding buttons.
+                                        $(element).find('.item-group-item-button-start').addClass('d-none');
+                                        $(element).find('.item-group-item-button-stop').removeClass('d-none');
+                                        $(element).find('.item-group-item-button-save').addClass('d-none');
+                                        $(element).find('.item-group-item-button-delete').addClass('d-none');
+                                    } else if (json.statusTitle === 'Stopping') {
+                                        // Hide and show the corresponding buttons.
+                                        $(element).find('.item-group-item-button-start').addClass('d-none');
+                                        $(element).find('.item-group-item-button-stop').addClass('d-none');
+                                        $(element).find('.item-group-item-button-save').addClass('d-none');
+                                        $(element).find('.item-group-item-button-delete').addClass('d-none');
+                                    } else if (json.statusTitle === 'Stopped') {
+                                        // Hide and show the corresponding buttons.
+                                        $(element).find('.item-group-item-button-start').removeClass('d-none');
+                                        $(element).find('.item-group-item-button-stop').addClass('d-none');
+                                        $(element).find('.item-group-item-button-save').removeClass('d-none');
+                                        $(element).find('.item-group-item-button-delete').removeClass('d-none');
+                                    } else if (json.statusTitle === 'Completed') {
+                                        // Hide and show the corresponding buttons.
+                                        $(element).find('.item-group-item-button-start').addClass('d-none');
+                                        $(element).find('.item-group-item-button-stop').addClass('d-none');
+                                        $(element).find('.item-group-item-button-save').removeClass('d-none');
+                                        $(element).find('.item-group-item-button-delete').removeClass('d-none');
+                                    }
+                                }
+                            },
+                            error: () => { }
+                        });
                     });
                 }
             };
@@ -102,13 +104,15 @@ $(window).on('load', () => {
                     // Get the current statistic name.
                     const statisticName = $(element).find('.item-group-statistic-name').first().text();
                     // Retrieve the new data for the statistic with the mentioned name.
-                    const json = $.ajax({
+                    const ajaxCall = $.ajax({
                         url: `${window.location.pathname}?handler=RefreshStatistic&statisticName=${statisticName}`,
-                        async: false,
-                        dataType: 'json'
-                    }).responseJSON;
-                    // Update the corresponding field.
-                    $(element).find('.item-group-statistic-count').text(json.statisticCount);
+                        dataType: 'json',
+                        success: (json) => {
+                            // Update the corresponding field.
+                            $(element).find('.item-group-statistic-count').text(json.statisticCount);
+                        },
+                        error: () => { }
+                    });
                 });
             };
 
@@ -412,56 +416,29 @@ $(window).on('load', () => {
             // Get the current status of the item.
             const status = $(element).find('.item-details-status').first().attr('title');
             // Retrieve the new data for the item with the mentioned ID.
-            const json = $.ajax({
+            const ajaxCall = $.ajax({
                 url: `${window.location.pathname}?handler=Refresh&id=${id}`,
-                async: false,
-                dataType: 'json'
-            }).responseJSON;
-            // Check if the status has changed.
-            if (status === json.statusTitle) {
-                // Reload the page.
-                location.reload(true);
-            } else {
-                // Update the corresponding fields.
-                $(element).find('.item-details-status').attr('title', json.statusTitle);
-                $(element).find('.item-details-status').text(json.statusText);
-                $(element).find('.item-details-status-icon').attr('title', json.statusText);
-                // Remove all classes from the icon.
-                $(element).find('.item-details-status-icon').removeClass('text-warning text-dark text-primary text-secondary');
-                $(element).find('.item-details-status-icon svg').removeClass('fa-clock fa-stopwatch fa-spinner fa-spin fa-pause-circle');
-                // Add the corresponding classes to the icon.
-                switch (json.statusTitle) {
-                    case 'Scheduled':
-                        $(element).find('.item-details-status-icon').addClass('text-warning');
-                        $(element).find('.item-details-status-icon svg').addClass('fa-clock');
-                        break;
-                    case 'Initializing':
-                        $(element).find('.item-details-status-icon').addClass('text-dark');
-                        $(element).find('.item-details-status-icon svg').addClass('fa-stopwatch');
-                        break;
-                    case 'Ongoing':
-                        $(element).find('.item-details-status-icon').addClass('text-primary');
-                        $(element).find('.item-details-status-icon svg').addClass('fa-spinner fa-spin');
-                        break;
-                    case 'Stopping':
-                        $(element).find('.item-details-status-icon').addClass('text-secondary');
-                        $(element).find('.item-details-status-icon svg').addClass('fa-pause-circle');
-                        break;
-                    default:
-                        break;
-                }
-            }
-            // Update the fields.
-            $(element).find('.item-details-current-iteration').attr('title', json.currentIterationTitle);
-            $(element).find('.item-details-current-iteration').text(json.currentIterationText);
-            $(element).find('.item-details-current-iteration-without-improvement').attr('title', json.currentIterationWithoutImprovementTitle);
-            $(element).find('.item-details-current-iteration-without-improvement').text(json.currentIterationWithoutImprovementText);
-            $(element).find('.item-details-date-time-started').attr('title', json.dateTimeStartedTitle);
-            $(element).find('.item-details-date-time-started').text(json.dateTimeStartedText);
-            $(element).find('.item-details-time-span').attr('title', json.timeSpanTitle);
-            $(element).find('.item-details-time-span').text(json.timeSpanText);
-            $(element).find('.item-details-date-time-ended').attr('title', json.dateTimeEndedTitle);
-            $(element).find('.item-details-date-time-ended').text(json.dateTimeEndedText);
+                dataType: 'json',
+                success: (json) => {
+                    // Check if the status has changed.
+                    if (status !== json.statusTitle) {
+                        // Reload the page.
+                        location.reload(true);
+                    }
+                    // Update the fields.
+                    $(element).find('.item-details-current-iteration').attr('title', json.currentIterationTitle);
+                    $(element).find('.item-details-current-iteration').text(json.currentIterationText);
+                    $(element).find('.item-details-current-iteration-without-improvement').attr('title', json.currentIterationWithoutImprovementTitle);
+                    $(element).find('.item-details-current-iteration-without-improvement').text(json.currentIterationWithoutImprovementText);
+                    $(element).find('.item-details-date-time-started').attr('title', json.dateTimeStartedTitle);
+                    $(element).find('.item-details-date-time-started').text(json.dateTimeStartedText);
+                    $(element).find('.item-details-time-span').attr('title', json.timeSpanTitle);
+                    $(element).find('.item-details-time-span').text(json.timeSpanText);
+                    $(element).find('.item-details-date-time-ended').attr('title', json.dateTimeEndedTitle);
+                    $(element).find('.item-details-date-time-ended').text(json.dateTimeEndedText);
+                },
+                error: () => { }
+            });
         };
 
         // Define a function to style a table on the page with DataTables.
