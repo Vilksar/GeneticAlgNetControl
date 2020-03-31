@@ -14,7 +14,7 @@
 
 Welcome to the GeneticAlgNetControl repository!
 
-This is a C# / .Net Core application which aims to solve the target network controllability problem using genetic algorithms. The application is cross-platform, working on all modern operating systems (Windows, MacOS, Linux) and can be run through a web-based GUI (graphical user interface), or via CLI (command-line interface).
+This is a C# / .Net Core application which aims to solve the target network controllability problem using genetic algorithms. The application is cross-platform, working on all modern operating systems (Windows, MacOS, Linux), and can be run through a web-based GUI (graphical user interface), or via CLI (command-line interface).
 
 ## Download
 
@@ -22,13 +22,13 @@ You can either download the repository or the already compiled application.
 
 ### Build
 
-The repository consists of a Visual Studio 2019 project. You can download it to run or build the application yourself. You need to have [.NET Core 3.0](https://dotnet.microsoft.com/download/dotnet-core/3.0) installed on your computer in order to run it, or the corresponding SDK in order to also be able to build it.
+The repository consists of a Visual Studio 2019 project. You can download it to run or build the application yourself. You need to have [.NET Core 3.1](https://dotnet.microsoft.com/download/dotnet-core/3.1) installed on your computer in order to run it, or the corresponding SDK in order to also be able to build it.
 
 ### Release
 
-You can directly download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be needed.
+You can directly download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be required.
 
-After downloading the ZIP archive, simply unarchive it and it is ready to run, no installation being required. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
+After downloading the ZIP archive, simply unarchive it and it is ready to run, without any installation. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
 
 ## Usage
 
@@ -54,7 +54,7 @@ Logging is enabled by default, so you will get several information messages thro
 
 Your default browser should open automatically to the home page of the application. If not, you should copy the local web server's address and paste it into the address bar of your favorite browser. Afterwards, it can be used just as any other website / web application (with the difference that everything runs locally, so no internet connection is needed). The application was tested on Chrome, but it should render and work nicely in any browser.
 
-If the `https` protocol is used (thus, requesting a secure connection), your browser might issue a warning that the certificate of the website could not be verified, thus the connection might not be secure. Considering that everything happens locally (the web server is hosted on your computer, and the browsar connects locally to it), no certificate is actually needed, as no data gets transfered, and the warning can be safely ignored (by selecting the options similar to "I understand the risks." or "I want to continue anyway.").
+If the `https` protocol is used (thus, requesting a secure connection), your browser might issue a warning that the certificate of the website could not be verified, thus the connection might not be secure. Considering that everything happens locally (the web server is hosted on your computer, and the browser connects locally to it), no certificate is actually needed, as no data gets transfered, and the warning can be safely ignored (by selecting the options similar to "I understand the risks." or "I want to continue anyway.").
 
 To close the application, you can navigate to the `Quit` page, or you can simply select the terminal where the application is running (and not the browser!) again and press `CTRL + C` (or `CMD + C` on MacOS). It is recommended to wait for it to gracefully shut down, as this will automatically stop and save the progress of all currently running analyses. If you forcefully close the application, you will lose all progress on the currently running analyses, however they will automatically restart on the next application launch.
 
