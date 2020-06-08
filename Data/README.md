@@ -5,6 +5,7 @@
 * [Introduction](#introduction)
 * [Input](#input)
 * [Output](#output)
+* [Cytoscape](#cytoscape)
 
 ## Introduction
 
@@ -16,9 +17,9 @@ Breast DEF, Ovarian DEF, Pancreatic DEF, SIGNOR BrOvPa DEF | [Link](https://doi.
 Breast HCC1428, MDA-MB-361, Ovarian O1946, OVCA8, Pancreatic AsPC-1, KP-3 | [Link](https://doi.org/10.1093/nar/gkr959)
 Social Interaction 1, 3 | [Link](https://doi.org/10.1126/science.1089167)
 Electronic Circuit 208, 420, 838 | [Link](https://doi.org/10.1126/science.298.5594.824)
-Random Erdos-Renyi 100, 500, 1000, 1500, 2000, 2500, 300 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html).
-Random Scale Free 100, 500, 1000, 1500, 2000, 2500, 300 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.directed.scale_free_graph.html?highlight=scale_free#networkx.generators.directed.scale_free_graph).
-Random Small World 100, 500, 1000, 1500, 2000, 2500, 300 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.watts_strogatz_graph.html?highlight=watts_st#networkx.generators.random_graphs.watts_strogatz_graph).
+Random Erdos-Renyi 100, 500, 1000, 1500, 2000, 2500, 3000 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.fast_gnp_random_graph.html)
+Random Scale Free 100, 500, 1000, 1500, 2000, 2500, 3000 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.directed.scale_free_graph.html?highlight=scale_free#networkx.generators.directed.scale_free_graph)
+Random Small World 100, 500, 1000, 1500, 2000, 2500, 3000 | [Link](https://networkx.github.io/documentation/stable/reference/generated/networkx.generators.random_graphs.watts_strogatz_graph.html?highlight=watts_st#networkx.generators.random_graphs.watts_strogatz_graph)
 
 ## Input
 
@@ -26,6 +27,10 @@ The ``Input`` directory contains examples of input data that can be read by the 
 
 ## Output
 
-The ``Output`` directory contains the results obtained after running the application once on each of the networks in the ``Input`` directory. Each output consists of a JSON file named ``Network_Name_Output``. In addition, the application has been run once more for all the protein-protein interaction networks while using the additional preferred nodes. The files named ``Network_Name_Output_Preffered`` contain these results.
+The ``Output`` directory contains the results obtained after running the application once on each of the networks in the ``Input`` directory. Each output consists of a JSON file named ``Network_Name_Output``. In addition, the application has been run once more for all the protein-protein interaction networks while using the additional preferred nodes. The files named ``Network_Name_Preferred_Output`` contain these results.
 
 Given the stochastic nature of the algorithm, the results obtained after each run of the application might vary. Each file represents only one possible output.
+
+## Cytoscape
+
+The ``Cytoscape`` directory contains the networks in the ``Input`` directory as ``cyjs`` files that can be directly imported and used in Cytoscape (either the [desktop application](https://cytoscape.org/), or the [JavaScript library](https://js.cytoscape.org/)). The already-compiled network collections for the desktop application are also included, together with a styling file.
