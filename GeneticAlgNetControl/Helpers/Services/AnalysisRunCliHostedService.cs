@@ -200,6 +200,21 @@ namespace GeneticAlgNetControl.Helpers.Services
                     return;
                 }
             }
+            // Try to read the parameters from the file.
+            try
+            {
+                // Read and parse the parameters from the file.
+                parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(parametersFilepath));
+            }
+            catch (Exception ex)
+            {
+                // Log an error.
+                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
+                // Return a successfully completed task.
+                return;
+            }
             // Check if there is an output filepath provided.
             if (!string.IsNullOrEmpty(outputFilepath))
             {
