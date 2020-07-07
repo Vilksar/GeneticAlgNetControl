@@ -9,6 +9,7 @@
 * [Usage](#usage)
   * [Usage (GUI)](#usage-gui)
   * [Usage (CLI)](#usage-cli)
+* [Examples](#examples)
  
 ## Introduction
 
@@ -28,11 +29,15 @@ The repository consists of a Visual Studio 2019 project. You can download it to 
 
 You can directly download the application (corresponding to your operating system) from the [releases page](../../releases). No prerequisites are needed in order to run it, although permission to execute the application and permission to create files might be required.
 
-After downloading the ZIP archive, simply unarchive it and it is ready to run, without any installation. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable.
+After downloading the ZIP archive, simply unarchive it and it is ready to run, without any installation. Please note that on MacOS and Linux it might be needed to manually mark the file `GeneticAlgNetControl` as executable. One way to achieve that can be to navigate to the unarchived directory and execute the following command in the terminal.
+
+```
+chmod 755 GeneticAlgNetControl
+```
 
 ## Usage
 
-Some options (such as CLI) require adding several command-line arguments when launching the application. This can be achieved by launching the application from your operating system's terminal or console. In order to find out more about the usage and possible arguments which can be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
+Some options (such as CLI) require adding several command-line arguments when launching the application. This can be achieved by launching the application from your operating system's terminal or console. You can view several examples of launch commands in the [examples](#examples) section. In order to find out more about the usage and possible arguments which can be used, you can launch the application with the `--Mode` argument set to `Help`, for example:
 
 ```
 --Mode "Help"
@@ -134,3 +139,26 @@ This mode has three mandatory arguments (omitting any of them will return an err
 * `--Output`. (optional) Use this argument to specify the path to the output file where the solutions of the analysis will be written. Permission to write is needed for the corresponding folder. If a file with the same name already exists, it will be automatically overwritten. The default value is the name of the file containing the edges, followed by the current date and time.
 
 If all the files have been successfully read and loaded, a confirmation message will be logged to the terminal and the algorithm will start running, providing constant feedback on its progress. Upon completion, all of the solutions will be written to the JSON file specified by the `--Output` argument.
+
+## Examples
+
+These are a few examples of possible command-line parameters for running the application.
+
+* ```
+  ./GeneticAlgNetControl --Mode "Help"
+  ```
+* ```
+  ./GeneticAlgNetControl
+  ```
+  ```
+  ./GeneticAlgNetControl --Mode "Web"
+  ```
+  ```
+  ./GeneticAlgNetControl --Mode "Web" --Urls "http://localhost:5000"
+  ```
+* ```
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Parameters "DefaultParameters.json"
+  ```
+  ```
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Preferred "path/to/file.extension" --Parameters "path/to/file.extension"
+  ```
