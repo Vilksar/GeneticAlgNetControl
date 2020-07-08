@@ -6,7 +6,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 using System.Diagnostics;
+using System.IO;
 
 namespace GeneticAlgNetControl
 {
@@ -41,7 +43,7 @@ namespace GeneticAlgNetControl
             // Add the database context and connection.
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection"));
+                options.UseSqlite(Configuration.GetConnectionString("SQLiteConnection").Replace("{ApplicationDirectory}", AppDomain.CurrentDomain.BaseDirectory));
             });
             // Add the algorithm run service.
             services.AddHostedService<AnalysisRunWebHostedService>();

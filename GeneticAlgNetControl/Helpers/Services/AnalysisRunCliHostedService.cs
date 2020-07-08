@@ -91,7 +91,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return;
             }
             // Get the current directory.
-            var currentDirectory = AppDomain.CurrentDomain.BaseDirectory;
+            var currentDirectory = Directory.GetCurrentDirectory();
             // Check if the file containing the edges exists.
             if (!File.Exists(edgesFilepath))
             {

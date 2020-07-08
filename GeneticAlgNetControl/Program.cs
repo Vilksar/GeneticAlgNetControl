@@ -45,6 +45,7 @@ namespace GeneticAlgNetControl
         {
             // Return a host with the given parameters.
             return Host.CreateDefaultBuilder(args)
+                .UseContentRoot(AppDomain.CurrentDomain.BaseDirectory)
                 .ConfigureLogging(logging =>
                 {
                     logging.SetMinimumLevel(LogLevel.Information);
