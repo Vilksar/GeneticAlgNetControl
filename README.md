@@ -145,29 +145,39 @@ If all the files have been successfully read and loaded, a confirmation message 
 These are a few examples of possible command-line parameters for running the application.
 
 * Help
+  
   ```
   ./GeneticAlgNetControl --Mode "Help"
   ```
+  
 * GUI
+  
   ```
   ./GeneticAlgNetControl
   ```
+  
   ```
   ./GeneticAlgNetControl --Mode "Web"
   ```
+  
   ```
   ./GeneticAlgNetControl --Mode "Web" --Urls "http://localhost:5000"
   ```
+  
 * CLI
-  ```
-  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Parameters "path/to/file.extension"
-  ```
-  ```
-  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Preferred "path/to/file.extension" --Parameters "path/to/file.extension"
-  ```
+  
   ```
   ./GeneticAlgNetControl --Mode "Cli" --Edges "samples/Social_Interaction_3.txt" --Targets "samples/Social_Interaction_3_Target.txt" --Parameters "DefaultParameters.json"
   ```
+  
   ```
   ./GeneticAlgNetControl --Mode "Cli" --Edges "samples/Breast_MDA-MB-361.txt" --Targets "samples/Breast_MDA-MB-361_Target.txt" --Preferred "samples/Breast_MDA-MB-361_Preferred.txt" --Parameters "DefaultParameters.json"
+  ```
+  
+  ```
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Parameters "path/to/file.extension"
+  ```
+  
+  ```
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "path/to/file.extension" --Targets "path/to/file.extension" --Preferred "path/to/file.extension" --Parameters "path/to/file.extension"
   ```
