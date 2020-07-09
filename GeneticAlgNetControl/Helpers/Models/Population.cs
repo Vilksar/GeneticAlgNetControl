@@ -233,7 +233,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             foreach (var chromosome in Chromosomes.Where(item => item.GetFitness() == bestFitness))
             {
                 // Check if the current combination already exists in the list of solutions.
-                if (!solutions.Any(item => new HashSet<string>(item.GetUniqueControlNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueControlNodes()))))
+                if (!solutions.Any(item => new HashSet<string>(item.GetUniqueInputNodes()).SetEquals(new HashSet<string>(chromosome.GetUniqueInputNodes()))))
                 {
                     // If not, then add it.
                     solutions.Add(chromosome);

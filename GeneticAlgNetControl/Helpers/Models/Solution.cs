@@ -20,29 +20,29 @@ namespace GeneticAlgNetControl.Helpers.Models
         public int MaximumControlPathLength { get; set; }
 
         /// <summary>
-        /// Represents the number of unique control nodes of the corresponding chromosome.
+        /// Represents the number of unique input nodes of the corresponding chromosome.
         /// </summary>
-        public int NumberOfUniqueControlNodes { get; set; }
+        public int NumberOfUniqueInputNodes { get; set; }
 
         /// <summary>
-        /// Represents the number of unique preferred nodes of the corresponding chromosome.
+        /// Represents the number of unique preferred input nodes of the corresponding chromosome.
         /// </summary>
-        public int NumberOfUniquePreferredControlNodes { get; set; }
+        public int NumberOfUniquePreferredInputNodes { get; set; }
 
         /// <summary>
-        /// Represents the number of target nodes controlled by the preferred control nodes.
+        /// Represents the number of target nodes controlled by the preferred input nodes.
         /// </summary>
-        public int NumberOfTargetNodesControlledByPreferredControlNodes { get; set; }
+        public int NumberOfTargetNodesControlledByPreferredInputNodes { get; set; }
 
         /// <summary>
-        /// Represents the unique control nodes of the corresponding chromosome.
+        /// Represents the unique input nodes of the corresponding chromosome.
         /// </summary>
-        public IEnumerable<string> UniqueControlNodes { get; set; }
+        public IEnumerable<string> UniqueInputNodes { get; set; }
 
         /// <summary>
-        /// Represents the unique preferred control nodes of the corresponding chromosome.
+        /// Represents the unique preferred input nodes of the corresponding chromosome.
         /// </summary>
-        public IEnumerable<string> UniquePreferredControlNodes { get; set; }
+        public IEnumerable<string> UniquePreferredInputNodes { get; set; }
 
         /// <summary>
         /// Represents the actual gene mapping of the corresponding chromosome.
@@ -57,11 +57,11 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Assign the default value for each property.
             Fitness = 0.0;
             MaximumControlPathLength = -1;
-            NumberOfUniqueControlNodes = 0;
-            NumberOfUniquePreferredControlNodes = 0;
-            NumberOfTargetNodesControlledByPreferredControlNodes = 0;
-            UniqueControlNodes = Enumerable.Empty<string>();
-            UniquePreferredControlNodes = Enumerable.Empty<string>();
+            NumberOfUniqueInputNodes = 0;
+            NumberOfUniquePreferredInputNodes = 0;
+            NumberOfTargetNodesControlledByPreferredInputNodes = 0;
+            UniqueInputNodes = Enumerable.Empty<string>();
+            UniquePreferredInputNodes = Enumerable.Empty<string>();
             Genes = new Dictionary<string, string>();
         }
 
@@ -78,11 +78,11 @@ namespace GeneticAlgNetControl.Helpers.Models
             Genes = chromosome.Genes;
             Fitness = chromosome.GetFitness();
             MaximumControlPathLength = chromosome.GetMaximumPathLength(nodeIndex, powersMatrixCA);
-            UniqueControlNodes = chromosome.GetUniqueControlNodes();
-            NumberOfTargetNodesControlledByPreferredControlNodes = chromosome.GetNumberOfTargetsControlledByPreferred(nodeIndex, nodeIsPreferred, powersMatrixCA);
-            UniquePreferredControlNodes = UniqueControlNodes.Where(item => nodeIsPreferred[item]);
-            NumberOfUniqueControlNodes = UniqueControlNodes.Count();
-            NumberOfUniquePreferredControlNodes = UniquePreferredControlNodes.Count();
+            UniqueInputNodes = chromosome.GetUniqueInputNodes();
+            NumberOfTargetNodesControlledByPreferredInputNodes = chromosome.GetNumberOfTargetsControlledByPreferredInputNodes(nodeIndex, nodeIsPreferred, powersMatrixCA);
+            UniquePreferredInputNodes = UniqueInputNodes.Where(item => nodeIsPreferred[item]);
+            NumberOfUniqueInputNodes = UniqueInputNodes.Count();
+            NumberOfUniquePreferredInputNodes = UniquePreferredInputNodes.Count();
         }
     }
 }

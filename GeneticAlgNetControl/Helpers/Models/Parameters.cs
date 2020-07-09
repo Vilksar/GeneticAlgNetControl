@@ -145,22 +145,22 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// <summary>
             /// Represents the default value for the maximum number of iteration for which the algorithm to run.
             /// </summary>
-            public static int MaximumIterations { get; } = 10000;
+            public static int MaximumIterations { get; } = 100;
 
             /// <summary>
             /// Represents the default value for the maximum number of iterations without improvement for which the algorithm to run.
             /// </summary>
-            public static int MaximumIterationsWithoutImprovement { get; } = 1000;
+            public static int MaximumIterationsWithoutImprovement { get; } = 25;
 
             /// <summary>
             /// Represents the default value for the maximum path length to be used in the algorithm.
             /// </summary>
-            public static int MaximumPathLength { get; } = 15;
+            public static int MaximumPathLength { get; } = 5;
 
             /// <summary>
             /// Represents the default value for the number of chromosomes in each population.
             /// </summary>
-            public static int PopulationSize { get; } = 80;
+            public static int PopulationSize { get; } = 20;
 
             /// <summary>
             /// Represents the default value for the maximum number of genes whose value can be simultaneously randomly generated.

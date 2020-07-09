@@ -66,10 +66,10 @@ namespace GeneticAlgNetControl.Helpers.Models
         }
 
         /// <summary>
-        /// Computes and gets the unique control nodes in the chromosome.
+        /// Computes and gets the unique input nodes in the chromosome.
         /// </summary>
-        /// <returns>The unique control nodes in the chromosome.</returns>
-        public IEnumerable<string> GetUniqueControlNodes()
+        /// <returns>The unique input nodes in the chromosome.</returns>
+        public IEnumerable<string> GetUniqueInputNodes()
         {
             // Return the unique control nodes.
             return Genes.Values.Distinct();
@@ -82,7 +82,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         public double GetFitness()
         {
             // Return the fitness of the chromosome.
-            return (double)(Genes.Count() - GetUniqueControlNodes().Count() + 1) * 100 / (double)Genes.Count();
+            return (double)(Genes.Count() - GetUniqueInputNodes().Count() + 1) * 100 / (double)Genes.Count();
         }
 
         /// <summary>
@@ -96,14 +96,14 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Define the variable to return.
             var isFullRank = false;
             // Get the unique control nodes.
-            var uniqueControlNodes = GetUniqueControlNodes().ToList();
+            var uniqueInputNodes = GetUniqueInputNodes().ToList();
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueInputNodes.Count());
             // Go over each control node.
-            for (int index = 0; index < uniqueControlNodes.Count(); index++)
+            for (int index = 0; index < uniqueInputNodes.Count(); index++)
             {
                 // Update the corresponding field.
-                matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
+                matrixB[nodeIndex[uniqueInputNodes[index]], index] = 1.0;
             }
             // Initialize the R matrix.
             var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
@@ -136,14 +136,14 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Define the variable to return.
             var maximumPathLength = -1;
             // Get the unique control nodes.
-            var uniqueControlNodes = GetUniqueControlNodes().ToList();
+            var uniqueInputNodes = GetUniqueInputNodes().ToList();
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueControlNodes.Count());
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniqueInputNodes.Count());
             // Go over each control node.
-            for (int index = 0; index < uniqueControlNodes.Count(); index++)
+            for (int index = 0; index < uniqueInputNodes.Count(); index++)
             {
                 // Update the corresponding field.
-                matrixB[nodeIndex[uniqueControlNodes[index]], index] = 1.0;
+                matrixB[nodeIndex[uniqueInputNodes[index]], index] = 1.0;
             }
             // Initialize the R matrix.
             var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
@@ -174,23 +174,23 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="nodeIsPreferred">The dictionary containing, for each node, if it is in the preferred node list.</param>
         /// <param name="powersMatrixCA">The list containing the different powers of the matrix (CA, CA^2, CA^3, ... ).</param>
         /// <returns>The number of target nodes that can be controlled only by the preferred nodes in the solution.</returns>
-        public int GetNumberOfTargetsControlledByPreferred(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
+        public int GetNumberOfTargetsControlledByPreferredInputNodes(Dictionary<string, int> nodeIndex, Dictionary<string, bool> nodeIsPreferred, List<Matrix<double>> powersMatrixCA)
         {
-            // Get the unique preferred nodes.
-            var uniquePreferredNodes = GetUniqueControlNodes().Where(item => nodeIsPreferred[item]).ToList();
+            // Get the unique preferred input nodes.
+            var uniquePreferredInputNodes = GetUniqueInputNodes().Where(item => nodeIsPreferred[item]).ToList();
             // Check if there aren't any preferred nodes.
-            if (!uniquePreferredNodes.Any())
+            if (!uniquePreferredInputNodes.Any())
             {
                 // Return zero.
                 return 0;
             }
             // Initialize the B matrix.
-            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniquePreferredNodes.Count());
+            var matrixB = Matrix<double>.Build.Dense(nodeIndex.Count(), uniquePreferredInputNodes.Count());
             // Go over each control node.
-            for (int index = 0; index < uniquePreferredNodes.Count(); index++)
+            for (int index = 0; index < uniquePreferredInputNodes.Count(); index++)
             {
                 // Update the corresponding field.
-                matrixB[nodeIndex[uniquePreferredNodes[index]], index] = 1.0;
+                matrixB[nodeIndex[uniquePreferredInputNodes[index]], index] = 1.0;
             }
             // Initialize the R matrix.
             var matrixR = Matrix<double>.Build.DenseOfMatrix(powersMatrixCA[0]).Multiply(matrixB);
@@ -282,8 +282,8 @@ namespace GeneticAlgNetControl.Helpers.Models
             // Define the number of tries in which to try and find a valid chromosome.
             var tries = _tries;
             // Get the number of occurances of each gene in this chromosome and which genes of each are preferred.
-            var occurrences = GetUniqueControlNodes()
-                .Concat(secondChromosome.GetUniqueControlNodes())
+            var occurrences = GetUniqueInputNodes()
+                .Concat(secondChromosome.GetUniqueInputNodes())
                 .Distinct()
                 .ToDictionary(item => item, item => Genes.Count(item1 => item1.Value == item) + secondChromosome.Genes.Count(item1 => item1.Value == item));
             // Use the specified crossover type.
