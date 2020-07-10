@@ -17,7 +17,7 @@ namespace GeneticAlgNetControl.Data.Enumerations
         /// Represents the default crossover algorithm that is twice more likely to choose preferred nodes.
         /// </summary>
         [Display(Name = "Weighted random preferred parent")]
-        WeightedRandomWithPreference,
+        WeightedRandomPreferred,
 
         /// <summary>
         /// Represents the default crossover algorithm that always chooses the dominant gene.
@@ -29,6 +29,6 @@ namespace GeneticAlgNetControl.Data.Enumerations
         /// Represents the default crossover algorithm that always chooses preferred nodes whenever possible.
         /// </summary>
         [Display(Name = "Dominant preferred parent")]
-        DominantWithPreference
+        DominantPreferred
     }
 }

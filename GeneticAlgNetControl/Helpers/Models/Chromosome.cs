@@ -315,7 +315,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a standard crossover with preference.
-                case AnalysisCrossoverType.WeightedRandomWithPreference:
+                case AnalysisCrossoverType.WeightedRandomPreferred:
                     // Repeat while the chromosome is not valid.
                     while (tries > 0)
                     {
@@ -384,7 +384,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a default crossover with preference.
-                case AnalysisCrossoverType.DominantWithPreference:
+                case AnalysisCrossoverType.DominantPreferred:
                     // Repeat while the chromosome is not valid.
                     while (tries > 0)
                     {
@@ -465,7 +465,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             switch (mutationType)
             {
                 // If we have a standard mutation.
-                case AnalysisMutationType.WeightedRandomAncestor:
+                case AnalysisMutationType.WeightedRandom:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
                     {
@@ -507,7 +507,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a stadard mutation with preference.
-                case AnalysisMutationType.WeightedRandomAncestorWithPreference:
+                case AnalysisMutationType.WeightedRandomPreferred:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
                     {
@@ -549,7 +549,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a default mutation.
-                case AnalysisMutationType.RandomAncestor:
+                case AnalysisMutationType.Random:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
                     {
@@ -583,7 +583,7 @@ namespace GeneticAlgNetControl.Helpers.Models
                     // End the switch statement.
                     break;
                 // If we have a default mutation with preference.
-                case AnalysisMutationType.RandomAncestorWithPreference:
+                case AnalysisMutationType.RandomPreferred:
                     // Repeat while the chromosome is not valid.
                     while (genesMutateDictionary.Any())
                     {

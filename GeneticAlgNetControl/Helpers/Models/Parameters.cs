@@ -190,7 +190,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// <summary>
             /// Represents the default value for the mutation algorithm to be used.
             /// </summary>
-            public static AnalysisMutationType MutationType { get; } = AnalysisMutationType.WeightedRandomAncestor;
+            public static AnalysisMutationType MutationType { get; } = AnalysisMutationType.WeightedRandom;
         }
     }
 }
