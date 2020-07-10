@@ -49,6 +49,8 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <returns>A runnable task.</returns>
         protected override async Task ExecuteAsync(CancellationToken cancellationToken)
         {
+            // Wait for 10 seconds for the web server to start.
+            await Task.Delay(10000);
             // Use the current scope.
             using var scope = _serviceScopeFactory.CreateScope();
             // Get the application context.
