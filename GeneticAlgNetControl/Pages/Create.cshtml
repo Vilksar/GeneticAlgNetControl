@@ -251,7 +251,7 @@
                             <input asp-for="Input.MaximumRunningTime" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.MaximumRunningTime" />
                         </div>
                         <div class="col-lg-4 order-3 order-lg-3 mb-3">
-                            <span asp-description-for="Input.MaximumRunningTime" class="text-muted small">The maximum number of seconds for which the algorithm will run. A value of zero will disable this feature.</span>
+                            <span asp-description-for="Input.MaximumRunningTime" class="text-muted small">The maximum number of seconds for which the algorithm will run.</span>
                             <span asp-validation-for="Input.MaximumRunningTime" class="text-danger small"></span>
                         </div>
                     </div>
@@ -283,7 +283,7 @@
                             <input asp-for="Input.RandomGenesPerChromosome" class="form-control parameter-group-parameter" data-defaultValue="@Helpers.Models.Parameters.DefaultValues.RandomGenesPerChromosome" />
                         </div>
                         <div class="col-lg-4 order-3 order-lg-3 mb-3">
-                            <span asp-description-for="Input.RandomGenesPerChromosome" class="text-muted small">The maximum number of genes in a randomly generated chromosome that will have a randomly generated value. All of the other genes will have a default value.</span>
+                            <span asp-description-for="Input.RandomGenesPerChromosome" class="text-muted small">The maximum number of genes in a randomly generated chromosome that will have a randomly generated value.</span>
                             <span asp-validation-for="Input.RandomGenesPerChromosome" class="text-danger small"></span>
                         </div>
                     </div>

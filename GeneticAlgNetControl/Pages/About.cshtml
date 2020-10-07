@@ -89,7 +89,7 @@
                         <span>Use this section of the form to specify the values for the analysis paramters. By default, all of the corresponding fields have their default values automatically filled in. The parameters are presented below.</span>
                         <ul class="mb-0">
                             <li class="">
-                                <span><code>RandomSeed</code>. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is <code>-1</code>, then it will be randomly generated. Its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomSeed</code>, which means that it will be randomly generated every time.</span>
+                                <span><code>RandomSeed</code>. Represents the random seed for the current algorithm run. A value of <code>-1</code> will generate a random value for the seed. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomSeed</code>.</span>
                             </li>
                             <li class="">
                                 <span><code>MaximumIterations</code>. Represents the maximum number of generations for which the algorithm will run. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumIterations</code>.</span>
@@ -98,7 +98,7 @@
                                 <span><code>MaximumIterationsWithoutImprovement</code>. Represents the maximum number of generations without an improvement in the fitness of the best chromosome in the population for which the algorithm will run. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumIterationsWithoutImprovement</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>MaximumRunningTime</code>. Represents the maximum number of seconds for which the algorithm will run. A value of zero will disable this feature. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumRunningTime</code>.</span>
+                                <span><code>MaximumRunningTime</code>. Represents the maximum number of seconds for which the algorithm will run. A value of <code>0</code> will not restrict the running time. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumRunningTime</code>.</span>
                             </li>
                             <li class="">
                                 <span><code>MaximumPathLength</code>. Represents the maximum number of edges in a control path. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumPathLength</code>.</span>
@@ -107,7 +107,7 @@
                                 <span><code>PopulationSize</code>. Represents the total number of chromosomes in a generation. It must be a positive integer greater than <code>1</code>, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.PopulationSize</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>RandomGenesPerChromosome</code>. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomGenesPerChromosome</code>.</span>
+                                <span><code>RandomGenesPerChromosome</code>. Represents the maximum number of randomly generated genes in a chromosome. All of the other genes will have their corresponding default value. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomGenesPerChromosome</code>.</span>
                             </li>
                             <li class="">
                                 <span><code>PercentageElite</code>. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.PercentageElite</code>.</span>
