@@ -42,6 +42,8 @@ namespace GeneticAlgNetControl.Pages
 
             public int CurrentIterationWithoutImprovement { get; set; }
 
+            public int CurrentRunningTime { get; set; }
+
             public List<string> Nodes { get; set; }
 
             public List<Edge> Edges { get; set; }
@@ -103,6 +105,8 @@ namespace GeneticAlgNetControl.Pages
                 HistoricAverageFitness = JsonSerializer.Deserialize<List<double>>(analysis.HistoricAverageFitness),
                 Solutions = JsonSerializer.Deserialize<List<Solution>>(analysis.Solutions)
             };
+            // Update the running time.
+            View.CurrentRunningTime = (int)Math.Truncate(View.DateTimeSpan.TotalSeconds);
             // Return the page.
             return Page();
         }
@@ -117,42 +121,52 @@ namespace GeneticAlgNetControl.Pages
                 // Return an empty JSON object.
                 return new JsonResult(new
                 {
-                    StatusTitle = string.Empty,
-                    StatusText = string.Empty,
-                    CurrentIterationTitle = string.Empty,
-                    CurrentIterationText = string.Empty,
-                    CurrentIterationWithoutImprovementTitle = string.Empty,
-                    CurrentIterationWithoutImprovementText = string.Empty,
-                    TimeSpanTitle = string.Empty,
-                    TimeSpanText = string.Empty
+                    StatusTitle = "The details of the analysis could not be retrieved.",
+                    StatusText = "-",
+                    DateTimeStartedTitle = "The details of the analysis could not be retrieved.",
+                    DateTimeStartedText = "--:--:-- --",
+                    TimeSpanTitle = "The details of the analysis could not be retrieved.",
+                    TimeSpanText = "--:--:--:--",
+                    DateTimeEndedTitle = "The details of the analysis could not be retrieved.",
+                    DateTimeEndedText = "--:--:-- --",
+                    CurrentIterationTitle = "The details of the analysis could not be retrieved.",
+                    CurrentIterationText = "- / -",
+                    CurrentIterationWithoutImprovementTitle = "The details of the analysis could not be retrieved.",
+                    CurrentIterationWithoutImprovementText = "- / -",
+                    CurrentRunningTimeTitle = "The details of the analysis could not be retrieved.",
+                    CurrentRunningTimeText = "- / -"
                 });
             }
             // Get the parameters.
             var parameters = JsonSerializer.Deserialize<Parameters>(analysis.Parameters);
             // Get the required values.
             var status = analysis.Status;
-            var currentIteration = analysis.CurrentIteration;
-            var currentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement;
-            var maximumIterations = parameters.MaximumIterations;
-            var maximumIterationsWithoutImprovement = parameters.MaximumIterationsWithoutImprovement;
             var dateTimeStarted = analysis.DateTimeStarted;
             var timeSpan = JsonSerializer.Deserialize<List<DateTimeInterval>>(analysis.DateTimeIntervals).Select(item => (item.DateTimeEnded ?? DateTime.Now) - (item.DateTimeStarted ?? DateTime.Now)).Aggregate(TimeSpan.Zero, (sum, value) => sum + value);
             var dateTimeEnded = analysis.DateTimeEnded;
+            var currentIteration = analysis.CurrentIteration;
+            var maximumIterations = parameters.MaximumIterations;
+            var currentIterationWithoutImprovement = analysis.CurrentIterationWithoutImprovement;
+            var maximumIterationsWithoutImprovement = parameters.MaximumIterationsWithoutImprovement;
+            var currentRunningTime = (int)Math.Truncate(timeSpan.TotalSeconds);
+            var maximumRunningTime = parameters.MaximumRunningTime;
             // Return a new JSON object.
             return new JsonResult(new
             {
                 StatusTitle = status.ToString(),
                 StatusText = status.ToString(),
-                CurrentIterationTitle = $"{currentIteration} / {maximumIterations}",
-                CurrentIterationText = $"{currentIteration} / {maximumIterations}",
-                CurrentIterationWithoutImprovementTitle = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
-                CurrentIterationWithoutImprovementText = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
                 DateTimeStartedTitle = dateTimeStarted != null ? dateTimeStarted.Value.ToString() : "Not started yet.",
                 DateTimeStartedText = dateTimeStarted != null ? dateTimeStarted.Value.ToLongTimeString() : "--:--:-- --",
                 TimeSpanTitle = timeSpan.ToString(),
                 TimeSpanText = timeSpan.ToString("dd\\:hh\\:mm\\:ss"),
                 DateTimeEndedTitle = dateTimeEnded != null ? dateTimeEnded.Value.ToString() : "Not ended yet.",
-                DateTimeEndedText = dateTimeEnded != null ? dateTimeEnded.Value.ToLongTimeString() : "--:--:-- --"
+                DateTimeEndedText = dateTimeEnded != null ? dateTimeEnded.Value.ToLongTimeString() : "--:--:-- --",
+                CurrentIterationTitle = $"{currentIteration} / {maximumIterations}",
+                CurrentIterationText = $"{currentIteration} / {maximumIterations}",
+                CurrentIterationWithoutImprovementTitle = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
+                CurrentIterationWithoutImprovementText = $"{currentIterationWithoutImprovement} / {maximumIterationsWithoutImprovement}",
+                CurrentRunningTimeTitle = $"{currentRunningTime} / {maximumRunningTime}",
+                CurrentRunningTimeText = $"{currentRunningTime} / {maximumRunningTime}"
             });
         }
     }

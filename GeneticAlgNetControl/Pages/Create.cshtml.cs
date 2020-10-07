@@ -59,6 +59,10 @@ namespace GeneticAlgNetControl.Pages
             public int MaximumIterationsWithoutImprovement { get; set; } = Parameters.DefaultValues.MaximumIterationsWithoutImprovement;
 
             [Required(ErrorMessage = "This field is required.")]
+            [Range(0, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
+            public int MaximumRunningTime { get; set; } = Parameters.DefaultValues.MaximumRunningTime;
+
+            [Required(ErrorMessage = "This field is required.")]
             [Range(1, int.MaxValue, ErrorMessage = "The value must be between {1} and {2}.")]
             public int MaximumPathLength { get; set; } = Parameters.DefaultValues.MaximumPathLength;
 
@@ -141,6 +145,7 @@ namespace GeneticAlgNetControl.Pages
                 RandomSeed = parameters.RandomSeed,
                 MaximumIterations = parameters.MaximumIterations,
                 MaximumIterationsWithoutImprovement = parameters.MaximumIterationsWithoutImprovement,
+                MaximumRunningTime = parameters.MaximumRunningTime,
                 MaximumPathLength = parameters.MaximumPathLength,
                 PopulationSize = parameters.PopulationSize,
                 RandomGenesPerChromosome = parameters.RandomGenesPerChromosome,
@@ -199,6 +204,7 @@ namespace GeneticAlgNetControl.Pages
                 RandomSeed = Input.RandomSeed,
                 MaximumIterations = Input.MaximumIterations,
                 MaximumIterationsWithoutImprovement = Input.MaximumIterationsWithoutImprovement,
+                MaximumRunningTime = Input.MaximumRunningTime,
                 MaximumPathLength = Input.MaximumPathLength,
                 PopulationSize = Input.PopulationSize,
                 RandomGenesPerChromosome = Input.RandomGenesPerChromosome <= targetNodes.Count() ? Input.RandomGenesPerChromosome : targetNodes.Count(),

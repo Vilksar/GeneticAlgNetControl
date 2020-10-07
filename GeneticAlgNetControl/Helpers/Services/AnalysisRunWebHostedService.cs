@@ -3,6 +3,7 @@ using GeneticAlgNetControl.Data.Enumerations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -15,9 +16,9 @@ namespace GeneticAlgNetControl.Helpers.Services
     public class AnalysisRunWebHostedService : BackgroundService
     {
         /// <summary>
-        /// Represents the service scope factory.
+        /// Represents the service provider.
         /// </summary>
-        private readonly IServiceScopeFactory _serviceScopeFactory;
+        private readonly IServiceProvider _serviceProvider;
 
         /// <summary>
         /// Represents the logger.
@@ -35,9 +36,9 @@ namespace GeneticAlgNetControl.Helpers.Services
         /// <param name="serviceScopeFactory">Represents the service scope factory.</param>
         /// <param name="logger">Represents the logger.</param>
         /// <param name="hostApplicationLifetime">Represents the application lifetime.</param>
-        public AnalysisRunWebHostedService(IServiceScopeFactory serviceScopeFactory, ILogger<AnalysisRunWebHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
+        public AnalysisRunWebHostedService(IServiceProvider serviceProvider, ILogger<AnalysisRunWebHostedService> logger, IHostApplicationLifetime hostApplicationLifetime)
         {
-            _serviceScopeFactory = serviceScopeFactory;
+            _serviceProvider = serviceProvider;
             _logger = logger;
             _hostApplicationLifetime = hostApplicationLifetime;
         }
@@ -51,10 +52,10 @@ namespace GeneticAlgNetControl.Helpers.Services
         {
             // Wait for 10 seconds for the web server to start.
             await Task.Delay(10000);
-            // Use the current scope.
-            using var scope = _serviceScopeFactory.CreateScope();
-            // Get the application context.
-            var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            // Create a new scope.
+            using var scope = _serviceProvider.CreateScope();
+            // Use a new context instance.
+            using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
             // Go over each algorithm in the database that is ongoing at start.
             foreach (var algorithm in context.Analyses.Where(item => item.Status == AnalysisStatus.Initializing || item.Status == AnalysisStatus.Ongoing || item.Status == AnalysisStatus.Stopping))
             {

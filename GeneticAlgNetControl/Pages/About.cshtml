@@ -89,37 +89,40 @@
                         <span>Use this section of the form to specify the values for the analysis paramters. By default, all of the corresponding fields have their default values automatically filled in. The parameters are presented below.</span>
                         <ul class="mb-0">
                             <li class="">
-                                <span><code>RandomSeed</code>. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is <code>-1</code>, then it will be randomly generated. Its default value is <code>-1</code>, which means that it will be randomly generated every time.</span>
+                                <span><code>RandomSeed</code>. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is <code>-1</code>, then it will be randomly generated. Its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomSeed</code>, which means that it will be randomly generated every time.</span>
                             </li>
                             <li class="">
-                                <span><code>MaximumIterations</code>. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is <code>10000</code>.</span>
+                                <span><code>MaximumIterations</code>. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumIterations</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>MaximumIterationsWithoutImprovement</code>. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population. It must be a positive integer, and its default value is <code>1000</code>.</span>
+                                <span><code>MaximumIterationsWithoutImprovement</code>. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population for which the algorithm will run. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumIterationsWithoutImprovement</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>MaximumPathLength</code>. Represents the maximum number of edges in a control path. It must be a positive integer, and its default value is <code>5</code>.</span>
+                                <span><code>MaximumRunningTime</code>. Represents the total number of seconds for which the algorithm will run. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumRunningTime</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>PopulationSize</code>. Represents the total number of chromosomes in a generation. It must be a positive integer greater than <code>1</code>, and its default value is <code>80</code>.</span>
+                                <span><code>MaximumPathLength</code>. Represents the maximum number of edges in a control path. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.MaximumPathLength</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>RandomGenesPerChromosome</code>. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is <code>15</code>.</span>
+                                <span><code>PopulationSize</code>. Represents the total number of chromosomes in a generation. It must be a positive integer greater than <code>1</code>, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.PopulationSize</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>PercentageElite</code>. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>0.25</code>.</span>
+                                <span><code>RandomGenesPerChromosome</code>. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.RandomGenesPerChromosome</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>PercentageRandom</code>. Represents the maximum percentage of randomly generated chromosomes in a generation. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>0.25</code>.</span>
+                                <span><code>PercentageElite</code>. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.PercentageElite</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>ProbabilityMutation</code>. Represents the probability of mutation for a chromosome. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>0.01</code>.</span>
+                                <span><code>PercentageRandom</code>. Represents the maximum percentage of randomly generated chromosomes in a generation. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.PercentageRandom</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>CrossoverType</code>. Represents the crossover algorithm to be used by the genetic algorithm. It must be an integer in the set <code>{0, 1, 2, 3}</code>, and its default value is <code>0</code>.</span>
+                                <span><code>ProbabilityMutation</code>. Represents the probability of mutation for a chromosome. It must be a real number in the <code>[0, 1]</code> interval, and its default value is <code>@Helpers.Models.Parameters.DefaultValues.ProbabilityMutation</code>.</span>
                             </li>
                             <li class="">
-                                <span><code>MutationType</code>. Represents the mutation algorithm to be used by the genetic algorithm. It must be an integer in the set <code>{0, 1, 2, 3}</code>, and its default value is <code>0</code>.</span>
+                                <span><code>CrossoverType</code>. Represents the crossover algorithm to be used by the genetic algorithm. It must be an integer in the set <code>{0, 1, 2, 3}</code>, and its default value is <code>@((int)Helpers.Models.Parameters.DefaultValues.CrossoverType)</code>.</span>
+                            </li>
+                            <li class="">
+                                <span><code>MutationType</code>. Represents the mutation algorithm to be used by the genetic algorithm. It must be an integer in the set <code>{0, 1, 2, 3}</code>, and its default value is <code>@((int)Helpers.Models.Parameters.DefaultValues.MutationType)</code>.</span>
                             </li>
                         </ul>
                     </li>

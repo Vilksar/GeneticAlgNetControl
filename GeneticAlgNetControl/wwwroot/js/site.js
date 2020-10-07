@@ -430,6 +430,8 @@ $(window).on('load', () => {
                     $(element).find('.item-details-current-iteration').text(json.currentIterationText);
                     $(element).find('.item-details-current-iteration-without-improvement').attr('title', json.currentIterationWithoutImprovementTitle);
                     $(element).find('.item-details-current-iteration-without-improvement').text(json.currentIterationWithoutImprovementText);
+                    $(element).find('.item-details-current-running-time').attr('title', json.currentRunningTimeTitle);
+                    $(element).find('.item-details-current-running-time').text(json.currentRunningTimeText);
                     $(element).find('.item-details-date-time-started').attr('title', json.dateTimeStartedTitle);
                     $(element).find('.item-details-date-time-started').text(json.dateTimeStartedText);
                     $(element).find('.item-details-time-span').attr('title', json.timeSpanTitle);

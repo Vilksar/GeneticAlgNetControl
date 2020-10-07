@@ -56,46 +56,61 @@
         </div>
     </div>
     <div class="container my-2">
-        <div class="card shadow-sm">
-            <div class="card-body">
-                <div class="row align-items-center">
-                    <div class="col-lg-2 col-xl-1 text-center">
-                        <span title="Details"><i class="fas fa-font fa-2x"></i></span>
-                        <hr class="d-block d-lg-none" />
-                    </div>
-                    <div class="col-lg-6 col-xl-6 text-center text-lg-left">
-                        <div class="font-weight-bold text-uppercase">
-                            <span title="@Model.View.Name" class="item-details-name">@Model.View.Name</span>
+        <div class="row align-items-center">
+            <div class="col-lg-8 mb-1 mb-lg-0">
+                <div class="card shadow-sm" title="Details">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                <span><i class="fas fa-font fa-2x"></i></span>
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                <div class="font-weight-bold text-uppercase">
+                                    <span title="@Model.View.Name" class="item-details-name">@Model.View.Name</span>
+                                </div>
+                                <div class="small text-muted">
+                                    <span title="@Model.View.Id" class="item-details-id">@Model.View.Id</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="small text-muted">
-                            <span title="@Model.View.Id" class="item-details-id">@Model.View.Id</span>
-                        </div>
                     </div>
-                    <div class="col-lg-4 col-xl-5 text-center text-lg-right">
-                        <hr class="d-block d-lg-none" />
-                        @switch (Model.View.Status)
-                        {
-                            case Data.Enumerations.AnalysisStatus.Scheduled:
-                                <span class="text-warning item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
-                                break;
-                            case Data.Enumerations.AnalysisStatus.Initializing:
-                                <span class="text-dark item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
-                                break;
-                            case Data.Enumerations.AnalysisStatus.Ongoing:
-                                <span class="text-primary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
-                                break;
-                            case Data.Enumerations.AnalysisStatus.Stopping:
-                                <span class="text-secondary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
-                                break;
-                            case Data.Enumerations.AnalysisStatus.Stopped:
-                                <span class="text-danger item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
-                                break;
-                            case Data.Enumerations.AnalysisStatus.Completed:
-                                <span class="text-success item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
-                                break;
-                            default:
-                                break;
-                        }
+                </div>
+            </div>
+            <div class="col-lg-4 my-1 my-lg-0">
+                <div class="card shadow-sm" title="Status">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <div class="col-xl-3 text-center">
+                                @switch (Model.View.Status)
+                                {
+                                    case Data.Enumerations.AnalysisStatus.Scheduled:
+                                        <span class="text-warning item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AnalysisStatus.Initializing:
+                                        <span class="text-dark item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-cog fa-spin fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AnalysisStatus.Ongoing:
+                                        <span class="text-primary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AnalysisStatus.Stopping:
+                                        <span class="text-secondary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-circle-notch fa-spin fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AnalysisStatus.Stopped:
+                                        <span class="text-danger item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
+                                        break;
+                                    case Data.Enumerations.AnalysisStatus.Completed:
+                                        <span class="text-success item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                <hr class="d-xl-none" />
+                            </div>
+                            <div class="col-xl-9 text-center">
+                                <span title="@Model.View.Status.ToString()" class="item-details-status">@Model.View.Status.ToString()</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,37 +221,15 @@
                 </div>
             </div>
             <div class="col-lg-4 mt-1 mt-lg-0">
-                <div class="card shadow-sm" title="Status">
+                <div class="card shadow-sm" title="Current running time">
                     <div class="card-body">
                         <div class="row align-items-center">
                             <div class="col-xl-3 text-center">
-                                @switch (Model.View.Status)
-                                {
-                                    case Data.Enumerations.AnalysisStatus.Scheduled:
-                                        <span class="text-warning item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-clock fa-2x"></i></span>
-                                        break;
-                                    case Data.Enumerations.AnalysisStatus.Initializing:
-                                        <span class="text-dark item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-stopwatch fa-2x"></i></span>
-                                        break;
-                                    case Data.Enumerations.AnalysisStatus.Ongoing:
-                                        <span class="text-primary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-spinner fa-spin fa-2x"></i></span>
-                                        break;
-                                    case Data.Enumerations.AnalysisStatus.Stopping:
-                                        <span class="text-secondary item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-pause-circle fa-2x"></i></span>
-                                        break;
-                                    case Data.Enumerations.AnalysisStatus.Stopped:
-                                        <span class="text-danger item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-stop-circle fa-2x"></i></span>
-                                        break;
-                                    case Data.Enumerations.AnalysisStatus.Completed:
-                                        <span class="text-success item-details-status-icon" title="@Model.View.Status.ToString()"><i class="fas fa-check-circle fa-2x"></i></span>
-                                        break;
-                                    default:
-                                        break;
-                                }
+                                <span><i class="fas fa-stopwatch fa-2x"></i></span>
                                 <hr class="d-xl-none" />
                             </div>
                             <div class="col-xl-9 text-center">
-                                <span title="@Model.View.Status.ToString()" class="item-details-status">@Model.View.Status.ToString()</span>
+                                <span title="@Model.View.CurrentRunningTime / @Model.View.Parameters.MaximumRunningTime" class="item-details-current-running-time">@Model.View.CurrentRunningTime / @Model.View.Parameters.MaximumRunningTime</span>
                             </div>
                         </div>
                     </div>
@@ -490,23 +483,31 @@
         <div class="card shadow-sm">
             <div class="card-body">
                 <div class="row">
-                    <div class="col-lg-4 order-1 order-lg-1 align-self-center">
+                    <div class="col-lg-12 order-1 order-lg-1 align-self-center">
                         <label asp-for="View.Parameters.RandomSeed" class="font-weight-bold">Random seed</label>
                     </div>
-                    <div class="col-lg-4 order-1 order-lg-2 mb-3">
+                    <div class="col-lg-12 order-1 order-lg-2 mb-3">
                         <input asp-for="View.Parameters.RandomSeed" class="form-control form-control-plaintext" disabled />
                     </div>
-                    <div class="col-lg-4 order-2 order-lg-1 align-self-center">
+                </div>
+                <div class="row">
+                    <div class="col-lg-4 order-1 order-lg-1 align-self-center">
                         <label asp-for="View.Parameters.MaximumIterations" class="font-weight-bold">Maximum iterations</label>
                     </div>
-                    <div class="col-lg-4 order-2 order-lg-2 mb-3">
+                    <div class="col-lg-4 order-1 order-lg-2 mb-3">
                         <input asp-for="View.Parameters.MaximumIterations" class="form-control form-control-plaintext" disabled />
                     </div>
-                    <div class="col-lg-4 order-3 order-lg-1 align-self-center">
+                    <div class="col-lg-4 order-2 order-lg-1 align-self-center">
                         <label asp-for="View.Parameters.MaximumIterationsWithoutImprovement" class="font-weight-bold">Maximum iterations without improvement</label>
                     </div>
-                    <div class="col-lg-4 order-3 order-lg-2 mb-3">
+                    <div class="col-lg-4 order-2 order-lg-2 mb-3">
                         <input asp-for="View.Parameters.MaximumIterationsWithoutImprovement" class="form-control form-control-plaintext" disabled />
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-1 align-self-center">
+                        <label asp-for="View.Parameters.MaximumRunningTime" class="font-weight-bold">Maximum running time</label>
+                    </div>
+                    <div class="col-lg-4 order-3 order-lg-2 mb-3">
+                        <input asp-for="View.Parameters.MaximumRunningTime" class="form-control form-control-plaintext" disabled />
                     </div>
                 </div>
                 <div class="row">

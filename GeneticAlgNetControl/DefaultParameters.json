@@ -2,6 +2,7 @@
   "RandomSeed": -1,
   "MaximumIterations": 100,
   "MaximumIterationsWithoutImprovement": 25,
+  "MaximumRunningTime": 0,
   "MaximumPathLength": 5,
   "PopulationSize": 20,
   "RandomGenesPerChromosome": 25,

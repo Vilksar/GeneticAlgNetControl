@@ -24,6 +24,11 @@ namespace GeneticAlgNetControl.Helpers.Models
         public int MaximumIterationsWithoutImprovement { get; set; }
 
         /// <summary>
+        /// Represents the maximum number of seconds for which the analysis to run.
+        /// </summary>
+        public int MaximumRunningTime { get; set; }
+
+        /// <summary>
         /// Represents the maximum path length to be used in the analysis.
         /// </summary>
         public int MaximumPathLength { get; set; }
@@ -72,6 +77,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             RandomSeed = DefaultValues.RandomSeed;
             MaximumIterations = DefaultValues.MaximumIterations;
             MaximumIterationsWithoutImprovement = DefaultValues.MaximumIterationsWithoutImprovement;
+            MaximumRunningTime = DefaultValues.MaximumRunningTime;
             MaximumPathLength = DefaultValues.MaximumPathLength;
             PopulationSize = DefaultValues.PopulationSize;
             RandomGenesPerChromosome = DefaultValues.RandomGenesPerChromosome;
@@ -88,6 +94,7 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="randomSeed">The random seed.</param>
         /// <param name="maximumIterations">The maximum number of iterations.</param>
         /// <param name="maximumIterationsWithoutImprovement">The maximum number of iterations without improvement.</param>
+        /// <param name="maximumRunningTime">The maximum number of seconds.</param>
         /// <param name="maximumPathLength">The maximum path length.</param>
         /// <param name="populationSize">The population size.</param>
         /// <param name="randomGenesPerChromosome">The maximum number of genes whose value can be simultaneously randomly generated.</param>
@@ -96,12 +103,13 @@ namespace GeneticAlgNetControl.Helpers.Models
         /// <param name="probabilityMutation">The probability of mutation for each gene of a chromosome.</param>
         /// <param name="crossoverType">The crossover algorithm to be used.</param>
         /// <param name="mutationType">The mutation algorithm to be used.</param>
-        public Parameters(int randomSeed, int maximumIterations, int maximumIterationsWithoutImprovement, int maximumPathLength, int populationSize, int randomGenesPerChromosome, double percentageRandom, double percentageElite, double probabilityMutation, AnalysisCrossoverType crossoverType, AnalysisMutationType mutationType)
+        public Parameters(int randomSeed, int maximumIterations, int maximumIterationsWithoutImprovement, int maximumRunningTime, int maximumPathLength, int populationSize, int randomGenesPerChromosome, double percentageRandom, double percentageElite, double probabilityMutation, AnalysisCrossoverType crossoverType, AnalysisMutationType mutationType)
         {
             // Assign the value for each parameter.
             RandomSeed = randomSeed;
             MaximumIterations = maximumIterations;
             MaximumIterationsWithoutImprovement = maximumIterationsWithoutImprovement;
+            MaximumRunningTime = maximumRunningTime;
             MaximumPathLength = maximumPathLength;
             PopulationSize = populationSize;
             RandomGenesPerChromosome = randomGenesPerChromosome;
@@ -122,6 +130,7 @@ namespace GeneticAlgNetControl.Helpers.Models
             return 0 <= RandomSeed &&
                 1 <= MaximumIterations &&
                 1 <= MaximumIterationsWithoutImprovement &&
+                0 <= MaximumRunningTime &&
                 1 <= MaximumPathLength &&
                 2 <= PopulationSize &&
                 1 <= RandomGenesPerChromosome &&
@@ -151,6 +160,11 @@ namespace GeneticAlgNetControl.Helpers.Models
             /// Represents the default value for the maximum number of iterations without improvement for which the algorithm to run.
             /// </summary>
             public static int MaximumIterationsWithoutImprovement { get; } = 25;
+
+            /// <summary>
+            /// Represents the default value for the maximum number of seconds for which the algorithm to run.
+            /// </summary>
+            public static int MaximumRunningTime { get; } = 0;
 
             /// <summary>
             /// Represents the default value for the maximum path length to be used in the algorithm.

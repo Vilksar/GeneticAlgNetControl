@@ -267,6 +267,7 @@ namespace GeneticAlgNetControl.Data.Models
             var preferredNodes = JsonSerializer.Deserialize<List<string>>(PreferredNodes);
             var parameters = JsonSerializer.Deserialize<Parameters>(Parameters);
             // Get the additional needed variables.
+            var dateTimeToStop = parameters.MaximumRunningTime != 0 ? DateTimeStarted + TimeSpan.FromSeconds(parameters.MaximumRunningTime) : null;
             var nodeIndex = Analysis.GetNodeIndex(nodes);
             var nodeIsPreferred = Analysis.GetNodeIsPreferred(nodes, preferredNodes);
             var matrixA = Analysis.GetMatrixA(nodeIndex, edges);
@@ -303,7 +304,7 @@ namespace GeneticAlgNetControl.Data.Models
             // Log a message.
             logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
             // Move through the generations.
-            while (!hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && this != null && Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement)
+            while (!hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && this != null && Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement && (dateTimeToStop == null || DateTime.Now < dateTimeToStop.Value))
             {
                 // Move on to the next iterations.
                 currentIteration += 1;
@@ -348,7 +349,7 @@ namespace GeneticAlgNetControl.Data.Models
             HistoricBestFitness = JsonSerializer.Serialize(historicBestFitness);
             HistoricAverageFitness = JsonSerializer.Serialize(historicAverageFitness);
             Solutions = JsonSerializer.Serialize(population.GetSolutions().Select(item => new Solution(item, nodeIndex, nodeIsPreferred, powersMatrixCA)));
-            Status = currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
+            Status = currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement && (dateTimeToStop == null || DateTime.Now < dateTimeToStop.Value) ? AnalysisStatus.Stopped : AnalysisStatus.Completed;
             DateTimeEnded = DateTime.Now;
             DateTimeIntervals = JsonSerializer.Serialize(JsonSerializer.Deserialize<List<DateTimeInterval>>(DateTimeIntervals).SkipLast(1).Append(new DateTimeInterval(DateTimeStarted, DateTimeEnded)));
             // Check if there is a context provided.

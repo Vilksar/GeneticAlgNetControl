@@ -302,6 +302,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 $"\n\tRandomSeed = {parameters.RandomSeed}",
                 $"\n\tMaximumIterations = {parameters.MaximumIterations}",
                 $"\n\tMaximumIterationsWithoutImprovement = {parameters.MaximumIterationsWithoutImprovement}",
+                $"\n\tMaximumRunningTime = {parameters.MaximumRunningTime}",
                 $"\n\tMaximumPathLength = {parameters.MaximumPathLength}",
                 $"\n\tPopulationSize = {parameters.PopulationSize}",
                 $"\n\tRandomGenesPerChromosome = {parameters.RandomGenesPerChromosome}",
