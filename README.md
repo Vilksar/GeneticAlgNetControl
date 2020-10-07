@@ -107,11 +107,12 @@ This mode has three mandatory arguments (omitting any of them will return an err
   ```
   {
     "RandomSeed": -1,
-    "MaximumIterations": 10000,
-    "MaximumIterationsWithoutImprovement": 1000,
+    "MaximumIterations": 100,
+    "MaximumIterationsWithoutImprovement": 25,
+    "MaximumRunningTime": 0,
     "MaximumPathLength": 5,
-    "PopulationSize": 80,
-    "RandomGenesPerChromosome": 15,
+    "PopulationSize": 20,
+    "RandomGenesPerChromosome": 25,
     "PercentageRandom": 0.25,
     "PercentageElite": 0.25,
     "ProbabilityMutation": 0.01,
@@ -122,12 +123,13 @@ This mode has three mandatory arguments (omitting any of them will return an err
   
   The parameters are presented below.
   
-  * `RandomSeed`. Represents the random seed for the current algorithm run. It must be a positive integer. However, if it is `-1`, then it will be randomly generated. Its default value is `-1`, which means that it will be randomly generated every time.
-  * `MaximumIterations`. Represents the total number of generations for which the algorithm will run. It must be a positive integer, and its default value is `10000`.
-  * `MaximumIterationsWithoutImprovement`. Represents the total number of generations without an improvement in the fitness of the best chromosome in the population. It must be a positive integer, and its default value is `1000`.
+  * `RandomSeed`. Represents the random seed for the current algorithm run. A value of `-1` will generate a random value for the seed. It must be a positive integer, and its default value is `-1`.
+  * `MaximumIterations`. Represents the maximum number of generations for which the algorithm will run. It must be a positive integer, and its default value is `100`.
+  * `MaximumIterationsWithoutImprovement`. Represents the maximum number of generations without an improvement in the fitness of the best chromosome in the population for which the algorithm will run. It must be a positive integer, and its default value is `25`.
+  * `MaximumRunningTime`. Represents the maximum number of seconds for which the algorithm will run. A value of `0` will not restrict the running time. It must be a positive integer, and its default value is `0`.
   * `MaximumPathLength`. Represents the maximum number of edges in a control path. It must be a positive integer, and its default value is `5`.
-  * `PopulationSize`. Represents the total number of chromosomes in a generation. It must be a positive integer greater than `1`, and its default value is `80`.
-  * `RandomGenesPerChromosome`. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is `15`.
+  * `PopulationSize`. Represents the total number of chromosomes in a generation. It must be a positive integer greater than `1`, and its default value is `20`.
+  * `RandomGenesPerChromosome`. Represents the maximum number of randomly generated genes in a chromosome. It must be a positive integer, and its default value is `25`.
   * `PercentageElite`. Represents the maximum percentage of elite chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
   * `PercentageRandom`. Represents the maximum percentage of randomly generated chromosomes in a generation. It must be a real number in the `[0, 1]` interval, and its default value is `0.25`.
   * `ProbabilityMutation`. Represents the probability of mutation for a chromosome. It must be a real number in the `[0, 1]` interval, and its default value is `0.01`.
