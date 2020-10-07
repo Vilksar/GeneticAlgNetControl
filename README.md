@@ -169,11 +169,11 @@ These are a few examples of possible command-line parameters for running the app
 * CLI
   
   ```
-  ./GeneticAlgNetControl --Mode "Cli" --Edges "samples/Social_Interaction_3.txt" --Targets "samples/Social_Interaction_3_Target.txt" --Parameters "DefaultParameters.json"
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "DataSets/Social_Interaction_3.txt" --Targets "DataSets/Social_Interaction_3_Target.txt" --Parameters "DefaultParameters.json"
   ```
   
   ```
-  ./GeneticAlgNetControl --Mode "Cli" --Edges "samples/Breast_MDA-MB-361.txt" --Targets "samples/Breast_MDA-MB-361_Target.txt" --Preferred "samples/Breast_MDA-MB-361_Preferred.txt" --Parameters "DefaultParameters.json"
+  ./GeneticAlgNetControl --Mode "Cli" --Edges "DataSets/Breast_MDA-MB-361.txt" --Targets "DataSets/Breast_MDA-MB-361_Target.txt" --Preferred "samples/Breast_MDA-MB-361_Preferred.txt" --Parameters "DefaultParameters.json"
   ```
   
   ```
