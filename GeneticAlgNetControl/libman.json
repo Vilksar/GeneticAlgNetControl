@@ -3,21 +3,21 @@
   "defaultProvider": "cdnjs",
   "libraries": [
     {
-      "library": "font-awesome@5.11.2",
+      "library": "font-awesome@5.14.0",
       "destination": "wwwroot/lib/font-awesome/",
       "files": [
         "js/all.min.js"
       ]
     },
     {
-      "library": "jquery@3.4.1",
+      "library": "jquery@3.5.1",
       "destination": "wwwroot/lib/jquery/",
       "files": [
         "jquery.min.js"
       ]
     },
     {
-      "library": "jquery-validate@1.19.1",
+      "library": "jquery-validate@1.19.2",
       "destination": "wwwroot/lib/jquery-validate/",
       "files": [
         "jquery.validate.min.js"
@@ -31,24 +31,22 @@
       ]
     },
     {
-      "library": "twitter-bootstrap@4.3.1",
+      "library": "twitter-bootstrap@4.5.2",
       "destination": "wwwroot/lib/twitter-bootstrap/",
       "files": [
         "js/bootstrap.bundle.min.js",
-        "js/bootstrap.bundle.min.js.map",
         "css/bootstrap.min.css",
-        "css/bootstrap.min.css.map"
       ]
     },
     {
-      "library": "Chart.js@2.8.0",
+      "library": "Chart.js@2.9.3",
       "destination": "wwwroot/lib/chart-js/",
       "files": [
         "Chart.min.js"
       ]
     },
     {
-      "library": "datatables@1.10.19",
+      "library": "datatables@1.10.21",
       "destination": "wwwroot/lib/datatables/",
       "files": [
         "js/jquery.dataTables.min.js",
