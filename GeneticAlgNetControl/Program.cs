@@ -25,14 +25,20 @@ namespace GeneticAlgNetControl
             var mode = configuration["Mode"];
             // Get the host to run based on the command-line arguments and build it.
             using var host = (mode == "Web" ? CreateWebHostBuilder(args) : mode == "Cli" ? CreateCliHostBuilder(args) : CreateDefaultHostBuilder(args)).Build();
+            // Get the corresponding logger.
+            var logger = host.Services.GetService<ILogger<Program>>();
+            // Display a message.
+            logger.LogInformation("The application has been started. You can press \"CTRL + C\" (\"Command + C\" on MacOS) to stop at any time.");
             // Try to run the application host.
             try
             {
+                // Run the application host.
                 host.Run();
             }
             catch (OperationCanceledException)
             {
-
+                // Display a message.
+                logger.LogInformation("The application has been stopped by the user.");
             }
         }
 

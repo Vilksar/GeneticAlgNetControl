@@ -103,7 +103,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return;
             }
             // Check if the file containing the target nodes exists.
-            if (!File.Exists(edgesFilepath))
+            if (!File.Exists(targetNodesFilepath))
             {
                 // Log an error.
                 _logger.LogError($"The file \"{targetNodesFilepath}\" (containing the network target nodes) could not be found in the current directory \"{currentDirectory}\".");
@@ -113,7 +113,7 @@ namespace GeneticAlgNetControl.Helpers.Services
                 return;
             }
             // Check if the file containing the preferred nodes exists.
-            if (!string.IsNullOrEmpty(preferredNodesFilepath) && !File.Exists(edgesFilepath))
+            if (!string.IsNullOrEmpty(preferredNodesFilepath) && !File.Exists(preferredNodesFilepath))
             {
                 // Log an error.
                 _logger.LogError($"The file \"{preferredNodesFilepath}\" (containing the network preferred nodes) could not be found in the current directory \"{currentDirectory}\".");
@@ -151,10 +151,10 @@ namespace GeneticAlgNetControl.Helpers.Services
                     .Select(item => new Edge { SourceNode = item.Item1, TargetNode = item.Item2 })
                     .ToList();
             }
-            catch
+            catch (Exception exception)
             {
                 // Log an error.
-                _logger.LogError($"An error occured while reading the file \"{edgesFilepath}\" (containing the edges).");
+                _logger.LogError($"The error \"{exception.Message}\" occured while reading the file \"{edgesFilepath}\" (containing the edges).");
                 // Stop the application.
                 _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
@@ -169,10 +169,10 @@ namespace GeneticAlgNetControl.Helpers.Services
                     .Distinct()
                     .ToList();
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 // Log an error.
-                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{targetNodesFilepath}\" (containing the target nodes).");
+                _logger.LogError($"The error \"{exception.Message}\" occured while reading the file \"{targetNodesFilepath}\" (containing the target nodes).");
                 // Stop the application.
                 _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
@@ -190,10 +190,10 @@ namespace GeneticAlgNetControl.Helpers.Services
                         .Distinct()
                         .ToList();
                 }
-                catch (Exception ex)
+                catch (Exception exception)
                 {
                     // Log an error.
-                    _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{preferredNodesFilepath}\" (containing the preferred nodes).");
+                    _logger.LogError($"The error \"{exception.Message}\" occured while reading the file \"{preferredNodesFilepath}\" (containing the preferred nodes).");
                     // Stop the application.
                     _hostApplicationLifetime.StopApplication();
                     // Return a successfully completed task.
@@ -206,38 +206,35 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Read and parse the parameters from the file.
                 parameters = JsonSerializer.Deserialize<Parameters>(File.ReadAllText(parametersFilepath));
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 // Log an error.
-                _logger.LogError($"The error \"{ex.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
+                _logger.LogError($"The error \"{exception.Message}\" occured while reading the file \"{parametersFilepath}\" (containing the parameters).");
                 // Stop the application.
                 _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
                 return;
             }
-            // Check if there is an output filepath provided.
-            if (!string.IsNullOrEmpty(outputFilepath))
-            {
-                // Try to write to the output file.
-                try
-                {
-                    // Write to the specified output file.
-                    File.WriteAllText(outputFilepath, string.Empty);
-                }
-                catch (Exception ex)
-                {
-                    // Log an error.
-                    _logger.LogError($"The error \"{ex.Message}\" occured while trying to write to the output file \"{outputFilepath}\".");
-                    // Stop the application.
-                    _hostApplicationLifetime.StopApplication();
-                    // Return a successfully completed task.
-                    return;
-                }
-            }
-            else
+            // Check if there isn't an output filepath provided.
+            if (string.IsNullOrEmpty(outputFilepath))
             {
                 // Assign the default value to the output filepath.
                 outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
+            }
+            // Try to write to the output file.
+            try
+            {
+                // Write to the specified output file.
+                File.WriteAllText(outputFilepath, string.Empty);
+            }
+            catch (Exception exception)
+            {
+                // Log an error.
+                _logger.LogError($"The error \"{exception.Message}\" occured while trying to write to the output file \"{outputFilepath}\".");
+                // Stop the application.
+                _hostApplicationLifetime.StopApplication();
+                // Return a successfully completed task.
+                return;
             }
             // Check if there weren't any edges found.
             if (!edges.Any())
@@ -325,12 +322,12 @@ namespace GeneticAlgNetControl.Helpers.Services
                 // Log a message.
                 _logger.LogInformation($"The results have been written in JSON format to the file \"{outputFilepath}\".");
             }
-            catch (Exception ex)
+            catch (Exception exception)
             {
                 // Log an error.
-                _logger.LogError(ex.Message);
-                // Log a message.
-                _logger.LogInformation($"An error occured while writing the results to the file \"{outputFilepath}\". The results will be displayed below instead.\n\n{outputText}\n");
+                _logger.LogError($"The error \"{exception.Message}\" occured while writing the results to the file \"{outputFilepath}\". The results will be displayed below instead.");
+                // Log the output text.
+                _logger.LogInformation(outputText);
                 // Stop the application.
                 _hostApplicationLifetime.StopApplication();
                 // Return a successfully completed task.
