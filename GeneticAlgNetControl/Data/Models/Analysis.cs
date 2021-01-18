@@ -236,7 +236,7 @@ namespace GeneticAlgNetControl.Data.Models
         public async Task Run(ILogger logger, IHostApplicationLifetime hostApplicationLifetime, ApplicationDbContext context)
         {
             // Log a message.
-            logger.LogInformation($"{DateTime.Now.ToString()}: Analysis \"{Name}\" started.");
+            logger.LogInformation($"{DateTime.Now}: Analysis \"{Name}\" started.");
             // Define a new stopwatch to measure the running time and start it.
             var stopwatch = new Stopwatch();
             stopwatch.Start();
@@ -259,7 +259,7 @@ namespace GeneticAlgNetControl.Data.Models
                 await context.Entry(this).ReloadAsync();
             }
             // Log a message.
-            logger.LogInformation($"{DateTime.Now.ToString()}: Computing the variables needed for the analysis.");
+            logger.LogInformation($"{DateTime.Now}: Computing the variables needed for the analysis.");
             // Get the edges, nodes, target nodes, preferred nodes and parameters.
             var nodes = JsonSerializer.Deserialize<List<string>>(Nodes);
             var edges = JsonSerializer.Deserialize<List<Edge>>(Edges);
@@ -294,7 +294,7 @@ namespace GeneticAlgNetControl.Data.Models
             if (currentIteration == 0 || !historicBestFitness.Any())
             {
                 // Log a message.
-                logger.LogInformation($"{DateTime.Now.ToString()}: Setting up the first population.");
+                logger.LogInformation($"{DateTime.Now}: Setting up the first population.");
                 // Initialize a new population.
                 population = new Population(nodeIndex, targetNodes, targetAncestors, powersMatrixCA, nodeIsPreferred, parameters, random);
                 // Update the fitness lists.
@@ -302,7 +302,7 @@ namespace GeneticAlgNetControl.Data.Models
                 historicAverageFitness.Add(population.GetFitnessList().Average());
             }
             // Log a message.
-            logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
+            logger.LogInformation($"{DateTime.Now}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
             // Move through the generations.
             while (!hostApplicationLifetime.ApplicationStopping.IsCancellationRequested && this != null && Status == AnalysisStatus.Ongoing && currentIteration < parameters.MaximumIterations && currentIterationWithoutImprovement < parameters.MaximumIterationsWithoutImprovement && (dateTimeToStop == null || DateTime.Now < dateTimeToStop.Value))
             {
@@ -330,7 +330,7 @@ namespace GeneticAlgNetControl.Data.Models
                     currentIterationWithoutImprovement = 0;
                 }
                 // Log a message.
-                logger.LogInformation($"{DateTime.Now.ToString()}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
+                logger.LogInformation($"{DateTime.Now}:\t{currentIteration}\t/\t{parameters.MaximumIterations}\t|\t{currentIterationWithoutImprovement}\t/\t{parameters.MaximumIterationsWithoutImprovement}\t|\t{historicBestFitness.Last()}\t|\t{historicAverageFitness.Last()}");
                 // Check if there is a context provided.
                 if (context != null)
                 {
@@ -361,7 +361,7 @@ namespace GeneticAlgNetControl.Data.Models
             // Stop the measuring watch.
             stopwatch.Stop();
             // Log a message.
-            logger.LogInformation($"{DateTime.Now.ToString()}: Analysis ended in {stopwatch.Elapsed}.");
+            logger.LogInformation($"{DateTime.Now}: Analysis ended in {stopwatch.Elapsed}.");
             // End the function.
             return;
         }

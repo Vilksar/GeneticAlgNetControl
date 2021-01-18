@@ -219,7 +219,7 @@ namespace GeneticAlgNetControl.Helpers.Services
             if (string.IsNullOrEmpty(outputFilepath))
             {
                 // Assign the default value to the output filepath.
-                outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output_{DateTime.Now.ToString("yyyyMMddHHmmss")}.json");
+                outputFilepath = edgesFilepath.Replace(Path.GetExtension(edgesFilepath), $"_Output_{DateTime.Now:yyyyMMddHHmmss}.json");
             }
             // Try to write to the output file.
             try
@@ -306,8 +306,8 @@ namespace GeneticAlgNetControl.Helpers.Services
                 $"\n\tPercentageRandom = {parameters.PercentageRandom}",
                 $"\n\tPercentageElite = {parameters.PercentageElite}",
                 $"\n\tProbabilityMutation = {parameters.ProbabilityMutation}",
-                $"\n\tCrossoverType = {parameters.CrossoverType.ToString()}",
-                $"\n\tMutationType = {parameters.MutationType.ToString()}"));
+                $"\n\tCrossoverType = {parameters.CrossoverType}",
+                $"\n\tMutationType = {parameters.MutationType}"));
             // Define a new analysis.
             var analysis = new Analysis(Path.GetFileNameWithoutExtension(edgesFilepath), edges, nodes, targetNodes, preferredNodes, parameters);
             // Run the analysis.

@@ -56,11 +56,11 @@ namespace GeneticAlgNetControl.Helpers.Services
             using var scope = _serviceProvider.CreateScope();
             // Use a new context instance.
             using var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-            // Go over each algorithm in the database that is ongoing at start.
-            foreach (var algorithm in context.Analyses.Where(item => item.Status == AnalysisStatus.Initializing || item.Status == AnalysisStatus.Ongoing || item.Status == AnalysisStatus.Stopping))
+            // Go over each analysis in the database that is ongoing at start.
+            foreach (var analysis in context.Analyses.Where(item => item.Status == AnalysisStatus.Initializing || item.Status == AnalysisStatus.Ongoing || item.Status == AnalysisStatus.Stopping))
             {
                 // Update its status.
-                algorithm.Status = AnalysisStatus.Scheduled;
+                analysis.Status = AnalysisStatus.Scheduled;
             }
             // Save the changes to the database.
             await context.SaveChangesAsync();
