@@ -4,8 +4,9 @@
 
 * [Introduction](#introduction)
 * [Input](#input)
-* [Output](#output)
 * [Cytoscape](#cytoscape)
+* [Output](#output)
+* [Results](#results)
 
 ## Introduction
 
@@ -23,15 +24,15 @@ Random Small World 100, 500, 1000, 1500, 2000 | [Link](https://networkx.github.i
 
 The ``Input`` directory contains examples of input data that can be read by the application. The actual networks can be found in the text files named ``Network_Name``. Each network file has a corresponding target nodes file named ``Network_Name_Target``. Both such files are needed for one run of the application. Furthermore, the files corresponding to the protein-protein interaction networks have an additional drug-target nodes file named ``Network_Name_Preferred``, which can be used as supplementary input for the application.
 
+## Cytoscape
+
+The ``Cytoscape`` directory contains the networks in the ``Input`` directory as ``cyjs`` files that can be directly imported and used in Cytoscape (either the [desktop application](https://cytoscape.org/), or the [JavaScript library](https://js.cytoscape.org/)). The already-compiled network collections for the desktop application are also included, together with a styling file.
+
 ## Output
 
 The ``Output`` directory contains the results obtained after running the application on the data sets in the ``Input`` directory. Each output consists of a JSON file with the name starting with ``Network_Name_`` and ending in ``_Output``, followed by the number of the run.
 
 Given the stochastic nature of the algorithm, the results obtained after each run of the application might vary. Each file represents only one possible output.
-
-## Cytoscape
-
-The ``Cytoscape`` directory contains the networks in the ``Input`` directory as ``cyjs`` files that can be directly imported and used in Cytoscape (either the [desktop application](https://cytoscape.org/), or the [JavaScript library](https://js.cytoscape.org/)). The already-compiled network collections for the desktop application are also included, together with a styling file.
 
 ## Results
 
