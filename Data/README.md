@@ -32,3 +32,7 @@ Given the stochastic nature of the algorithm, the results obtained after each ru
 ## Cytoscape
 
 The ``Cytoscape`` directory contains the networks in the ``Input`` directory as ``cyjs`` files that can be directly imported and used in Cytoscape (either the [desktop application](https://cytoscape.org/), or the [JavaScript library](https://js.cytoscape.org/)). The already-compiled network collections for the desktop application are also included, together with a styling file.
+
+## Results
+
+The ``Results`` directory contains statistics of the results in the ``Output`` directory as Excel files. Additionally, these files also provide a comparison to the results of a similar application introduced [here](https://doi.org/10.1038/s41598-017-10491-y), when ran on the same data sets.
