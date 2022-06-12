@@ -35,7 +35,7 @@
       "destination": "wwwroot/lib/twitter-bootstrap/",
       "files": [
         "js/bootstrap.bundle.min.js",
-        "css/bootstrap.min.css",
+        "css/bootstrap.min.css"
       ]
     },
     {
